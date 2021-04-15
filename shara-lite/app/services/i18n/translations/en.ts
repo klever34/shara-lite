@@ -1,4 +1,4 @@
-import {Strings} from 'types/i18n'
+import {Strings} from 'types/i18n';
 
 const en: Strings = {
   update_shara: {
@@ -706,6 +706,10 @@ const en: Strings = {
         title: 'Contact Support',
         description: 'Ask a question or leave a message',
       },
+      kyc_settings: {
+        title: 'KYC Settings',
+        description: 'Fill your KYC information',
+      },
     },
     logout: {
       logout_data_verification_text: 'Verifying your saved data...',
@@ -1055,6 +1059,8 @@ const en: Strings = {
       balance: 'Balance',
       bnpl_terms_text: 'Buy now pay later terms',
       repayment_date: 'to be paid in full by {{date}}',
+      bearing_fees_text: 'I will be braring the BNPL fees',
+      select_option_text: 'Select buy now pay later option',
       excess_amount_error: 'Amount is more than amount available for drawdown',
     },
     confirmation: {
@@ -1074,7 +1080,7 @@ const en: Strings = {
       payment: 'Client pays {{amount}} over {{days}} days',
     },
     receipt: {
-      bnpl_text: 'Buy Now Pay Later (8 weeks)',
+      bnpl_text: 'Buy Now Pay Later ({{payment_frequency}} {{payment_frequency_unit}})',
     },
     add_repayment: 'Add Repayment',
     client: {
@@ -1115,6 +1121,8 @@ const en: Strings = {
       outstanding_amount: '{{amount}}',
       notes: 'Notes',
       notes_text_content: '{{notes}}',
+      client_takes_charge: 'The client will be covering interest in their weekly repayments of {{payment_frequency_amount}}',
+      merchant_takes_charge: 'You are covering the interest payments and {{amount}} was funded to your wallet',
     },
     recent_purchase_message:
       'Hi {{customer_name}}, thank you for your recent purchase.',
@@ -1136,6 +1144,7 @@ const en: Strings = {
   submit: 'Submit',
   send_via: 'Send via',
   push_payment: 'Push payment',
-}
+  you_get: 'You get',
+};
 
-export default en
+export default en;

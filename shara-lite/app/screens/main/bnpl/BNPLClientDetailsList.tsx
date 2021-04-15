@@ -1,20 +1,20 @@
-import {Button, toNumber} from '@/components';
+import { Button, toNumber } from '@/components';
 import EmptyState from '@/components/EmptyState';
-import {Icon} from '@/components/Icon';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency} from '@/helpers/utils';
-import {ICustomer} from '@/models';
-import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
-import {IBNPLRepayment} from '@/models/BNPLRepayment';
-import {getAnalyticsService, getApiService, getI18nService} from '@/services';
-import {handleError} from '@/services/error-boundary';
-import {useAppNavigation} from '@/services/navigation';
-import {useReceipt} from '@/services/receipt';
-import {applyStyles, colors, dimensions} from '@/styles';
-import React, {useCallback} from 'react';
-import {FlatList, InteractionManager, Text, View} from 'react-native';
-import {AddRepaymentModal} from './AddRepaymentModal';
-import {BNPLClientTransactionListItem} from './BNPLClientTransactionListItem';
+import { Icon } from '@/components/Icon';
+import { ModalWrapperFields, withModal } from '@/helpers/hocs';
+import { amountWithCurrency } from '@/helpers/utils';
+import { ICustomer } from '@/models';
+import { IBNPLDrawdown } from '@/models/BNPLDrawdown';
+import { IBNPLRepayment } from '@/models/BNPLRepayment';
+import { getAnalyticsService, getApiService, getI18nService } from '@/services';
+import { handleError } from '@/services/error-boundary';
+import { useAppNavigation } from '@/services/navigation';
+import { useReceipt } from '@/services/receipt';
+import { applyStyles, colors, dimensions } from '@/styles';
+import React, { useCallback } from 'react';
+import { FlatList, InteractionManager, Text, View } from 'react-native';
+import { AddRepaymentModal } from './AddRepaymentModal';
+import { BNPLClientTransactionListItem } from './BNPLClientTransactionListItem';
 
 type Props = {
   customer?: ICustomer;

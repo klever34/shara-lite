@@ -10,6 +10,7 @@ import {Text, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {BNPLTransactionList} from './BNPLTransactionList';
 import {useBNPLDrawdownsList} from './hook';
+import { ICustomer } from '@/models';
 
 const strings = getI18nService().strings;
 
@@ -29,7 +30,10 @@ export const CompleteBNPLScreen = () => {
   } = useBNPLDrawdownsList({bnplDrawdowns});
 
   const handleRecordTransaction = useCallback(() => {
-    navigation.navigate('BNPLRecordTransactionScreen');
+    navigation.navigate('SelectCustomerList', {
+      onSelectCustomer: (customer: ICustomer) =>
+        navigation.navigate('BNPLRecordTransactionScreen', {customer}),
+    });
   }, [navigation]);
 
   useEffect(() => {

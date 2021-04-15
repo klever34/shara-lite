@@ -107,7 +107,7 @@ export type MainStackParamList = {
   Drawdown: undefined;
   BNPLScreen: undefined;
   BNPLClientScreen: {data: IBNPLDrawdown};
-  BNPLRecordTransactionScreen: undefined;
+  BNPLRecordTransactionScreen: {customer: ICustomer};
   BNPLTransactionDetailsScreen: {transaction: IBNPLDrawdown};
   BNPLTransactionSuccessScreen: {
     transaction: {

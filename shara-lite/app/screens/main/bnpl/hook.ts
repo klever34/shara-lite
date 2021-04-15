@@ -27,7 +27,10 @@ export const useBNPLDrawdownsList = (options: UseBNPLDrawdownsOptions) => {
         `customer CONTAINS[c] "${searchTerm}"`,
       )
     }
-    return bnplDrawdowns
+    return bnplDrawdowns.sorted(
+      'created_at',
+      true,
+    )
   }, [bnplDrawdownsData.length, searchTerm])
 
   const handleSetBNPLDrawdownsToDisplay = useCallback(

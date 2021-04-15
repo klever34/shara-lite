@@ -1,28 +1,28 @@
-import DIContainer, {object, get, IDIContainer} from 'rsdi'
-import {IStorageService, StorageService} from './storage'
-import {ContactService, IContactService} from './contact'
-import {AuthService, IAuthService} from './auth'
-import {IRealmService, RealmService} from './realm'
-import {ApiService, IApiService} from './api'
-import {INavigationService, NavigationService} from './navigation'
-import {AnalyticsService, IAnalyticsService} from './analytics'
-import {INotificationService, NotificationService} from './notification'
-import {IGeolocationService, GeolocationService} from './geolocation'
-import {AddressService, IAddressService} from '@/services/address/service'
+import DIContainer, {get, IDIContainer, object} from 'rsdi';
+import {IStorageService, StorageService} from './storage';
+import {ContactService, IContactService} from './contact';
+import {AuthService, IAuthService} from './auth';
+import {IRealmService, RealmService} from './realm';
+import {ApiService, IApiService} from './api';
+import {INavigationService, NavigationService} from './navigation';
+import {AnalyticsService, IAnalyticsService} from './analytics';
+import {INotificationService, NotificationService} from './notification';
+import {GeolocationService, IGeolocationService} from './geolocation';
+import {AddressService, IAddressService} from '@/services/address/service';
 import {
   IIPGeolocationService,
   IPGeolocationService,
-} from '@/services/ip-geolocation'
+} from '@/services/ip-geolocation';
 import {
   IRemoteConfigService,
   RemoteConfigService,
-} from '@/services/remote-config'
-import {I18nService, II18nService} from '@/services/i18n'
-import {HelpDeskService, IHelpDeskService} from '@/services/help-desk'
-import {IPubNubService} from './pubnub'
+} from '@/services/remote-config';
+import {I18nService, II18nService} from '@/services/i18n';
+import {HelpDeskService, IHelpDeskService} from '@/services/help-desk';
+import {IPubNubService, PubNubService} from '@/services/pubnub';
 
 const createDIContainer = (): IDIContainer => {
-  const container = new DIContainer()
+  const container = new DIContainer();
   container.addDefinitions({
     Notification: object(NotificationService),
     Navigation: object(NavigationService),
@@ -31,6 +31,7 @@ const createDIContainer = (): IDIContainer => {
     Geolocation: object(GeolocationService),
     IPGeolocation: object(IPGeolocationService),
     Analytics: object(AnalyticsService).construct(get('Storage')),
+    PubNub: object(PubNubService),
     I18n: object(I18nService).construct(get('RemoteConfig'), get('Storage')),
     Auth: object(AuthService).construct(
       get('Storage'),
@@ -48,45 +49,48 @@ const createDIContainer = (): IDIContainer => {
     Address: object(AddressService).construct(get('Realm')),
     RemoteConfig: object(RemoteConfigService),
     HelpDesk: object(HelpDeskService).construct(get('Notification')),
-  })
-  return container
-}
+  });
+  return container;
+};
 
-export const container = createDIContainer()
+export const container = createDIContainer();
 
 export const getNotificationService = () =>
-  container.get<INotificationService>('Notification')
+  container.get<INotificationService>('Notification');
 
 export const getNavigationService = () =>
-  container.get<INavigationService>('Navigation')
+  container.get<INavigationService>('Navigation');
 
 export const getAnalyticsService = () =>
-  container.get<IAnalyticsService>('Analytics')
+  container.get<IAnalyticsService>('Analytics');
 
-export const getPubNubService = () => container.get<IPubNubService>('PubNub')
+export const getPubNubService = () => container.get<IPubNubService>('PubNub');
 
-export const getRealmService = () => container.get<IRealmService>('Realm')
+export const getRealmService = () => container.get<IRealmService>('Realm');
 
-export const getStorageService = () => container.get<IStorageService>('Storage')
+export const getStorageService = () =>
+  container.get<IStorageService>('Storage');
 
-export const getAuthService = () => container.get<IAuthService>('Auth')
+export const getAuthService = () => container.get<IAuthService>('Auth');
 
-export const getApiService = () => container.get<IApiService>('Api')
+export const getApiService = () => container.get<IApiService>('Api');
 
-export const getContactService = () => container.get<IContactService>('Contact')
+export const getContactService = () =>
+  container.get<IContactService>('Contact');
 
 export const getGeolocationService = () =>
-  container.get<IGeolocationService>('Geolocation')
+  container.get<IGeolocationService>('Geolocation');
 
-export const getAddressService = () => container.get<IAddressService>('Address')
+export const getAddressService = () =>
+  container.get<IAddressService>('Address');
 
 export const getIPGeolocationService = () =>
-  container.get<IIPGeolocationService>('IPGeolocation')
+  container.get<IIPGeolocationService>('IPGeolocation');
 
 export const getRemoteConfigService = () =>
-  container.get<IRemoteConfigService>('RemoteConfig')
+  container.get<IRemoteConfigService>('RemoteConfig');
 
-export const getI18nService = () => container.get<II18nService>('I18n')
+export const getI18nService = () => container.get<II18nService>('I18n');
 
 export const getHelpDeskService = () =>
-  container.get<IHelpDeskService>('HelpDesk')
+  container.get<IHelpDeskService>('HelpDesk');

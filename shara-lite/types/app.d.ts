@@ -182,6 +182,25 @@ type IPGeolocationResponse = {
   };
 };
 
+type BNPLBundle = {
+  id: number;
+  default: boolean;
+  bnpl_product_id: number;
+  currency_code: string;
+  active: boolean;
+  repayment_period: number,
+  repayment_period_unit: string;
+  repayment_profile: string;
+  interest_rate: number;
+  interest_rate_unit: string;
+  payment_frequency: number;
+  payment_frequency_unit: string;
+  arrangement_fee: number;
+  arrangement_fee_unit: string;
+  created_at: string;
+  updated_at: string;
+}
+
 type StatusFilter = {
   label: string;
   value: 'all' | 'unpaid' | 'paid' | 'pending' | 'cancelled';

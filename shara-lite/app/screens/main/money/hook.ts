@@ -302,8 +302,8 @@ export const usePaymentActivities = ({
   }, [filter, filterEndDate, filterStartDate, bnplRepayments.length])
 
   const totalReceivedAmount = useMemo(() => {
-    return filteredCollections.sum('amount') ?? 0
-  }, [filteredCollections])
+    return filteredCollections.filtered('status = "success"').sum('amount') ?? 0;
+  }, [filteredCollections]);
 
   const totalWithdrawnAmount = useMemo(() => {
     return (
