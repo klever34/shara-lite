@@ -836,6 +836,7 @@ export interface Strings {
       outstanding_amount: string;
       notes: string;
       notes_text_content: string;
+      takes_charge_text: string;
     };
     recent_purchase_message: string;
     recent_purchase_message_from_business: string;

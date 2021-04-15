@@ -1,4 +1,4 @@
-import {Button, toNumber} from '@/components';
+import {Button, FloatingLabelInput, toNumber} from '@/components';
 import { Checkbox } from '@/components/Checkbox';
 import {FlatFloatingLabelCurrencyInput} from '@/components/FloatingLabelCurrencyInput';
 import {Icon} from '@/components/Icon';
@@ -82,6 +82,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
     errors,
     touched,
     handleSubmit,
+    handleChange,
     setFieldValue,
   } = useFormik<FormValues>({
     onSubmit: (values) => {
@@ -145,6 +146,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
       amount_paid: number;
       total_amount: number;
       bearingFees: boolean;
+      note?: string;
     }) => {
       try {
         const {credit_amount, bearingFees } = values;
@@ -356,6 +358,23 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
                 />
               ))
             }
+            <View style={applyStyles('pb-24 flex-row items-center')}>
+              <Icon
+                size={20}
+                name="comment"
+                style={applyStyles('top-8')}
+                type="material-icons"
+                color={colors['gray-100']}
+              />
+              <FloatingLabelInput
+                value={values.note}
+                errorMessage={errors.note}
+                onChangeText={handleChange('note')}
+                isInvalid={!!errors.note && !!touched.note}
+                containerStyle={applyStyles('ml-16 flex-1')}
+                label={strings('bnpl.record_transaction.fields.note.label')}
+              />
+            </View>
             <Text style={applyStyles('pt-8 text-red-100 text-center text-uppercase', {paddingBottom: 100})}>
               {strings('bnpl.record_transaction.repayment_date', {
                 date: format(addWeeks(new Date(), selectedBNPLProduct?.payment_frequency ?? 1), 'dd MMM, yyyy'),

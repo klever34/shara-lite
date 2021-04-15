@@ -26,6 +26,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
     receipt,
     created_at,
     amount_owed,
+    takes_charge,
     bnpl_repayments,
     repayment_amount,
     payment_frequency,
@@ -142,6 +143,14 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
               })}
             </Text>
           </View>
+        </View>
+        <View
+          style={applyStyles('flex-row px-24 border-b-1 center', {
+            borderColor: colors['gray-20'],
+          })}>
+          <Text style={applyStyles('py-18 text-gray-300 text-700 text-uppercase text-center')}>
+            {strings('bnpl.transaction_info.takes_charge_text', {takes_charge})}
+          </Text>
         </View>
         <Text
           style={applyStyles(

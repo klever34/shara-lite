@@ -1121,6 +1121,7 @@ const en: Strings = {
       outstanding_amount: '{{amount}}',
       notes: 'Notes',
       notes_text_content: '{{notes}}',
+      takes_charge_text: '{{takes_charge}} takes charge',
     },
     recent_purchase_message:
       'Hi {{customer_name}}, thank you for your recent purchase.',
