@@ -1121,7 +1121,8 @@ const en: Strings = {
       outstanding_amount: '{{amount}}',
       notes: 'Notes',
       notes_text_content: '{{notes}}',
-      takes_charge_text: '{{takes_charge}} takes charge',
+      client_takes_charge: 'The client will be covering interest in their weekly repayments of {{payment_frequency_amount}}',
+      merchant_takes_charge: 'You are covering the interest payments and {{amount}} was funded to your wallet',
     },
     recent_purchase_message:
       'Hi {{customer_name}}, thank you for your recent purchase.',

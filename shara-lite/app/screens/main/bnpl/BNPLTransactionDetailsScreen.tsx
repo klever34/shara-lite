@@ -52,6 +52,11 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
     });
   }, [openModal]);
 
+  const takesChargeMessage: {[key: string]: string} = {
+    client: strings('bnpl.transaction_info.client_takes_charge', {payment_frequency_amount: amountWithCurrency(payment_frequency_amount)}),
+    merchant: strings('bnpl.transaction_info.merchant_takes_charge', {amount: amountWithCurrency(amount_owed)})
+  }
+
   return (
     <SafeAreaView style={applyStyles('bg-white flex-1')}>
       <View style={applyStyles('px-24 pb-16')}>
@@ -148,8 +153,8 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
           style={applyStyles('flex-row px-24 border-b-1 center', {
             borderColor: colors['gray-20'],
           })}>
-          <Text style={applyStyles('py-18 text-gray-300 text-700 text-uppercase text-center')}>
-            {strings('bnpl.transaction_info.takes_charge_text', {takes_charge})}
+          <Text style={applyStyles('py-18 text-gray-300 text-700 text-center')}>
+            {!!takes_charge && takesChargeMessage[takes_charge]}
           </Text>
         </View>
         <Text
