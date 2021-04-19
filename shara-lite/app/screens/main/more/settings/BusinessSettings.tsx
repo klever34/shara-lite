@@ -21,7 +21,7 @@ import {applyStyles} from '@/styles';
 import {ObjectId} from 'bson';
 import React, {useCallback, useContext, useMemo} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
-import {Alert, ScrollView, View} from 'react-native';
+import {Alert, ScrollView, View, Platform} from 'react-native';
 
 const i18Service = getI18nService();
 
@@ -33,6 +33,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
   let {callingCode} = useIPGeolocation();
   const navigation = useAppNavigation();
   const user = authService.getUser();
+  // const token = authService.getToken();
   const businessInfo = authService.getBusinessInfo();
   const {
     name,
@@ -153,6 +154,22 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
     return fields;
   }, [address, callingCode, name, profile_image, getMobileNumber]);
 
+  // const createFormData = (photo, body = {}) => {
+  //   const data = new FormData();
+  
+  //   data.append('photo', {
+  //     name: photo.fileName,
+  //     type: photo.type,
+  //     uri: Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri,
+  //   });
+  
+  //   Object.keys(body).forEach((key) => {
+  //     data.append(key, body[key]);
+  //   });
+  
+  //   return data;
+  // };
+
   const handleSubmit = useCallback(
     async (formValues) => {
       // return;
@@ -168,10 +185,20 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
       formValues?.mobile && payload.append('mobile', formValues?.mobile);
       formValues?.countryCode &&
         payload.append('country_code', formValues?.countryCode);
-      formValues?.profileImageFile &&
-        Object.keys(formValues?.profileImageFile).length > 1 &&
-        payload.append('profileImageFile', formValues?.profileImageFile);
-      console.log({formValues})
+      // formValues?.profileImageFile &&
+      //   Object.keys(formValues?.profileImageFile).length > 1 &&
+      //   payload.append('profileImageFile', formValues?.profileImageFile);
+      // console.log('herehhh');
+      
+      // console.log(formValues.profileImageFile);
+      payload.append('profileImageFile', {
+        name: 'Shara'+ new Date().getMilliseconds(),
+        type: "image/jpeg",
+        uri: formValues.profileImageFile.uri
+      });
+
+      console.log(JSON.stringify(payload));
+
 
       try {
         user?.businesses && user.businesses.length
@@ -183,11 +210,6 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
         showSuccessToast(
           i18Service.strings('business_settings.edit_success_text'),
         );
-        const res = await apiService.businessSetupUpdate(payload, id);
-        console.log({res1: res});
-        const result = await apiService.businessSetup(payload);
-        console.log({res2: result.data});
-        return;
         handleOpenSaveModal();
       } catch (error) {
         Alert.alert('Error', error.message);

@@ -558,6 +558,8 @@ export class ApiService implements IApiService {
 
   async businessSetup(payload: FormData) {
     try {
+      // console.log(businessId);
+      console.log(payload);
       const fetchResponse = await this.requester.post('/business', payload, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -579,6 +581,8 @@ export class ApiService implements IApiService {
 
   async businessSetupUpdate(payload: FormData, businessId?: string) {
     try {
+      console.log(businessId);
+      console.log(payload);
       const fetchResponse = await this.requester.patch(
         `/business/${businessId}`,
         payload,
@@ -588,11 +592,14 @@ export class ApiService implements IApiService {
           },
         },
       );
+      
       const {
         data: {business},
       }: {data: {business: Business}} = fetchResponse;
 
       let user = this.authService.getUser() as User;
+      console.log();
+      
       user = {
         ...user,
         businesses: user.businesses.map((item) => {

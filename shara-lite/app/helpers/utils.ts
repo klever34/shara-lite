@@ -127,10 +127,11 @@ export const useImageInput = (
         const source = {
           uri,
           type,
-          name,
+          name
         };
+
         console.log(source);
-        
+
         setImageUrl(source);
       }
     });
@@ -217,4 +218,4 @@ export const sortDatesRelativeToDate = (dates: Date[], date: Date) => {
       var distanceb = Math.abs(date - b);
       return distancea - distanceb;
     });
-}
+};
