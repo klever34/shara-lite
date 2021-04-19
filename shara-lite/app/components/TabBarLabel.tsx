@@ -14,7 +14,7 @@ export const TabBarLabel = ({children, focused}: TabBarLabelProps) => {
         focused ? 'text-gray-300 text-700' : 'text-gray-200',
         'uppercase',
         {
-          fontSize: applySpacing(12),
+          fontSize: applySpacing(10),
         },
       )}>
       {children}

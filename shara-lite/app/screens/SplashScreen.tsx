@@ -19,6 +19,7 @@ import {useInitRealm} from '@/services/realm';
 import {version as currentVersion} from '../../package.json';
 import {getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
+import SharaLogo from '@/assets/images/shara-logo.svg';
 const strings = getI18nService().strings;
 
 const remoteConfigService = getRemoteConfigService();
@@ -36,7 +37,7 @@ const SplashScreen = () => {
   const navigation = useNavigation();
   const {initRealm: _initRealm} = useInitRealm();
   const initRealm = useRef(_initRealm).current;
-  
+
   useEffect(() => {
     const navigationService = getNavigationService();
     navigationService.setInstance(navigation);
@@ -120,10 +121,13 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Image
+      {/* <Image
         source={require('../assets/images/shara_logo.png')}
         style={styles.image}
-      />
+      /> */}
+      <View style={{alignSelf: 'center'}}>
+        <SharaLogo width={350} height={300} />
+      </View>
       <Text style={styles.text}>{strings('shara_tagline')}</Text>
     </View>
   );

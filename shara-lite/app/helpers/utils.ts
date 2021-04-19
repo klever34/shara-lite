@@ -5,7 +5,7 @@ import addDays from 'date-fns/addDays';
 import promiseRetry from 'promise-retry';
 import * as React from 'react';
 import {useCallback, useMemo, useState} from 'react';
-import {Alert} from 'react-native';
+import {Alert, Platform} from 'react-native';
 import Config from 'react-native-config';
 import 'react-native-get-random-values';
 import ImagePicker, {
@@ -104,26 +104,34 @@ export const useImageInput = (
   options: ImagePickerOptions = {},
 ) => {
   const [imageUrl, setImageUrl] = useState(initialUrl);
+  let opt = {
+    title: 'Select Avatar',
+    storageOptions: {
+      skipBackup: true,
+      path: 'images',
+    },
+  };
   const handleImageInputChange = useCallback(() => {
-    ImagePicker.showImagePicker(options, (response) => {
+    ImagePicker.showImagePicker(opt, (response) => {
       if (response.didCancel) {
         // do nothing
       } else if (response.error) {
         Alert.alert('Error', response.error);
       } else {
-        const {uri, type, fileName} = response;
-        const extensionIndex = uri.lastIndexOf('.');
-        const extension = uri.slice(extensionIndex + 1);
-        const allowedExtensions = ['jpg', 'jpeg', 'png'];
-        if (!allowedExtensions.includes(extension)) {
-          return Alert.alert('Error', 'That file type is not allowed.');
-        }
-        const image = {
+        const uri =
+          Platform.OS == 'ios'
+            ? response.uri.replace('file://', '')
+            : response.uri;
+        const type = response.type;
+        const name = response.fileName;
+        const source = {
           uri,
           type,
-          name: fileName ?? '',
+          name,
         };
-        setImageUrl(image);
+        console.log(source);
+        
+        setImageUrl(source);
       }
     });
   }, [options]);

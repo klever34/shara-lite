@@ -2,7 +2,7 @@ import {applyStyles, colors} from '@/styles';
 import {endOfDay, format, startOfDay} from 'date-fns';
 import React, {useCallback, useState} from 'react';
 import {Text} from '@/components';
-import {View} from 'react-native';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import {Button} from './Button';
 import {DatePicker} from './DatePicker';
 import {Icon} from './Icon';
@@ -235,19 +235,42 @@ export const TransactionFilterModal = ({
   return (
     <View style={applyStyles('p-16 pt-0')}>
       {renderContent()}
-      <View style={[applyStyles('pt-24 flex-row items-center justify-between'), {width: '100%'}]}>
-        <Button
-          title={strings('clear_filter')}
-          onPress={handleClear}
-          variantColor="transparent"
-          style={applyStyles({width: '100%'})}
-        />
-        <Button
-          title={strings('done')}
-          onPress={handleDone}
-          style={applyStyles({width: '100%'})}
-        />
+      <View style={applyStyles('flex-row justify-between items-center w-full mt-20 mb-20')}>
+        <TouchableOpacity style={styles.skipBtn} onPress={() => handleClear()}>
+          <Text style={{fontFamily: 'Roboto-Medium', alignSelf: 'center'}}>
+            Clear Filter
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.nextBtn} onPress={() => handleDone()}>
+          <Text
+            style={{
+              fontFamily: 'Roboto-Medium',
+              alignSelf: 'center',
+              color: '#fff',
+            }}>
+            Done
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  skipBtn: {
+    width: '47%',
+    elevation: 0,
+    borderWidth: 1.5,
+    borderColor: colors['gray-20'],
+    backgroundColor: 'transparent',
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+  nextBtn: {
+    width: '47%',
+    elevation: 0,
+    backgroundColor: colors['blue-100'],
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+});

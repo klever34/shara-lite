@@ -17,7 +17,7 @@ import {RouteProp} from '@react-navigation/native';
 import {useFormik} from 'formik';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Text} from '@/components';
-import {View} from 'react-native';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import {MainStackParamList} from '..';
 import {getI18nService} from '@/services';
 
@@ -257,21 +257,49 @@ export const EditCustomerScreen = withModal(
           placeholder={strings('customers.fields.notes.placeholder')}
         />
         <View
-          style={applyStyles('pt-24 flex-row items-center justify-between')}>
-          <Button
-            title={strings('customers.delete_customer')}
-            variantColor="transparent"
-            style={applyStyles({width: '100%'})}
-            onPress={handleOpenDeleteConfirmation}
-          />
-          <Button
-            title={strings('save')}
-            isLoading={loading}
-            onPress={handleSubmit}
-            style={applyStyles({width: '100%'})}
-          />
+          style={applyStyles(
+            'flex-row justify-between items-center w-full mt-20 mb-20',
+          )}>
+          <TouchableOpacity
+            style={styles.skipBtn}
+            onPress={() => handleOpenDeleteConfirmation()}>
+            <Text style={{fontFamily: 'Roboto-Medium', alignSelf: 'center'}}>
+              {strings('customers.delete_customer')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.nextBtn}
+            onPress={() => handleSubmit()}>
+            <Text
+              style={{
+                fontFamily: 'Roboto-Medium',
+                alignSelf: 'center',
+                color: '#fff',
+              }}>
+              {strings('save')}
+            </Text>
+          </TouchableOpacity>
         </View>
       </Page>
     );
   },
 );
+
+const styles = StyleSheet.create({
+  skipBtn: {
+    width: '47%',
+    elevation: 0,
+    borderWidth: 1.5,
+    borderColor: colors['gray-20'],
+    backgroundColor: 'transparent',
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+  nextBtn: {
+    width: '47%',
+    elevation: 0,
+    backgroundColor: colors['blue-100'],
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+});
