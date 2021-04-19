@@ -155,6 +155,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
 
   const handleSubmit = useCallback(
     async (formValues) => {
+      // return;
       const phoneNumber = formValues.mobile as PhoneNumber;
       formValues = {
         ...formValues,
@@ -170,6 +171,8 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
       formValues?.profileImageFile &&
         Object.keys(formValues?.profileImageFile).length > 1 &&
         payload.append('profileImageFile', formValues?.profileImageFile);
+      console.log({formValues})
+
       try {
         user?.businesses && user.businesses.length
           ? await apiService.businessSetupUpdate(payload, id)
@@ -180,6 +183,11 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
         showSuccessToast(
           i18Service.strings('business_settings.edit_success_text'),
         );
+        const res = await apiService.businessSetupUpdate(payload, id);
+        console.log({res1: res});
+        const result = await apiService.businessSetup(payload);
+        console.log({res2: result.data});
+        return;
         handleOpenSaveModal();
       } catch (error) {
         Alert.alert('Error', error.message);

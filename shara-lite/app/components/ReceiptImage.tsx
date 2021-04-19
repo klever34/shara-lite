@@ -43,6 +43,8 @@ export const ReceiptImage = memo((props: Props) => {
   const user = getAuthService().getUser();
   const businessInfo = getAuthService().getBusinessInfo();
   const {callingCode} = useIPGeolocation();
+  console.log({businessInfo});
+
   const code = businessInfo.country_code || user?.country_code || callingCode;
   const getBusinessMobile = useCallback(() => {
     if (businessInfo.mobile) {
