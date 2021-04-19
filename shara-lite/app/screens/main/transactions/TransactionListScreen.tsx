@@ -497,6 +497,12 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
             bottom: 0,
             right: 16,
             elevation: 4,
+            shadowOffset: {
+              width: 0,
+              height: 5,
+            },
+            shadowOpacity: 0.34,
+            shadowRadius: 6.27,
           })}
         />
       )}

@@ -170,13 +170,19 @@ export const EntryButton = ({ghost, style}: EntryButtonProps) => {
   const {showEntryDialog} = useContext(EntryContext);
 
   return (
-    <Touchable onPress={ghost ? undefined : showEntryDialog}>
+    <Touchable onPress={showEntryDialog}>
       <View
         style={applyStyles(
           'w-60 h-60 my-12 rounded-32 center bg-secondary relative',
           style,
         )}>
-        <Icon size={40} name="plus" type="feathericons" color={colors.white} />
+        <Icon
+          size={40}
+          name="plus"
+          type="feathericons"
+          color={colors.white}
+          onPress={showEntryDialog}
+        />
       </View>
     </Touchable>
   );

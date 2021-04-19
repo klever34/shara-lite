@@ -22,6 +22,8 @@ export const BottomHalfModalContainer = ({
       onBackdropPress={onClose}
       onBackButtonPress={onClose}
       swipeDirection={swipeDirection}
+      // hideModalContentWhileAnimating={true}
+      // useNativeDriver={true}
       style={applyStyles('justify-end m-0')}>
       <View style={styles.content}>
         <View

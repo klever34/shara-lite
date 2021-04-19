@@ -19,6 +19,7 @@ import Touchable from '@/components/Touchable';
 import {useLastSeen} from '@/services/last-seen';
 import {MoneyScreen} from './money';
 import {MoreScreen} from './more';
+import SharaLogo from '@/assets/images/shara_logo_white.svg';
 
 const strings = getI18nService().strings;
 
@@ -131,7 +132,7 @@ export const HomeScreen = () => {
               <TabBarLabel {...labelProps}>{strings('home')}</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon type="material-icons" name="home" size={32} color={color} />
+              <Icon type="material-icons" name="home" size={24} color={color} />
             ),
           }}
         />
@@ -148,7 +149,7 @@ export const HomeScreen = () => {
               <Icon
                 type="material-icons"
                 name="people"
-                size={32}
+                size={24}
                 color={color}
               />
             ),
@@ -166,7 +167,7 @@ export const HomeScreen = () => {
                 <Icon
                   type="material-icons"
                   name="attach-money"
-                  size={28}
+                  size={24}
                   color={color}
                 />
               ),
@@ -181,7 +182,7 @@ export const HomeScreen = () => {
               <TabBarLabel {...labelProps}>{strings('more_text')}</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon type="material-icons" name="menu" size={28} color={color} />
+              <Icon type="material-icons" name="menu" size={24} color={color} />
             ),
           }}
         />

@@ -43,6 +43,7 @@ export const SearchFilter = ({
             name="search"
             type="feathericons"
             color={colors['gray-50']}
+            style={{marginLeft: 10}}
           />
         </View>
         <TextInput
@@ -56,12 +57,13 @@ export const SearchFilter = ({
           )}
           onChangeText={onSearch}
           placeholder={placeholderText}
+          placeholderTextColor={"#c4c4c4"}
         />
         {!!value && onClearInput && (
           <Touchable onPress={onClearInput}>
             <View
               style={applyStyles('flex-row center', {
-                top: 10,
+                top: -30,
                 right: 12,
                 zIndex: 10,
                 position: 'absolute',
