@@ -1,19 +1,19 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {SafeAreaView, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {TouchableActionItem} from '@/components/TouchableActionItem';
 import {applyStyles, colors} from '@/styles';
 import {Page} from '@/components/Page';
-import {getApiService, getAuthService} from '@/services';
-import {Alert} from 'react-native';
-import {User} from 'types/app';
+import {RouteProp} from '@react-navigation/native';
+import {SecurityStackParamList} from '.';
 
-export const SecurityOptionsScreen = () => {
+type SecurityOptionsScreenProps = {
+  route: RouteProp<SecurityStackParamList, 'SecurityOptions'>;
+};
+
+export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
+  const {pinSet} = route.params;
   const navigation = useAppNavigation();
-  const [pinSet, setPinSet] = useState(false);
-  const [, setLoading] = useState(false);
-  const authService = getAuthService();
-  let user = authService.getUser() as User;
 
   const setTransactionPin = useCallback(() => {
     navigation.navigate('SetTransactionPin');
@@ -23,42 +23,25 @@ export const SecurityOptionsScreen = () => {
     navigation.navigate('SecurityQuestions');
   }, [navigation]);
 
-  useEffect(() => {
-    const apiService = getApiService();
-    async function fetchData() {
-      try {
-        const res = await apiService.transactionPin(user.id);
-        setLoading(true);
-        setPinSet(res.data);
-      } catch (error) {
-        setLoading(false);
-        Alert.alert('error', error.message);
+  const newPin = pinSet
+    ? {
+        leftSection: {
+          title: 'Set Transaction PIN',
+          caption: 'View and update your personal information',
+        },
+        onPress: setTransactionPin,
       }
-    }
-    fetchData();
-  }, [user.id]);
-  console.log('here', pinSet);
-
-  const newPin =
-    pinSet === 'false'
-      ? {
-          leftSection: {
-            title: 'Set Transaction PIN',
-            caption: 'View and update your personal information',
-          },
-          onPress: setTransactionPin,
-        }
-      : {
-          leftSection: {
-            title: 'Change Transaction PIN',
-            caption: 'View and update your personal information',
-          },
-          onPress: setTransactionPin,
-        };
+    : {
+        leftSection: {
+          title: 'Change Transaction PIN',
+          caption: 'View and update your personal information',
+        },
+        onPress: setTransactionPin,
+      };
 
   const securityOptions = useMemo(() => {
     return [
-      {newPin},
+      newPin,
       {
         leftSection: {
           title: 'Security Questions',
@@ -74,10 +57,10 @@ export const SecurityOptionsScreen = () => {
       <Page
         header={{
           title: 'SECURITY',
-          style: applyStyles('py-8'),
+          style: applyStyles('py-8 mt-0'),
           iconLeft: {},
         }}
-        style={applyStyles('px-0')}>
+        style={applyStyles('px-0 pt-0')}>
         <View style={applyStyles('mb-24')}>
           {securityOptions.map((option, index) => {
             return (

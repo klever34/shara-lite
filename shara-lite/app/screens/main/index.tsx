@@ -102,7 +102,7 @@ export type MainStackParamList = {
   PaymentSettings: undefined;
   BVNVerification: undefined;
   BusinessSettings: undefined;
-  SecuritySettings: undefined;
+  SecuritySettings: {pinSet?: boolean};
   DisburementScreen: undefined;
   UserProfileSettings: undefined;
 

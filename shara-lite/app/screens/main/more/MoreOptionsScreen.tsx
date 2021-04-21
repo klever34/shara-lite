@@ -12,6 +12,7 @@ import {
   getI18nService,
   getRemoteConfigService,
   getStorageService,
+  getApiService,
 } from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
@@ -128,8 +129,14 @@ export const MoreOptionsScreen = withModal(
             title: 'Security',
             caption: 'Set your PIN and security questions',
           },
-          onPress: () => {
-            navigation.navigate('SecuritySettings');
+          onPress: async () => {
+            if (!user) {
+              return;
+            }
+            const {data: pinSet} = await getApiService().transactionPin(
+              user.id,
+            );
+            navigation.navigate('SecuritySettings', {pinSet});
           },
         },
         {
