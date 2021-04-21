@@ -61,6 +61,11 @@ import ReferralScreen from './more/referral';
 import {BVNVerification} from './payments/BVNVerification';
 import DisburementScreen from './payments/DisburementScreen';
 import {ReportScreen} from './report';
+import {SecurityScreen} from './security';
+import {EnterTransaction} from './security/EnterTransaction';
+import {SecurityQuestions} from './security/SecurityQuestions';
+import {SuccessScreen} from './security/SuccessScreen';
+import {TransactionPin} from './security/TransactionPin';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
@@ -97,11 +102,18 @@ export type MainStackParamList = {
   PaymentSettings: undefined;
   BVNVerification: undefined;
   BusinessSettings: undefined;
+  SecuritySettings: undefined;
   DisburementScreen: undefined;
   UserProfileSettings: undefined;
 
   // Report
   Report: undefined;
+
+  // Pin
+  SetTransactionPin: undefined;
+  SuccessScreen: undefined;
+  SecurityQuestions: undefined;
+  VerifyTransactionPin: undefined;
 
   // Money
   Drawdown: undefined;
@@ -403,6 +415,47 @@ const MainScreens = () => {
             <MainStack.Screen
               name="RequestPaymentSuccess"
               component={RequestPaymentSuccessScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            {/* Pin */}
+            <MainStack.Screen
+              name="SecuritySettings"
+              component={SecurityScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="SetTransactionPin"
+              component={TransactionPin}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="SuccessScreen"
+              component={SuccessScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="SecurityQuestions"
+              component={SecurityQuestions}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="VerifyTransactionPin"
+              component={EnterTransaction}
               options={{
                 headerShown: false,
               }}

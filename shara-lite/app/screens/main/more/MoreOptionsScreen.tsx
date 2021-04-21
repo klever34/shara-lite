@@ -125,6 +125,15 @@ export const MoreOptionsScreen = withModal(
         },
         {
           leftSection: {
+            title: 'Security',
+            caption: 'Set your PIN and security questions',
+          },
+          onPress: () => {
+            navigation.navigate('SecuritySettings');
+          },
+        },
+        {
+          leftSection: {
             title: strings('more.list.kyc_settings.title'),
             caption: strings('more.list.kyc_settings.description'),
           },

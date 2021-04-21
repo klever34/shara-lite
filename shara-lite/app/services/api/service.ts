@@ -190,7 +190,26 @@ export interface IApiService {
     mobile?: string;
   }): Promise<ApiResponse>;
   sendSMS(payload: {to: string; message: string}): Promise<ApiResponse>;
-  getBNPLBundles(): Promise<BNPLBundle[]>
+  getBNPLBundles(): Promise<BNPLBundle[]>;
+
+  setTransactionPin(
+    id: string,
+    payload: {pin: string; confirm_pin: string},
+  ): Promise<ApiResponse>;
+
+  setSecurityQuestions(payload: {
+    token: string;
+    user_id: number;
+    question: string;
+    answer: string;
+  }): Promise<ApiResponse>;
+
+  verifyTransactionPin(
+    id: string,
+    payload: {pin: string},
+  ): Promise<ApiResponse>;
+
+  transactionPin(id: number): Promise<any>;
 }
 
 export class ApiService implements IApiService {
@@ -889,6 +908,55 @@ export class ApiService implements IApiService {
         {},
       );
       return bnplBundles;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async setTransactionPin(
+    id: string,
+    payload: {pin: string; confirm_pin: string},
+  ): Promise<ApiResponse> {
+    try {
+      return await this.requester.post(
+        `/users/${id}/create-transaction-pin`,
+        payload,
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async setSecurityQuestions(payload: {
+    user_id: number;
+    token: string;
+    answer: string;
+    question: string;
+  }): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/security-qa', payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async verifyTransactionPin(
+    id: string,
+    payload: {pin: string},
+  ): Promise<ApiResponse> {
+    try {
+      return await this.requester.post(
+        `/users/${id}/verify-transaction-pin`,
+        payload,
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async transactionPin(id: number) {
+    try {
+      return this.requester.get(`/users/${id}/verify-transaction-pin-set`, {});
     } catch (e) {
       throw e;
     }
