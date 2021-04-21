@@ -1,7 +1,7 @@
 import {Text} from '@/components';
 import {applyStyles, colors} from '@/styles';
-import React from 'react';
-import {TextStyle, View, ViewStyle} from 'react-native';
+import React, {useCallback, useState} from 'react';
+import {ActivityIndicator, TextStyle, View, ViewStyle} from 'react-native';
 import {TextProps} from 'react-native-ui-lib';
 import {CircleWithIcon} from './CircleWithIcon';
 import {Icon} from './Icon';
@@ -20,7 +20,7 @@ type Section = {
 export interface TouchableActionItemProps {
   icon?: string;
   style?: ViewStyle;
-  onPress?(): void;
+  onPress?(): Promise<void> | void;
   leftSection?: Section;
   rightSection?: Section;
   showChevronIcon?: boolean;
@@ -35,8 +35,20 @@ export const TouchableActionItem = (props: TouchableActionItemProps) => {
     rightSection,
     showChevronIcon = true,
   } = props;
+  const [loading, setLoading] = useState(false);
+  const handlePress = useCallback(() => {
+    if (onPress) {
+      const result = onPress();
+      if (result) {
+        setLoading(true);
+        result.finally(() => {
+          setLoading(false);
+        });
+      }
+    }
+  }, [onPress]);
   return (
-    <Touchable onPress={onPress}>
+    <Touchable onPress={handlePress}>
       <View style={applyStyles('flex-row p-12 items-center', style)}>
         {icon && <CircleWithIcon icon={icon} style={applyStyles('mr-12')} />}
         <View style={applyStyles('flex-row flex-1 pr-8')}>
@@ -89,14 +101,17 @@ export const TouchableActionItem = (props: TouchableActionItemProps) => {
             )}
           </View>
         </View>
-        {showChevronIcon && (
-          <Icon
-            size={20}
-            type="feathericons"
-            name="chevron-right"
-            color={colors['gray-50']}
-          />
-        )}
+        {showChevronIcon &&
+          (loading ? (
+            <ActivityIndicator color={colors['gray-50']} />
+          ) : (
+            <Icon
+              size={20}
+              type="feathericons"
+              name="chevron-right"
+              color={colors['gray-50']}
+            />
+          ))}
       </View>
     </Touchable>
   );
