@@ -224,7 +224,7 @@ const CollectionItem = ({data}: {data: ICollection}) => {
                   style={applyStyles(
                     `pl-8 text-700 text-capitalize ${statusColors[status]}`,
                   )}>
-                  {status}
+                  {status === 'pending' ? 'in progress' : status}
                 </Text>
               </View>
             </View>
@@ -285,7 +285,7 @@ const DisbursementItem = ({data}: {data: IDisbursement}) => {
             style={applyStyles(
               `text-700 text-capitalize ${statusColors[status]}`,
             )}>
-            {status}
+            {status === 'pending' ? 'in progress' : status}
           </Text>
         </View>
       </View>
