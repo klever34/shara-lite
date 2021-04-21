@@ -211,6 +211,8 @@ export interface IApiService {
   ): Promise<ApiResponse>;
 
   transactionPin(id: number): Promise<any>;
+
+  getSecurityQuestions(id: number): Promise<any>;
 }
 
 export class ApiService implements IApiService {
@@ -959,8 +961,16 @@ export class ApiService implements IApiService {
   async transactionPin(id: number) {
     try {
       return this.requester.get(`/users/${id}/transaction-pin-set`, {});
-    } catch (e) {
-      throw e;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getSecurityQuestions(id: number) {
+    try {
+      return this.requester.get(`/security-qa?user_id=${id}`, {});
+    } catch (error) {
+      throw error;
     }
   }
 }
