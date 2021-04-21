@@ -7,7 +7,7 @@ import {
   getI18nService,
   getRemoteConfigService,
 } from '@/services';
-import {Alert, ScrollView, View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import {applyStyles, as, colors} from '@/styles';
 import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
@@ -23,7 +23,6 @@ import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import Icon from '@/components/Icon';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
-import {User} from 'types/app';
 
 const markdownStyle = {
   body: applyStyles('text-gray-300 text-400 text-base mb-32'),
@@ -41,13 +40,11 @@ type SelectWithdrawalAccountModalProps = {
   onDone: (
     selectedDisbursementMethod: IDisbursementMethod & Realm.Object,
   ) => void;
-  handlePinChange: (code: string) => void;
 };
 
 const SelectWithdrawalAccountModal = ({
   onClose,
   onDone,
-  handlePinChange,
 }: SelectWithdrawalAccountModalProps) => {
   const {getDisbursementMethods} = useDisbursementMethod();
   const methods = getDisbursementMethods() ?? [];
@@ -151,14 +148,10 @@ const SelectWithdrawalAccountModal = ({
 type ConfirmationModalProps = {
   children: ReactNode;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
 };
 
-const ConfirmationModal = ({
-  children,
-  onClose,
-  onConfirm,
-}: ConfirmationModalProps) => {
+const ConfirmationModal = ({children}: ConfirmationModalProps) => {
   return (
     <View style={as('')}>
       <Header
@@ -192,7 +185,6 @@ type MoneyWithdrawScreenProps = {
 const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
   ({onClose, openModal, closeModal}) => {
     const [pin, setPin] = useState('');
-    const [, setLoading] = useState(false);
     const handlePinChange = useCallback((code) => {
       setPin(code);
     }, []);
@@ -228,7 +220,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
       } catch (e) {
         return false;
       }
-    }, []);
+    }, [user]);
 
     const handleSelectWithdrawalAccount = useCallback(() => {
       openModal('bottom-half', {
@@ -244,51 +236,62 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
       });
     }, [closeModal, openModal]);
 
+    const handleSubmit = useCallback(
+      async (amount: string) => {
+        if (!user || !disbursementMethod) {
+          return;
+        }
+        try {
+          const apiService = getApiService();
+          const res = await apiService.verifyTransactionPin(
+            user.id.toString(),
+            {pin},
+          );
+          await getApiService().makeDisbursement({
+            amount: toNumber(amount),
+            disbursement_method_id: disbursementMethod.api_id,
+            token: res?.data.token,
+          });
+          getAnalyticsService()
+            .logEvent('moneyWithdrawn', {
+              amount: toNumber(amount),
+              bank_details: selectedBankAccount,
+            })
+            .then(() => {});
+          closeModal();
+          openModal('full', {
+            renderContent: () => (
+              <TransactionSuccessModal
+                subheading={strings('payment_activities.withdraw_success', {
+                  amount: amountWithCurrency(toNumber(amount)),
+                  bank_details: selectedBankAccount,
+                })}
+                onDone={() => {
+                  closeModal();
+                  onClose();
+                }}
+              />
+            ),
+          });
+        } catch (e) {
+          handleError(e);
+          closeModal();
+        }
+      },
+      [
+        closeModal,
+        disbursementMethod,
+        onClose,
+        openModal,
+        pin,
+        selectedBankAccount,
+        user,
+      ],
+    );
+
     const handleNext = useCallback(
       (amount: string) => {
         if (disbursementMethod?.api_id) {
-          const handleSubmit = useCallback(async () => {
-            const apiService = getApiService();
-            const payload = {pin};
-            const res = apiService
-              .verifyTransactionPin(user.id.toString(), payload)
-              .then(() => {})
-              .catch((error) => {
-                Alert.alert('error', error.message);
-              });
-            try {
-              await getApiService().makeDisbursement({
-                amount: toNumber(amount),
-                disbursement_method_id: disbursementMethod.api_id,
-                token: res?.data.token,
-              });
-              getAnalyticsService()
-                .logEvent('moneyWithdrawn', {
-                  amount: toNumber(amount),
-                  bank_details: selectedBankAccount,
-                })
-                .then(() => {});
-              closeModal();
-              openModal('full', {
-                renderContent: () => (
-                  <TransactionSuccessModal
-                    subheading={strings('payment_activities.withdraw_success', {
-                      amount: amountWithCurrency(toNumber(amount)),
-                      bank_details: selectedBankAccount,
-                    })}
-                    onDone={() => {
-                      closeModal();
-                      onClose();
-                    }}
-                  />
-                ),
-              });
-            } catch (e) {
-              handleError(e);
-              closeModal();
-            }
-          }, [amount]);
-
           openModal('bottom-half', {
             renderContent: () => (
               <ConfirmationModal onClose={closeModal}>
@@ -317,7 +320,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
                   pinCount={4}
                   autoFocusOnLoad={true}
                   secureTextEntry={true}
-                  onCodeFilled={() => handleSubmit()}
+                  onCodeFilled={() => handleSubmit(amount)}
                   onCodeChanged={handlePinChange}
                   style={applyStyles('flex-row center', {
                     height: 100,
@@ -342,11 +345,10 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
         closeModal,
         disbursementMethod,
         handlePinChange,
-        onClose,
+        handleSubmit,
         openModal,
         pin,
         selectedBankAccount,
-        user.id,
       ],
     );
 
@@ -402,7 +404,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
         }
         return errors;
       },
-      [walletBalance],
+      [maxWithdrawalAmount, walletBalance],
     );
 
     return (
