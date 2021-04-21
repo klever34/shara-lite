@@ -10,6 +10,7 @@ import {User} from 'types/app';
 
 export const SecurityOptionsScreen = () => {
   const navigation = useAppNavigation();
+  const [pinSet, setPinSet] = useState(false);
   const [, setLoading] = useState(false);
   const authService = getAuthService();
   let user = authService.getUser() as User;
@@ -28,6 +29,7 @@ export const SecurityOptionsScreen = () => {
       try {
         const res = await apiService.transactionPin(user.id);
         setLoading(true);
+        setPinSet(res.data);
       } catch (error) {
         setLoading(false);
         Alert.alert('error', error.message);
@@ -35,16 +37,28 @@ export const SecurityOptionsScreen = () => {
     }
     fetchData();
   }, [user.id]);
+  console.log('here', pinSet);
+
+  const newPin =
+    pinSet === 'false'
+      ? {
+          leftSection: {
+            title: 'Set Transaction PIN',
+            caption: 'View and update your personal information',
+          },
+          onPress: setTransactionPin,
+        }
+      : {
+          leftSection: {
+            title: 'Change Transaction PIN',
+            caption: 'View and update your personal information',
+          },
+          onPress: setTransactionPin,
+        };
 
   const securityOptions = useMemo(() => {
     return [
-      {
-        leftSection: {
-          title: 'Set Transaction PIN',
-          caption: 'View and update your personal information',
-        },
-        onPress: setTransactionPin,
-      },
+      {newPin},
       {
         leftSection: {
           title: 'Security Questions',
@@ -53,7 +67,7 @@ export const SecurityOptionsScreen = () => {
         onPress: securityQuestions,
       },
     ];
-  }, [securityQuestions, setTransactionPin]);
+  }, [newPin, securityQuestions]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>

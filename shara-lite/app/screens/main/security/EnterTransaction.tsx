@@ -9,7 +9,6 @@ import {Alert, Text, View} from 'react-native';
 import {User} from 'types/app';
 
 export const EnterTransaction = (props: any) => {
-  console.log('herer', props.route.params);
   const {
     route: {
       params: {question, answer},
@@ -35,22 +34,18 @@ export const EnterTransaction = (props: any) => {
           user.id.toString(),
           payload,
         );
-        console.log('res', res);
         if (res?.data.token) {
-          console.log('i get here');
           const securityQuestionPayload = {
             user_id: user.id,
             token: res.data.token,
             answer,
             question,
           };
-          console.log('sec', securityQuestionPayload);
           await apiService.setSecurityQuestions(securityQuestionPayload);
           navigation.navigate('SuccessScreen');
         }
       } catch (error) {
         setLoading(false);
-        console.log('errr', error);
         Alert.alert('error', error.message);
       }
     },

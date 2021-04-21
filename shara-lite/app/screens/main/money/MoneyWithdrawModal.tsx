@@ -7,8 +7,8 @@ import {
   getI18nService,
   getRemoteConfigService,
 } from '@/services';
-import {ScrollView, View} from 'react-native';
-import {applyStyles, as} from '@/styles';
+import {Alert, ScrollView, View} from 'react-native';
+import {applyStyles, as, colors} from '@/styles';
 import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import ActionButtonSet from '@/components/ActionButtonSet';
@@ -21,6 +21,9 @@ import {IDisbursementMethod} from '@/models/DisbursementMethod';
 import {TransactionSuccessModal} from '@/components/TransactionSuccessModal';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
+import Icon from '@/components/Icon';
+import OTPInputView from '@twotalltotems/react-native-otp-input';
+import {User} from 'types/app';
 
 const markdownStyle = {
   body: applyStyles('text-gray-300 text-400 text-base mb-32'),
@@ -38,11 +41,13 @@ type SelectWithdrawalAccountModalProps = {
   onDone: (
     selectedDisbursementMethod: IDisbursementMethod & Realm.Object,
   ) => void;
+  handlePinChange: (code: string) => void;
 };
 
 const SelectWithdrawalAccountModal = ({
   onClose,
   onDone,
+  handlePinChange,
 }: SelectWithdrawalAccountModalProps) => {
   const {getDisbursementMethods} = useDisbursementMethod();
   const methods = getDisbursementMethods() ?? [];
@@ -58,6 +63,21 @@ const SelectWithdrawalAccountModal = ({
   const handleDone = useCallback(() => {
     onDone(selectedDisbursementMethod);
   }, [onDone, selectedDisbursementMethod]);
+
+  // const handleSubmit = useCallback(async(pin: string) => {
+  //   const apiService = getApiService();
+  //   try {
+  //     const payload = {pin};
+  //       const res = await apiService.verifyTransactionPin(
+  //         user.id.toString(),
+  //         payload,
+  //       );
+  //   } catch (error) {
+  //     setLoading(false);
+  //     Alert.alert('error', error.message);
+  //   }
+  // },[])
+
   return (
     <ScrollView style={as('')}>
       <Header
@@ -142,12 +162,12 @@ const ConfirmationModal = ({
   return (
     <View style={as('')}>
       <Header
-        title={strings('payment_activities.confirm_withdrawal')}
+        title={'ENTER TRANSACTION PIN'}
         style={as('border-b-0 pt-12 pb-0')}
       />
       <View style={as('px-24 py-12 items-center')}>
         {children}
-        <ActionButtonSet
+        {/* <ActionButtonSet
           actionBtns={[
             {
               title: strings('cancel'),
@@ -159,7 +179,7 @@ const ConfirmationModal = ({
               onPress: onConfirm,
             },
           ]}
-        />
+        /> */}
       </View>
     </View>
   );
@@ -171,6 +191,11 @@ type MoneyWithdrawScreenProps = {
 
 const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
   ({onClose, openModal, closeModal}) => {
+    const [pin, setPin] = useState('');
+    const [, setLoading] = useState(false);
+    const handlePinChange = useCallback((code) => {
+      setPin(code);
+    }, []);
     const {
       getPrimaryDisbursementMethod,
       getDisbursementMethods,
@@ -222,59 +247,107 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
     const handleNext = useCallback(
       (amount: string) => {
         if (disbursementMethod?.api_id) {
+          const handleSubmit = useCallback(async () => {
+            const apiService = getApiService();
+            const payload = {pin};
+            const res = apiService
+              .verifyTransactionPin(user.id.toString(), payload)
+              .then(() => {})
+              .catch((error) => {
+                Alert.alert('error', error.message);
+              });
+            try {
+              await getApiService().makeDisbursement({
+                amount: toNumber(amount),
+                disbursement_method_id: disbursementMethod.api_id,
+                token: res?.data.token,
+              });
+              getAnalyticsService()
+                .logEvent('moneyWithdrawn', {
+                  amount: toNumber(amount),
+                  bank_details: selectedBankAccount,
+                })
+                .then(() => {});
+              closeModal();
+              openModal('full', {
+                renderContent: () => (
+                  <TransactionSuccessModal
+                    subheading={strings('payment_activities.withdraw_success', {
+                      amount: amountWithCurrency(toNumber(amount)),
+                      bank_details: selectedBankAccount,
+                    })}
+                    onDone={() => {
+                      closeModal();
+                      onClose();
+                    }}
+                  />
+                ),
+              });
+            } catch (e) {
+              handleError(e);
+              closeModal();
+            }
+          }, [amount]);
+
           openModal('bottom-half', {
             renderContent: () => (
-              <ConfirmationModal
-                onClose={closeModal}
-                onConfirm={() => {
-                  return getApiService()
-                    .makeDisbursement({
-                      amount: toNumber(amount),
-                      disbursement_method_id: disbursementMethod.api_id,
-                    })
-                    .then(() => {
-                      getAnalyticsService()
-                        .logEvent('moneyWithdrawn', {
-                          amount: toNumber(amount),
-                          bank_details: selectedBankAccount,
-                        })
-                        .then(() => {});
-                      closeModal();
-                      openModal('full', {
-                        renderContent: () => (
-                          <TransactionSuccessModal
-                            subheading={strings(
-                              'payment_activities.withdraw_success',
-                              {
-                                amount: amountWithCurrency(toNumber(amount)),
-                                bank_details: selectedBankAccount,
-                              },
-                            )}
-                            onDone={() => {
-                              closeModal();
-                              onClose();
-                            }}
-                          />
-                        ),
-                      });
-                    })
-                    .catch((e) => {
-                      handleError(e);
-                      closeModal();
-                    });
-                }}>
+              <ConfirmationModal onClose={closeModal}>
                 <Markdown style={markdownStyle}>
                   {strings('payment_activities.about_to_withdraw', {
                     amount: amountWithCurrency(toNumber(amount)),
                     bank_details: selectedBankAccount,
                   })}
                 </Markdown>
+                <View style={applyStyles('flex-row pt-16 px-8')}>
+                  <Icon
+                    size={20}
+                    name="lock"
+                    type="feathericons"
+                    color={colors['gray-100']}
+                  />
+                  <Text
+                    style={applyStyles(
+                      'text-center text-gray-100 text-base px-10',
+                    )}>
+                    All transactions are safe, secure and instant.
+                  </Text>
+                </View>
+                <OTPInputView
+                  code={pin}
+                  pinCount={4}
+                  autoFocusOnLoad={true}
+                  secureTextEntry={true}
+                  onCodeFilled={() => handleSubmit()}
+                  onCodeChanged={handlePinChange}
+                  style={applyStyles('flex-row center', {
+                    height: 100,
+                    width: 100,
+                  })}
+                  codeInputFieldStyle={applyStyles('w-20 h-45 text-black', {
+                    fontSize: 18,
+                    borderWidth: 0,
+                    borderRadius: 0,
+                    borderBottomWidth: 4,
+                  })}
+                  codeInputHighlightStyle={applyStyles({
+                    borderColor: colors.primary,
+                  })}
+                />
               </ConfirmationModal>
             ),
           });
         }
       },
-      [closeModal, disbursementMethod, onClose, openModal, selectedBankAccount],
+      [
+        closeModal,
+        disbursementMethod,
+        handlePinChange,
+        onClose,
+        openModal,
+        pin,
+        selectedBankAccount,
+        user.id,
+      ],
     );
 
     // TODO: Add logic to check whether money settings is set up

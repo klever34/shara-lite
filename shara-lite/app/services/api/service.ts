@@ -167,6 +167,7 @@ export interface IApiService {
   makeDisbursement(payload: {
     amount: number;
     disbursement_method_id: number;
+    token: string;
   }): Promise<ApiResponse>;
   saveDrawdown(payload: {amount: number}): Promise<any>;
   makeDrawdownRepayment(payload: {amount: number}): Promise<any>;
@@ -797,6 +798,7 @@ export class ApiService implements IApiService {
   async makeDisbursement(payload: {
     amount: number;
     disbursement_method_id: number;
+    token: string;
   }): Promise<ApiResponse> {
     try {
       return await this.requester.post('/disbursement', payload);
@@ -956,7 +958,7 @@ export class ApiService implements IApiService {
 
   async transactionPin(id: number) {
     try {
-      return this.requester.get(`/users/${id}/verify-transaction-pin-set`, {});
+      return this.requester.get(`/users/${id}/transaction-pin-set`, {});
     } catch (e) {
       throw e;
     }
