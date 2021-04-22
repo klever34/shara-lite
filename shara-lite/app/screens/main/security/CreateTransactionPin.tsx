@@ -1,5 +1,4 @@
 import {getApiService, getAuthService} from '@/services';
-import {handleError} from '@/services/error-boundary';
 import React, {useCallback} from 'react';
 import {TransactionPin} from './TransactionPin';
 
@@ -9,9 +8,12 @@ export const CreateTransactionPin = () => {
   const handleSubmit = useCallback(
     async (payload) => {
       try {
-        return await getApiService().setTransactionPin(`${user?.id}`, payload);
+        await getApiService().setTransactionPin(`${user?.id}`, {
+          pin: payload.pin,
+          confirm_pin: payload.confirmPin,
+        });
       } catch (error) {
-        handleError(error);
+        throw error;
       }
     },
     [user],
@@ -21,7 +23,7 @@ export const CreateTransactionPin = () => {
     <TransactionPin
       onSubmit={handleSubmit}
       enterProps={{
-        heading: 'Enter tranaction PIN',
+        heading: 'Set 4-digit PIN for all your transactions',
         subHeading: 'All transactions are safe, secure and instant.',
       }}
     />

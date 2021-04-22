@@ -6,6 +6,8 @@ import OTPInputView from '@twotalltotems/react-native-otp-input';
 import {Icon} from '@/components/Icon';
 import {SuccessScreen} from './SuccessScreen';
 import {withModal} from '@/helpers/hocs';
+import {useAppNavigation} from '@/services/navigation';
+import {Button} from '@/components';
 
 type ConfirmTransactionPinProps = {
   handleSubmit?: (code: string) => void;
@@ -20,13 +22,14 @@ export const TransactionPin = withModal(
     const [pin, setPin] = useState('');
     const [, setLoading] = useState(false);
     const [section, setSection] = useState(0);
+    const navigation = useAppNavigation();
 
     const handlePinChange = useCallback((code) => {
       setPin(code);
     }, []);
 
-    const handleEnterPinSubmit = useCallback(() => {
-      setPin('');
+    const handleEnterPinSubmit = useCallback((code) => {
+      setPin(code);
       setSection(1);
     }, []);
 
@@ -34,14 +37,33 @@ export const TransactionPin = withModal(
       async (confirmPin: string) => {
         setLoading(true);
         try {
-          await onSubmit({pin, confirm_pin: confirmPin});
+          await onSubmit({pin, confirmPin});
           const onCloseModal = openModal('full', {
             renderContent: () => (
               <SuccessScreen
-                onDone={() => {
-                  closeModal();
-                  onCloseModal();
-                }}
+                renderButtons={() => (
+                  <View
+                    style={applyStyles(
+                      'mt-64 pt-64 flex-row items-center justify-around',
+                    )}>
+                    <Button
+                      title={'done'}
+                      variantColor="transparent"
+                      style={applyStyles('mt-32', {width: '45%'})}
+                      onPress={() => {
+                        closeModal();
+                        onCloseModal();
+                      }}
+                    />
+                    <Button
+                      title={'Security question'}
+                      style={applyStyles('mt-32', {width: '45%'})}
+                      onPress={() => {
+                        navigation.navigate('SecurityQuestions');
+                      }}
+                    />
+                  </View>
+                )}
               />
             ),
           });
@@ -50,7 +72,7 @@ export const TransactionPin = withModal(
           Alert.alert('error', error.message);
         }
       },
-      [closeModal, onSubmit, openModal, pin],
+      [closeModal, navigation, onSubmit, openModal, pin],
     );
 
     return (

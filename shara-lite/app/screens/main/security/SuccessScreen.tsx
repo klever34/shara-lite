@@ -2,9 +2,8 @@ import React from 'react';
 import {Text, View} from 'react-native';
 import LottieView from 'lottie-react-native';
 import {applyStyles} from '@/styles';
-import {Button} from '@/components';
 
-export const SuccessScreen = ({onDone}: any) => {
+export const SuccessScreen = ({onDone, renderButtons}: any) => {
   return (
     <>
       <View style={applyStyles('py-80 mt-80 items-center')}>
@@ -28,14 +27,8 @@ export const SuccessScreen = ({onDone}: any) => {
           Your transaction PIN has been set succesfully
         </Text>
       </View>
-      <View
-        style={applyStyles('mt-64 pt-64 flex-row items-center justify-around')}>
-        <Button
-          onPress={onDone}
-          title={'done'}
-          style={applyStyles('mt-32', {width: '45%'})}
-        />
-      </View>
+
+      {renderButtons(onDone)}
     </>
   );
 };

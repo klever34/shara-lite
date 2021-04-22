@@ -77,7 +77,7 @@ export const MoreOptionsScreen = withModal(
           navigation.navigate('PaymentSettings');
         }
       } else {
-        navigation.navigate('DisburementScreen');
+        navigation.navigate('VerifyTransactionPin');
       }
     }, [navigation, user]);
 

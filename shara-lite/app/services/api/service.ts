@@ -222,6 +222,11 @@ export interface IApiService {
       token: string;
     },
   ): Promise<any>;
+
+  verifySecurityQuestions(payload: {
+    answer: string;
+    user_id: number;
+  }): Promise<any>;
 }
 
 export class ApiService implements IApiService {
@@ -977,7 +982,7 @@ export class ApiService implements IApiService {
 
   async getSecurityQuestions(id: number) {
     try {
-      return this.requester.get(`/security-qa?user_id=${id}`, {});
+      return this.requester.get(`/security-qa`, {user_id: id});
     } catch (error) {
       throw error;
     }
@@ -996,6 +1001,17 @@ export class ApiService implements IApiService {
         `/users/${id}/update-transaction-pin`,
         payload,
       );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async verifySecurityQuestions(payload: {
+    answer: string;
+    user_id: number;
+  }): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/security-qa/verify', payload);
     } catch (error) {
       throw error;
     }

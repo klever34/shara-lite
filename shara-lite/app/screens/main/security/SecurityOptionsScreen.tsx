@@ -6,6 +6,7 @@ import {applyStyles, colors} from '@/styles';
 import {Page} from '@/components/Page';
 import {RouteProp} from '@react-navigation/native';
 import {SecurityStackParamList} from '.';
+import {getApiService, getAuthService} from '@/services';
 
 type SecurityOptionsScreenProps = {
   route: RouteProp<SecurityStackParamList, 'SecurityOptions'>;
@@ -13,23 +14,17 @@ type SecurityOptionsScreenProps = {
 
 export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
   const {pinSet} = route.params;
+  const fromSecuritySettings = true;
   const navigation = useAppNavigation();
+  const user = getAuthService().getUser();
 
   const setTransactionPin = useCallback(() => {
     navigation.navigate('SetTransactionPin');
   }, [navigation]);
 
-  const securityQuestions = useCallback(() => {
-    navigation.navigate('SecurityQuestions');
-  }, [navigation]);
-
   const changeTransactionPin = useCallback(() => {
-    navigation.navigate('ChangeTransactionPin');
-  }, [navigation]);
-
-  const recoverTransactionPin = useCallback(() => {
-    navigation.navigate('RecoverTransactionPin');
-  }, [navigation]);
+    navigation.navigate('VerifyTransactionPin', {fromSecuritySettings});
+  }, [fromSecuritySettings, navigation]);
 
   const newPin = !pinSet
     ? {
@@ -52,20 +47,21 @@ export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
       newPin,
       {
         leftSection: {
-          title: 'Security Questions',
-          caption: 'View and edit your business information',
-        },
-        onPress: securityQuestions,
-      },
-      {
-        leftSection: {
           title: 'Recover PIN',
           caption: 'View and update your personal information',
         },
-        onPress: recoverTransactionPin,
+        onPress: async () => {
+          if (!user) {
+            return;
+          }
+          const {data: question} = await getApiService().getSecurityQuestions(
+            user.id,
+          );
+          navigation.navigate('RecoverTransactionPin', question);
+        },
       },
     ];
-  }, [newPin, recoverTransactionPin, securityQuestions]);
+  }, [navigation, newPin, user]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
