@@ -90,7 +90,7 @@ export const EnterTransaction = withModal(
             style={applyStyles(
               'text-center text-black text-lg pt-16 px-8 mt-32',
             )}>
-            Enter Tranaction PIN her
+            Enter Tranaction PIN
           </Text>
           <View style={applyStyles('flex-row pt-8')}>
             <Icon

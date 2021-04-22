@@ -982,7 +982,7 @@ export class ApiService implements IApiService {
 
   async getSecurityQuestions(id: number) {
     try {
-      return this.requester.get(`/security-qa`, {user_id: id});
+      return this.requester.get('/security-qa', {user_id: id});
     } catch (error) {
       throw error;
     }

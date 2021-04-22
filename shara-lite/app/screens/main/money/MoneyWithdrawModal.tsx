@@ -412,7 +412,7 @@ export const TransactionPinWithdrawModal = ({
           bank_details: selectedBankAccount,
         })}
       </Markdown>
-      <View style={applyStyles('flex-row pt-16 px-8')}>
+      <View style={applyStyles('flex-row px-8')}>
         <Icon
           size={20}
           name="lock"
