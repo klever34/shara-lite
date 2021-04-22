@@ -5,7 +5,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import React, {ReactNode, useMemo} from 'react';
 import {Text} from '@/components';
-import {View, ViewStyle} from 'react-native';
+import {View, ViewStyle, TouchableOpacity} from 'react-native';
 import {Icon} from './Icon';
 import PlaceholderImage from './PlaceholderImage';
 import Touchable from './Touchable';
@@ -100,10 +100,12 @@ const CustomerDetailsHeader = ({
           borderBottomColor: colors['gray-20'],
         })}>
         {backButton && (
-          <HeaderBackButton
-            iconName="arrow-left"
-            onPress={() => navigation.goBack()}
-          />
+          <TouchableOpacity style={{marginRight: 20}} onPress={() => navigation.goBack()}>
+            <HeaderBackButton
+              iconName="arrow-left"
+              onPress={() => navigation.goBack()}
+            />
+          </TouchableOpacity>
         )}
         <View
           style={applyStyles(

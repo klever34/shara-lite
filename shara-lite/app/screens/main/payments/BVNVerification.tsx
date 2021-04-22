@@ -42,6 +42,8 @@ export const BVNVerification = () => {
 
   const handleSubmit = useCallback(
     async (otp: string) => {
+      // navigation.navigate('DisburementScreen');
+      // return;
       const apiService = getApiService();
       setLoading(true);
       try {

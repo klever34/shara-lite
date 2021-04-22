@@ -124,9 +124,8 @@ function PaymentContainer(props: ModalWrapperFields) {
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
         <KeyboardAwareScrollView
-          nestedScrollEnabled
-          persistentScrollbar={true}
-          keyboardShouldPersistTaps="always">
+        keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="always">
           <Text
             style={applyStyles(
               'text-center text-uppercase text-700 text-gray-300 mb-16',
@@ -170,9 +169,8 @@ function PaymentContainer(props: ModalWrapperFields) {
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
           <KeyboardAwareScrollView
-            nestedScrollEnabled
-            persistentScrollbar={true}
-            keyboardShouldPersistTaps="always">
+          keyboardDismissMode="interactive"
+          keyboardShouldPersistTaps="always">
             <Text
               style={applyStyles(
                 'text-center text-uppercase text-700 text-gray-300',
@@ -289,9 +287,8 @@ function PaymentContainer(props: ModalWrapperFields) {
 
   return (
     <KeyboardAwareScrollView
-      nestedScrollEnabled
-      persistentScrollbar={true}
-      keyboardShouldPersistTaps="always"
+    keyboardDismissMode="interactive"
+    keyboardShouldPersistTaps="always"
       style={applyStyles('bg-white flex-1')}>
       <Page
         header={{

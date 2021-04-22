@@ -18,9 +18,8 @@ function WithdrawalMethod() {
       }}
       style={applyStyles('px-0')}>
       <KeyboardAwareScrollView
-        nestedScrollEnabled
-        persistentScrollbar={true}
-        keyboardShouldPersistTaps="always"
+          keyboardDismissMode="interactive"
+          keyboardShouldPersistTaps="always"
         style={applyStyles('py-18 bg-white flex-1')}>
         <PaymentSettingBvn />
       </KeyboardAwareScrollView>

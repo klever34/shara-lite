@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {Icon} from './Icon';
 //@ts-ignore
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
+// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import Touchable from './Touchable';
 import {mergeRefs} from '../helpers/utils';
 

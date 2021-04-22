@@ -7,10 +7,12 @@ import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Text} from '@/components';
-import {Alert, FlatList, View} from 'react-native';
+import {Alert, FlatList, View, KeyboardAvoidingView, Platform} from 'react-native';
+// import {KeyboardAvoidingView, Platform} from 'react-native'
+
 import {DisbursementProvider} from 'types/app';
 //@ts-ignore
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
+// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import {Page} from '@/components/Page';
 import {getI18nService} from '@/services';
 import Emblem from '@/assets/images/emblem-gray.svg';
@@ -83,10 +85,8 @@ function DisburementScreen(props: ModalWrapperFields) {
   const handleOpenAddItemModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
-        <KeyboardAwareScrollView
-          nestedScrollEnabled
-          persistentScrollbar={true}
-          keyboardShouldPersistTaps="always">
+        <KeyboardAvoidingView
+        behavior={Platform.OS == 'ios' ? 'padding' : 'height'}>
           <Text
             style={applyStyles(
               'text-center text-uppercase text-700 text-gray-300 mb-16 mt-10',
@@ -107,12 +107,12 @@ function DisburementScreen(props: ModalWrapperFields) {
                       title={strings('cancel')}
                       onPress={closeModal}
                       variantColor="transparent"
-                      style={applyStyles({width: '48%'})}
+                      style={applyStyles({width: '100%'})}
                     />
                     <Button
                       title={strings('save')}
                       isLoading={isSaving}
-                      style={applyStyles({width: '48%'})}
+                      style={applyStyles({width: '100%'})}
                       onPress={() => {
                         handleSubmit();
                         closeModal();
@@ -123,7 +123,7 @@ function DisburementScreen(props: ModalWrapperFields) {
               </>
             )}
           />
-        </KeyboardAwareScrollView>
+        </KeyboardAvoidingView>
       ),
     });
   }, [openModal, isSaving, onFormSubmit, disbursementProviders]);
@@ -168,11 +168,9 @@ function DisburementScreen(props: ModalWrapperFields) {
         iconLeft: {onPress: handleGoBack},
       }}
       style={applyStyles('px-0')}>
-      <KeyboardAwareScrollView
-        nestedScrollEnabled
-        persistentScrollbar={true}
-        keyboardShouldPersistTaps="always"
-        style={applyStyles('py-18 bg-white flex-1')}>
+      <View
+// behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+        style={applyStyles('py-18 bg-white flex-1', {height: '100%'})}>
         {disbursementMethods.length === 0 ? (
           <View style={applyStyles('flex-1')}>
             <View style={applyStyles('center pb-32')}>
@@ -261,7 +259,7 @@ function DisburementScreen(props: ModalWrapperFields) {
             />
           </View>
         )}
-      </KeyboardAwareScrollView>
+      </View>
     </Page>
   );
 }
