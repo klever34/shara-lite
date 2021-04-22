@@ -143,8 +143,14 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
 
   const isPaymentSettingsSetup = true;
 
+  const isTransactionPinSetup = true;
+
   const onGoToMoneySettings = useCallback(() => {
     navigation.navigate('PaymentSettings');
+  }, [navigation]);
+
+  const onGoToSecuritySettings = useCallback(() => {
+    navigation.navigate('SecuritySettings');
   }, [navigation]);
 
   const handleDrawdown = useCallback(() => {
@@ -174,6 +180,24 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
             title={strings('payment_activities.empty_state.tag')}
             style={as('w-full')}
             onPress={onGoToMoneySettings}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!isTransactionPinSetup) {
+    return (
+      <SafeAreaView style={applyStyles('flex-1 bg-white')}>
+        <View style={as('flex-1 center px-32')}>
+          <Emblem width={64} height={64} />
+          <Text style={as('text-center mt-24 mb-32 text-gray-200')}>
+            {strings('payment_activities.empty_state.description')}
+          </Text>
+          <Button
+            title={strings('payment_activities.empty_state.tag')}
+            style={as('w-full')}
+            onPress={onGoToSecuritySettings}
           />
         </View>
       </SafeAreaView>

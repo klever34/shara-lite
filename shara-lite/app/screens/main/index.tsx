@@ -62,10 +62,12 @@ import {BVNVerification} from './payments/BVNVerification';
 import DisburementScreen from './payments/DisburementScreen';
 import {ReportScreen} from './report';
 import {SecurityScreen} from './security';
+import {ChangeTransactionPin} from './security/ChangeTransactionPin';
+import {CreateTransactionPin} from './security/CreateTransactionPin';
 import {EnterTransaction} from './security/EnterTransaction';
+import {RecoverTransactionPin} from './security/RecoverTransactionPin';
 import {SecurityQuestions} from './security/SecurityQuestions';
 import {SuccessScreen} from './security/SuccessScreen';
-import {TransactionPin} from './security/TransactionPin';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
@@ -114,6 +116,8 @@ export type MainStackParamList = {
   SuccessScreen: undefined;
   SecurityQuestions: undefined;
   VerifyTransactionPin: undefined;
+  RecoverTransactionPin: undefined;
+  ChangeTransactionPin: undefined;
 
   // Money
   Drawdown: undefined;
@@ -431,7 +435,7 @@ const MainScreens = () => {
 
             <MainStack.Screen
               name="SetTransactionPin"
-              component={TransactionPin}
+              component={CreateTransactionPin}
               options={{
                 headerShown: false,
               }}
@@ -456,6 +460,22 @@ const MainScreens = () => {
             <MainStack.Screen
               name="VerifyTransactionPin"
               component={EnterTransaction}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="RecoverTransactionPin"
+              component={RecoverTransactionPin}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="ChangeTransactionPin"
+              component={ChangeTransactionPin}
               options={{
                 headerShown: false,
               }}

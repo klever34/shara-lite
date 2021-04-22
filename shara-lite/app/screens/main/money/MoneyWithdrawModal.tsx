@@ -61,20 +61,6 @@ const SelectWithdrawalAccountModal = ({
     onDone(selectedDisbursementMethod);
   }, [onDone, selectedDisbursementMethod]);
 
-  // const handleSubmit = useCallback(async(pin: string) => {
-  //   const apiService = getApiService();
-  //   try {
-  //     const payload = {pin};
-  //       const res = await apiService.verifyTransactionPin(
-  //         user.id.toString(),
-  //         payload,
-  //       );
-  //   } catch (error) {
-  //     setLoading(false);
-  //     Alert.alert('error', error.message);
-  //   }
-  // },[])
-
   return (
     <ScrollView style={as('')}>
       <Header
@@ -184,10 +170,6 @@ type MoneyWithdrawScreenProps = {
 
 const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
   ({onClose, openModal, closeModal}) => {
-    const [pin, setPin] = useState('');
-    const handlePinChange = useCallback((code) => {
-      setPin(code);
-    }, []);
     const {
       getPrimaryDisbursementMethod,
       getDisbursementMethods,
@@ -237,7 +219,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
     }, [closeModal, openModal]);
 
     const handleSubmit = useCallback(
-      async (amount: string) => {
+      async (pin: string, amount: string) => {
         if (!user || !disbursementMethod) {
           return;
         }
@@ -283,7 +265,6 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
         disbursementMethod,
         onClose,
         openModal,
-        pin,
         selectedBankAccount,
         user,
       ],
@@ -294,49 +275,12 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
         if (disbursementMethod?.api_id) {
           openModal('bottom-half', {
             renderContent: () => (
-              <ConfirmationModal onClose={closeModal}>
-                <Markdown style={markdownStyle}>
-                  {strings('payment_activities.about_to_withdraw', {
-                    amount: amountWithCurrency(toNumber(amount)),
-                    bank_details: selectedBankAccount,
-                  })}
-                </Markdown>
-                <View style={applyStyles('flex-row pt-16 px-8')}>
-                  <Icon
-                    size={20}
-                    name="lock"
-                    type="feathericons"
-                    color={colors['gray-100']}
-                  />
-                  <Text
-                    style={applyStyles(
-                      'text-center text-gray-100 text-base px-10',
-                    )}>
-                    All transactions are safe, secure and instant.
-                  </Text>
-                </View>
-                <OTPInputView
-                  code={pin}
-                  pinCount={4}
-                  autoFocusOnLoad={true}
-                  secureTextEntry={true}
-                  onCodeFilled={() => handleSubmit(amount)}
-                  onCodeChanged={handlePinChange}
-                  style={applyStyles('flex-row center', {
-                    height: 100,
-                    width: 100,
-                  })}
-                  codeInputFieldStyle={applyStyles('w-20 h-45 text-black', {
-                    fontSize: 18,
-                    borderWidth: 0,
-                    borderRadius: 0,
-                    borderBottomWidth: 4,
-                  })}
-                  codeInputHighlightStyle={applyStyles({
-                    borderColor: colors.primary,
-                  })}
-                />
-              </ConfirmationModal>
+              <TransactionPinWithdrawModal
+                closeModal={closeModal}
+                amount={amount}
+                handleSubmit={handleSubmit}
+                selectedBankAccount={selectedBankAccount}
+              />
             ),
           });
         }
@@ -344,10 +288,8 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
       [
         closeModal,
         disbursementMethod,
-        handlePinChange,
         handleSubmit,
         openModal,
-        pin,
         selectedBankAccount,
       ],
     );
@@ -450,5 +392,60 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
     );
   },
 );
+
+export const TransactionPinWithdrawModal = ({
+  closeModal,
+  amount,
+  selectedBankAccount,
+  handleSubmit,
+}: any) => {
+  const [pin, setPin] = useState('');
+  const handlePinChange = useCallback((code) => {
+    setPin(code);
+  }, []);
+
+  return (
+    <ConfirmationModal onClose={closeModal}>
+      <Markdown style={markdownStyle}>
+        {strings('payment_activities.about_to_withdraw', {
+          amount: amountWithCurrency(toNumber(amount)),
+          bank_details: selectedBankAccount,
+        })}
+      </Markdown>
+      <View style={applyStyles('flex-row pt-16 px-8')}>
+        <Icon
+          size={20}
+          name="lock"
+          type="feathericons"
+          color={colors['gray-100']}
+        />
+        <Text style={applyStyles('text-center text-gray-100 text-base px-10')}>
+          All transactions are safe, secure and instant.
+        </Text>
+      </View>
+      <OTPInputView
+        code={pin}
+        pinCount={4}
+        autoFocusOnLoad={true}
+        secureTextEntry={true}
+        onCodeFilled={(pin) => handleSubmit(pin, amount)}
+        onCodeChanged={handlePinChange}
+        style={applyStyles('flex-row center', {
+          height: 100,
+          width: 100,
+        })}
+        codeInputFieldStyle={applyStyles('w-20 h-45 text-black', {
+          fontSize: 18,
+          borderWidth: 0,
+          borderRadius: 0,
+          borderBottomWidth: 4,
+        })}
+        codeInputHighlightStyle={applyStyles({
+          borderColor: colors.primary,
+        })}
+      />
+    </ConfirmationModal>
+  );
+};
 
 export default MoneyWithdrawModal;

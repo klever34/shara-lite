@@ -213,6 +213,15 @@ export interface IApiService {
   transactionPin(id: number): Promise<any>;
 
   getSecurityQuestions(id: number): Promise<any>;
+
+  changeTransactionPin(
+    id: string,
+    payload: {
+      pin: string;
+      confirm_pin: string;
+      token: string;
+    },
+  ): Promise<any>;
 }
 
 export class ApiService implements IApiService {
@@ -969,6 +978,24 @@ export class ApiService implements IApiService {
   async getSecurityQuestions(id: number) {
     try {
       return this.requester.get(`/security-qa?user_id=${id}`, {});
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async changeTransactionPin(
+    id: string,
+    payload: {
+      pin: string;
+      confirm_pin: string;
+      token: string;
+    },
+  ): Promise<ApiResponse> {
+    try {
+      return await this.requester.patch(
+        `/users/${id}/update-transaction-pin`,
+        payload,
+      );
     } catch (error) {
       throw error;
     }

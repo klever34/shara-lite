@@ -4,10 +4,10 @@ import LottieView from 'lottie-react-native';
 import {applyStyles} from '@/styles';
 import {Button} from '@/components';
 
-export const SuccessScreen = () => {
+export const SuccessScreen = ({onDone}: any) => {
   return (
     <>
-      <View style={applyStyles('py-64 mt-64 items-center')}>
+      <View style={applyStyles('py-80 mt-80 items-center')}>
         <View style={applyStyles('py-20')}>
           <LottieView
             autoPlay
@@ -31,12 +31,8 @@ export const SuccessScreen = () => {
       <View
         style={applyStyles('mt-64 pt-64 flex-row items-center justify-around')}>
         <Button
-          title={'cancel'}
-          variantColor="transparent"
-          style={applyStyles('mt-32', {width: '45%'})}
-        />
-        <Button
-          title={'Security questions'}
+          onPress={onDone}
+          title={'done'}
           style={applyStyles('mt-32', {width: '45%'})}
         />
       </View>
