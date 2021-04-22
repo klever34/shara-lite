@@ -1,4 +1,18 @@
 import {Strings} from 'types/i18n';
+import apiEn from './api-en';
+
+const formatApiEn = (obj: {[key: string]: any}) => {
+  const result: {[key: string]: any} = {};
+  const keys = Object.keys(obj);
+  keys.forEach((key) => {
+    if (obj[key].message) {
+      result[key] = obj[key].message;
+    } else {
+      result[key] = formatApiEn(obj[key]);
+    }
+  });
+  return result;
+};
 
 const en: Strings = {
   update_shara: {
@@ -84,170 +98,7 @@ const en: Strings = {
       description:
         'We are syncing your data across the Shara app. This might take a few seconds.',
     },
-    api: {
-      fallbackError: 'Oops! Something unexpected happened.',
-      auth: {
-        otp: {
-          welcomeBack:
-            "Welcome back to Shara. We've sent an OTP to your mobile number",
-          welcome: "Welcome to Shara. We've sent an OTP to your mobile number",
-          selectCountry: 'Please select a country',
-          fallbackError: 'Oops! An error occurred while signing up user',
-        },
-        login: {
-          otpExpired: 'OTP has expired',
-          success: 'Login Successful',
-          fallbackError: 'Invalid mobile or OTP',
-        },
-      },
-      business: {
-        notFound: 'Business not found',
-        create: {
-          success: 'Business created successfully',
-        },
-        details: {
-          success: 'Business found successfully',
-        },
-        customerDetails: {
-          notFound: 'Customer not found',
-          success: 'Customer found successfully',
-        },
-        update: {
-          uniqueSlug: 'This slug has been taken already',
-          success: 'Business updated successfully',
-        },
-      },
-      fcm: {
-        addToken: {
-          missingFields: 'FCM token and platform are required',
-          success: 'Token updated successfully',
-        },
-      },
-      passwordReset: {
-        notFound: 'Account not found',
-        create: {
-          success: 'Please use the OTP sent to your mobile number',
-        },
-        reset: {
-          invalid: 'OTP has expired or is invalid',
-          success: 'Password reset successful',
-        },
-        update: {
-          uniqueSlug: 'This slug has been taken already',
-          success: 'Business updated successfully',
-        },
-      },
-      paymentProvider: {
-        list: {
-          success: 'Payment providers retrieved successfully',
-        },
-      },
-      user: {
-        update: {
-          success: 'User updated successfully',
-        },
-      },
-      mPesa: {
-        initiateSTKPush: {
-          business: {
-            notFound: 'Business not found',
-          },
-          customer: {
-            notFound: 'Business not found',
-          },
-          kenyaOnly: 'Business not found',
-          success:
-            'We were unable to send an STK push to your mobile number please try again or contact us through the Shara mobile application',
-        },
-        processValidationEvent: {
-          success: 'Error Validating Payment',
-        },
-        processConfirmationEvent: {
-          success: 'Error Confirming Payment',
-        },
-      },
-      disbursement: {
-        create: {
-          notFound: 'Your selected withdrawal method is not available',
-          success: 'Your withdrawal has been processed successfully',
-          insufficientBalance: 'You cannot withdraw more than {{maxAmount}}',
-          error:
-            'We were unable to process your withdrawal, please try again or contact us through the Shara mobile application',
-        },
-      },
-      drawdown: {
-        create: {
-          notFound: 'No drawdown has been approved for you',
-          invalidAmount:
-            'Amount specified is more than the amount available for drawdown',
-          inactive: 'Drawdown is not currently active',
-          error:
-            'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
-          success: 'Drawdown taken successfully',
-        },
-      },
-      drawdownRepayment: {
-        create: {
-          notFound: 'No drawdown has been approved for you',
-          complete: "You've already finished repaying your loans",
-          error:
-            'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
-          insufficientBalance: 'Your wallet balance is not sufficient',
-          success: 'Repayment successful',
-        },
-      },
-      identity: {
-        verify: {
-          error:
-            'We were unable to verify your identity, please try again or contact us through the Shara mobile application',
-          invalid: 'Your ID is invalid',
-          success: 'Verification successful',
-        },
-        validate: {
-          error: 'OTP Validation Failed',
-          invalid: 'Your OTP is invalid',
-          success: 'OTP Validation successful',
-        },
-      },
-      bnplApproval: {
-        create: {
-          success: 'BNPL approved successfully',
-          error: 'Unable to approve BNPL for user',
-          exists: 'An active BNPL exists for this user',
-          userNotFound: 'User not found',
-        },
-      },
-      bnplDrawdown: {
-        create: {
-          notFound: 'No BNPL has been approved for you',
-          invalidAmount:
-            'Amount specified is more than the amount available for drawdown',
-          inactive: 'Drawdown is not currently active',
-          error:
-            'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
-          success: 'Drawdown taken successfully',
-          duplicate:
-            'This looks like a duplicate transaction. Please wait 2 minutes to retry, if this is not an error.',
-        },
-      },
-      bnplRepayment: {
-        create: {
-          notFound: 'No BNPL has been approved for you',
-          complete: "You've already finished repaying your loans",
-          error:
-            'We were unable to process your repayment, please try again or contact us through the Shara mobile application',
-          insufficientBalance: 'Your wallet balance is not sufficient',
-          success: 'Repayment successful',
-        },
-      },
-      sms: {
-        create: {
-          success: 'Sms sent successfully',
-          missingFields: 'To & Message are required',
-          error: 'Unable to send SMS. Please try again later',
-        },
-      },
-    },
+    api: formatApiEn(apiEn) as Strings['alert']['api'],
   },
   shara_tagline: 'Built To Get You Paid Faster',
   onboarding_copy_1: {
@@ -1080,7 +931,8 @@ const en: Strings = {
       payment: 'Client pays {{amount}} over {{days}} days',
     },
     receipt: {
-      bnpl_text: 'Buy Now Pay Later ({{payment_frequency}} {{payment_frequency_unit}})',
+      bnpl_text:
+        'Buy Now Pay Later ({{payment_frequency}} {{payment_frequency_unit}})',
     },
     add_repayment: 'Add Repayment',
     client: {
@@ -1121,8 +973,10 @@ const en: Strings = {
       outstanding_amount: '{{amount}}',
       notes: 'Notes',
       notes_text_content: '{{notes}}',
-      client_takes_charge: 'The client will be covering interest in their weekly repayments of {{payment_frequency_amount}}',
-      merchant_takes_charge: 'You are covering the interest payments and {{amount}} was funded to your wallet',
+      client_takes_charge:
+        'The client will be covering interest in their weekly repayments of {{payment_frequency_amount}}',
+      merchant_takes_charge:
+        'You are covering the interest payments and {{amount}} was funded to your wallet',
     },
     recent_purchase_message:
       'Hi {{customer_name}}, thank you for your recent purchase.',
