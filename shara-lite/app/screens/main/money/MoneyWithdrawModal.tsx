@@ -7,7 +7,7 @@ import {
   getI18nService,
   getRemoteConfigService,
 } from '@/services';
-import {ScrollView, View} from 'react-native';
+import {ActivityIndicator, ScrollView, View} from 'react-native';
 import {applyStyles, as, colors} from '@/styles';
 import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
@@ -204,6 +204,9 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
       }
     }, [user]);
 
+    const [loading, setLoading] = useState(false);
+    const [hasError, setHasError] = useState(false);
+
     const handleSelectWithdrawalAccount = useCallback(() => {
       openModal('bottom-half', {
         renderContent: () => (
@@ -223,6 +226,8 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
         if (!user || !disbursementMethod) {
           return;
         }
+        setLoading(true);
+        setHasError(false);
         try {
           const apiService = getApiService();
           const res = await apiService.verifyTransactionPin(
@@ -234,6 +239,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
             disbursement_method_id: disbursementMethod.api_id,
             token: res?.data.token,
           });
+          setLoading(false);
           getAnalyticsService()
             .logEvent('moneyWithdrawn', {
               amount: toNumber(amount),
@@ -256,6 +262,8 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
             ),
           });
         } catch (e) {
+          setLoading(false);
+          setHasError(true);
           handleError(e);
           closeModal();
         }
@@ -279,6 +287,8 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
                 closeModal={closeModal}
                 amount={amount}
                 handleSubmit={handleSubmit}
+                loading={loading}
+                hasError={hasError}
                 selectedBankAccount={selectedBankAccount}
               />
             ),
@@ -289,6 +299,8 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
         closeModal,
         disbursementMethod,
         handleSubmit,
+        hasError,
+        loading,
         openModal,
         selectedBankAccount,
       ],
@@ -398,6 +410,8 @@ export const TransactionPinWithdrawModal = ({
   amount,
   selectedBankAccount,
   handleSubmit,
+  loading,
+  hasError,
 }: any) => {
   const [pin, setPin] = useState('');
   const handlePinChange = useCallback((code) => {
@@ -420,7 +434,7 @@ export const TransactionPinWithdrawModal = ({
           color={colors['gray-100']}
         />
         <Text style={applyStyles('text-center text-gray-100 text-base px-10')}>
-          All transactions are safe, secure and instant.
+          {strings('withdrawal_pin.subHeading')}
         </Text>
       </View>
       <OTPInputView
@@ -444,6 +458,12 @@ export const TransactionPinWithdrawModal = ({
           borderColor: colors.primary,
         })}
       />
+      {loading && <ActivityIndicator size={24} color={colors.primary} />}
+      {hasError && (
+        <Text style={applyStyles('text-red-100 text-sm text-400')}>
+          {strings('withdrawal_pin.error_message')}
+        </Text>
+      )}
     </ConfirmationModal>
   );
 };

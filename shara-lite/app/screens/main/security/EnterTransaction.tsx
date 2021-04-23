@@ -5,7 +5,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, {useCallback, useState} from 'react';
-import {Alert, Text, View} from 'react-native';
+import {ActivityIndicator, Alert, Text, View} from 'react-native';
 import {User} from 'types/app';
 import {SuccessScreen} from './SuccessScreen';
 import {withModal} from '@/helpers/hocs';
@@ -16,10 +16,13 @@ const strings = getI18nService().strings;
 export const EnterTransaction = withModal(
   ({route: {params}, closeModal, openModal}: any) => {
     const [pin, setPin] = useState('');
-    const [, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [hasError, setHasError] = useState(false);
     const authService = getAuthService();
     let user = authService.getUser() as User;
     const navigation = useAppNavigation();
+
+    const heading = params.heading;
 
     const handlePinChange = useCallback((code) => {
       setPin(code);
@@ -29,6 +32,7 @@ export const EnterTransaction = withModal(
       async (pin: string) => {
         const apiService = getApiService();
         setLoading(true);
+        setHasError(false);
         try {
           const payload = {pin};
           const {
@@ -67,41 +71,24 @@ export const EnterTransaction = withModal(
               ),
             });
           } else if (params && params.fromSecuritySettings) {
-            navigation.navigate('ChangeTransactionPin', {token});
+            navigation.navigate('ChangeTransactionPin', {token, heading});
           } else {
             navigation.navigate('DisburementScreen');
           }
         } catch (error) {
           setLoading(false);
-          Alert.alert(strings('error'), error.message);
+          setHasError(true);
+          Alert.alert(strings('alert.error'), error.message);
         }
       },
-      [closeModal, navigation, openModal, params, user.id],
+      [closeModal, heading, navigation, openModal, params, user.id],
     );
-
-    // const handleLoading = useCallback(() => {
-    //   // if (loading) {
-    //   const closeLoadingModal = openModal('loading', {
-    //     text: 'Loading ...',
-    //   });
-
-    //   closeLoadingModal();
-    //   // }
-    // }, [openModal]);
-
-    // const loadingState = useCallback(
-    //   (pin) => {
-    //     handleLoading();
-    //     handleSubmit(pin);
-    //   },
-    //   [handleLoading, handleSubmit],
-    // );
 
     return (
       <Page
         header={{
           iconLeft: {},
-          title: 'Set TRANSACTION PIN',
+          title: strings('withdrawal_pin.transaction_pin'),
           style: applyStyles('py-8'),
         }}
         style={applyStyles('px-0 py-32')}>
@@ -124,11 +111,6 @@ export const EnterTransaction = withModal(
               {strings('withdrawal_pin.subHeading')}
             </Text>
           </View>
-          {/* {loading && (
-            <View style={styles.customerListHeader}>
-              <ActivityIndicator size={24} color={colors.primary} />
-            </View>
-          )} */}
           <OTPInputView
             code={pin}
             pinCount={4}
@@ -150,6 +132,12 @@ export const EnterTransaction = withModal(
               borderColor: colors.primary,
             })}
           />
+          {loading && <ActivityIndicator size={24} color={colors.primary} />}
+          {hasError && (
+            <Text style={applyStyles('text-red-100 text-sm text-400')}>
+              {strings('withdrawal_pin.error_message')}
+            </Text>
+          )}
         </View>
       </Page>
     );

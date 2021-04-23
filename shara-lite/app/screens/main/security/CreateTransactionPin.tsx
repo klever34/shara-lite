@@ -24,6 +24,7 @@ export const CreateTransactionPin = () => {
   return (
     <TransactionPin
       onSubmit={handleSubmit}
+      hideButton={true}
       enterProps={{
         heading: strings('withdrawal_pin.create_transaction_pin.heading'),
         subHeading: strings('withdrawal_pin.subHeading'),

@@ -1003,12 +1003,14 @@ const en: Strings = {
     subHeading: 'All transactions are safe, secure and instant.',
     change_transaction_pin: {
       heading: 'Enter old Transaction Pin',
+      title: 'Change Transaction Pin',
     },
+    transaction_pin: 'Transaction Pin',
     create_transaction_pin: {
       heading: 'Set 4-digit PIN for all your transactions',
     },
     enter_transaction_pin: {
-      heading: 'Enter Transaction PIN',
+      heading: 'Enter your Transaction PIN',
       page_title: 'Set TRANSACTION PIN',
     },
     enter_new_transaction_pin: 'Enter your new transaction PIN',
@@ -1037,6 +1039,7 @@ const en: Strings = {
     success_message: 'Your transaction PIN has been set successfully',
     confirm_transaction_pin_heading: 'Confirm PIN',
     enter_transaction_pin_title: 'ENTER TRANSACTION PIN',
+    error_message: 'INCORRECT PIN',
   },
 };
 

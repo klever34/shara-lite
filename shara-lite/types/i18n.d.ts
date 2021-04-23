@@ -860,7 +860,9 @@ export interface Strings {
     subHeading: string;
     change_transaction_pin: {
       heading: string;
+      title: string;
     };
+    transaction_pin: string;
     create_transaction_pin: {
       heading: string;
     };
@@ -893,6 +895,7 @@ export interface Strings {
     success_message: string;
     confirm_transaction_pin_heading: string;
     enter_transaction_pin_title: string;
+    error_message: string;
   };
 }
 

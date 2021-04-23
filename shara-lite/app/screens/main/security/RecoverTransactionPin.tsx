@@ -30,13 +30,16 @@ export const RecoverTransactionPin = (props: any) => {
     setLoading(true);
     try {
       const payload = {answer, user_id: user.id};
-      await apiService.verifySecurityQuestions(payload);
+      const {
+        data: {token},
+      } = await apiService.verifySecurityQuestions(payload);
       navigation.navigate('ChangeTransactionPin', {
+        token,
         heading: strings('withdrawal_pin.enter_new_transaction_pin'),
       });
     } catch (error) {
       setLoading(false);
-      Alert.alert(strings('error'), error.message);
+      Alert.alert(strings('alert.error'), error.message);
     }
   }, [answer, navigation, user.id]);
 

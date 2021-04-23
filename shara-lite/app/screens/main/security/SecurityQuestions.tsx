@@ -28,7 +28,7 @@ export const SecurityQuestions = () => {
       navigation.navigate('VerifyTransactionPin', {question, answer});
     } catch (error) {
       setLoading(false);
-      Alert.alert(strings('error'), error.message);
+      Alert.alert(strings('alert.error'), error.message);
     }
   }, [answer, navigation, question]);
 

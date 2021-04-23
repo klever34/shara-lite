@@ -1,6 +1,6 @@
 import {Page} from '@/components/Page';
-import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, Text, View} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {ActivityIndicator, Alert, Keyboard, Text, View} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import {Icon} from '@/components/Icon';
@@ -17,12 +17,21 @@ type ConfirmTransactionPinProps = {
   subHeading?: any;
   pin?: any;
   handlePinChange?: (code: string) => void;
+  loading?: boolean;
 };
 
 export const TransactionPin = withModal(
-  ({enterProps, confirmProps, openModal, closeModal, onSubmit}: any) => {
+  ({
+    enterProps,
+    confirmProps,
+    openModal,
+    closeModal,
+    onSubmit,
+    title,
+    hideButton,
+  }: any) => {
     const [pin, setPin] = useState('');
-    const [, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [section, setSection] = useState(0);
     const navigation = useAppNavigation();
 
@@ -48,24 +57,39 @@ export const TransactionPin = withModal(
                     style={applyStyles(
                       'mt-64 pt-64 flex-row items-center justify-around',
                     )}>
-                    <Button
-                      title={strings('done')}
-                      variantColor="transparent"
-                      style={applyStyles('mt-32', {width: '45%'})}
-                      onPress={() => {
-                        closeModal();
-                        onCloseModal();
-                      }}
-                    />
-                    <Button
-                      title={strings(
-                        'withdrawal_pin.recover_transaction_pin.page_title',
-                      )}
-                      style={applyStyles('mt-32', {width: '45%'})}
-                      onPress={() => {
-                        navigation.navigate('SecurityQuestions');
-                      }}
-                    />
+                    {hideButton === true ? (
+                      <Button
+                        title={strings('done')}
+                        variantColor="transparent"
+                        style={applyStyles('mt-32', {width: '45%'})}
+                        onPress={() => {
+                          closeModal();
+                          onCloseModal();
+                          navigation.navigate('SecuritySettings');
+                        }}
+                      />
+                    ) : (
+                      <Button
+                        title={strings('done')}
+                        style={applyStyles('mt-32', {width: '45%'})}
+                        onPress={() => {
+                          closeModal();
+                          onCloseModal();
+                          navigation.navigate('SecuritySettings');
+                        }}
+                      />
+                    )}
+                    {hideButton === true && (
+                      <Button
+                        title={strings(
+                          'withdrawal_pin.recover_transaction_pin.page_title',
+                        )}
+                        style={applyStyles('mt-32', {width: '45%'})}
+                        onPress={() => {
+                          navigation.navigate('SecurityQuestions');
+                        }}
+                      />
+                    )}
                   </View>
                 )}
               />
@@ -73,23 +97,24 @@ export const TransactionPin = withModal(
           });
         } catch (error) {
           setLoading(false);
-          Alert.alert(strings('error'), error.message);
+          Alert.alert(strings('alert.error'), error.message);
         }
       },
-      [closeModal, navigation, onSubmit, openModal, pin],
+      [closeModal, hideButton, navigation, onSubmit, openModal, pin],
     );
 
     return (
       <Page
         header={{
           iconLeft: {},
-          title: strings('withdrawal_pin.enter_transaction_pin.page_title'),
+          title: title,
           style: applyStyles('py-8'),
         }}
         style={applyStyles('px-0 py-32')}>
         {section === 0 ? (
           <EnterTransactionPin
             pin={pin}
+            loading={loading}
             handlePinChange={handlePinChange}
             heading={strings('withdrawal_pin.create_transaction_pin.heading')}
             subHeading={strings('withdrawal_pin.subHeading')}
@@ -98,6 +123,7 @@ export const TransactionPin = withModal(
           />
         ) : (
           <EnterTransactionPin
+            loading={loading}
             heading={strings('withdrawal_pin.confirm_transaction_pin_heading')}
             subHeading={strings('withdrawal_pin.subHeading')}
             handleSubmit={handleSubmit}
@@ -115,6 +141,7 @@ export const EnterTransactionPin = ({
   subHeading,
   pin: pinProp,
   handlePinChange,
+  loading,
 }: ConfirmTransactionPinProps) => {
   const [pin, setPin] = useState(pinProp || '');
 
@@ -168,6 +195,7 @@ export const EnterTransactionPin = ({
           borderColor: colors.primary,
         })}
       />
+      {loading && <ActivityIndicator size={24} color={colors.primary} />}
     </View>
   );
 };

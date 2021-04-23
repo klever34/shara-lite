@@ -1115,16 +1115,18 @@
     "copied": "Copied",
     "submit": "Submit",
     "withdrawal_pin": {
-      "subHeading": "All transactions are safe, secure and instant.",
-      "change_transaction_pin": {"heading": "Enter old Transaction Pin"},
+      "subHeading": "All transactions are safe, secure and instant",
+      "change_transaction_pin": {
+        "heading": "Enter old Transaction Pin",
+        "title": "Change Transaction Pin"
+      },
       "create_transaction_pin": {
         "heading": "Set 4-digit PIN for all your transactions"
       },
       "enter_transaction_pin": {
-        "heading": "Enter Transaction PIN",
+        "heading": "Enter your Transaction PIN",
         "page_title": "Set TRANSACTION PIN"
       },
-      "enter_new_transaction_pin": "Enter your new transaction PIN",
       "not_set_transaction_pin": "Set a Transaction pin",
       "not_set_transaction_pin_text": "Set a Transaction pin before making a withdrawal",
       "security_settings": "security settings",
@@ -1148,7 +1150,11 @@
       },
       "success_message": "Your transaction PIN has been set successfully",
       "confirm_transaction_pin_heading": "Confirm PIN",
-      "enter_transaction_pin_title": "ENTER TRANSACTION PIN"
+      "confirm_transaction_pin_title": "ENTER TRANSACTION PIN",
+      "transaction_pin": "Transaction Pin",
+      "enter_new_transaction_pin": "Enter your new transaction PIN",
+      "enter_transaction_pin_title": "ENTER TRANSACTION PIN",
+      "error_message": "INCORRECT PIN"
     }
   },
   "sw": {
@@ -1350,9 +1356,9 @@
             "userNotFound": "Mtumiaji hajapatikana"
           },
           "updateLimit": {
-            "success": "",
-            "error": "",
-            "notFound": "",
+            "success": "BNPL Limit updated successfully",
+            "error": "An active BNPL does not exist for this user",
+            "notFound": "Unable to update BNPL limit for user",
             "userNotFound": "Mtumiaji hajapatikana"
           }
         },
@@ -1364,7 +1370,7 @@
             "error": "Hatukuweza kushughulikia shida yako tafadhali jaribu tena au wasiliana nasi kuipitia programu ya rununu ya Shara",
             "success": "Kiwango cha kushuka kimechukuliwa kwa mafanikio",
             "duplicate": "Hii inaonekana kama manunuzi ya nakala. Tafadhali subiri dakika 2 ili ujaribu tena, ikiwa hii sio kosa.",
-            "bundleNotFound": ""
+            "bundleNotFound": "BNPL Bundle has not been approved for you"
           },
           "common": {
             "drawdownNotFound": "",
@@ -1392,30 +1398,86 @@
         },
         "validationError": "",
         "bnplKyc": {
-          "create": {"success": "", "error": ""},
-          "update": {"success": "", "error": ""},
-          "read": {"success": "", "error": ""}
+          "create": {
+            "success": "KYC Successfully Submitted",
+            "error": "Unable to submit KYC. Please try again later"
+          },
+          "update": {
+            "success": "KYC Successfully Updated",
+            "error": "Unable to updating KYC. Please try again later"
+          },
+          "read": {
+            "success": "KYC Successfully Retrieved",
+            "error": "Unable to retrieve KYC"
+          }
         },
         "bnplBundle": {
-          "available": {"success": "", "notFound": "", "error": ""},
-          "create": {"success": "", "error": ""},
-          "update": {"success": "", "error": "", "notFound": ""},
-          "list": {"success": "", "error": ""},
-          "read": {"success": "", "error": ""}
+          "available": {
+            "success": "Bundle Successfully Retrieved",
+            "notFound": "Unable to retrieve Bundle. Please try again later",
+            "error": "Unable to retrieve Bundle. Please try again later"
+          },
+          "create": {
+            "success": "Bundle Successfully Created",
+            "error": "Unable to create Bundle. Please try again later"
+          },
+          "update": {
+            "success": "Bundle Successfully Updated",
+            "error": "Unable to updating Bundle. Please try again later",
+            "notFound": "Bundle not found"
+          },
+          "list": {
+            "success": "Bundles Successfully Retrieved",
+            "error": "Unable to retrieve Bundles"
+          },
+          "read": {
+            "success": "Bundle Successfully Retrieved",
+            "error": "Unable to retrieve Bundle."
+          }
         },
         "bnplCharge": {
-          "create": {"success": "", "error": ""},
-          "update": {"success": "", "error": ""},
-          "list": {"success": "", "error": ""},
-          "template": {"success": "", "error": ""},
-          "read": {"error": "", "success": ""}
+          "create": {
+            "success": "Charge Successfully Created",
+            "error": "Unable to create Charge. Please try again later"
+          },
+          "update": {
+            "success": "Charge Successfully Updated",
+            "error": "Unable to update Charge. Please try again later"
+          },
+          "list": {
+            "success": "Charges Successfully Retrieved",
+            "error": "Unable to retrieve Charges"
+          },
+          "template": {
+            "success": "Charge Template Successfully Retrieved",
+            "error": "Unable to retrieve Charge Template"
+          },
+          "read": {
+            "error": "Unable to retrieve Charge",
+            "success": "Charge Successfully Retrieved"
+          }
         },
         "bnplProduct": {
-          "create": {"success": "", "error": ""},
-          "update": {"success": "", "error": ""},
-          "list": {"success": "", "error": ""},
-          "template": {"success": "", "error": ""},
-          "read": {"success": "", "error": ""}
+          "create": {
+            "success": "Product Successfully Created",
+            "error": "Unable to create Product. Please try again later"
+          },
+          "update": {
+            "success": "Product Successfully Updated",
+            "error": "Unable to updating Product. Please try again later"
+          },
+          "list": {
+            "success": "Products Successfully Retrieved",
+            "error": "Unable to retrieve Products"
+          },
+          "template": {
+            "success": "Product Template Successfully Retrieved",
+            "error": "Unable to retrieve Product Template."
+          },
+          "read": {
+            "success": "Product Successfully Retrieved",
+            "error": "Unable to retrieve Product"
+          }
         },
         "disbursementProvider": {"list": {"success": ""}},
         "disbursementMethod": {
@@ -1800,8 +1862,14 @@
           "description": "Toa maoni yoyote hapa"
         },
         "language": {"title": "Lugha", "description": "Chagua Lugha yako"},
-        "support": {"title": "", "description": ""},
-        "kyc_settings": {"title": "", "description": ""}
+        "support": {
+          "title": "Contact Support",
+          "description": "Ask a question or leave a message"
+        },
+        "kyc_settings": {
+          "title": "KYC Settings",
+          "description": "Fill your KYC information"
+        }
       },
       "logout": {
         "logout_data_verification_text": "Kuhakikisha data yako iliyohifadhiwa",
@@ -2017,7 +2085,7 @@
       "bnpl_drawdown_item": "Nunua sasa lipa uchoraji baadaye wa ** {{amount}} ** hadi ** {{customer}} **",
       "bnpl_repayment_item": "Nunua sasa ulipe ulipaji wa baadaye wa ** {{amount}} ** kutoka kwa ** {{customer}} **",
       "no_decimals": "MPESA hairuhusu malipo ya desimali",
-      "withdraw_maximum_error": ""
+      "withdraw_maximum_error": "Maximum amount per withdrawal is {{amount}}"
     },
     "drawdown": {
       "title": "Kuchora",
@@ -2187,32 +2255,43 @@
     "copied": "Imenakiliwa",
     "submit": "Wasilisha",
     "withdrawal_pin": {
-      "subHeading": "",
-      "change_transaction_pin": {"heading": ""},
-      "create_transaction_pin": {"heading": ""},
+      "subHeading": "Shughuli zote ni salama, salama na papo hapo",
+      "change_transaction_pin": {
+        "heading": "Ingiza Siri ya Manunuzi ya zamani",
+        "title": ""
+      },
+      "create_transaction_pin": {
+        "heading": "Weka PIN ya tarakimu 4 kwa shughuli zako zote"
+      },
       "enter_transaction_pin": {"heading": "", "page_title": ""},
-      "enter_new_transaction_pin": "",
-      "not_set_transaction_pin": "",
-      "not_set_transaction_pin_text": "",
-      "security_settings": "",
-      "not_set_transaction_pin_button": "",
-      "recover_transaction_pin": {"page_title": "", "placeholder": ""},
-      "transaction_pin_caption": "",
+      "not_set_transaction_pin": "Weka pini ya Ununuzi",
+      "not_set_transaction_pin_text": "Weka pini ya Ununuzi kabla ya kujitoa",
+      "security_settings": "mipangilio ya usalama",
+      "not_set_transaction_pin_button": "Nenda kwenye Mipangilio ya Usalama",
+      "recover_transaction_pin": {
+        "page_title": "Maswali ya usalama",
+        "placeholder": "Ingiza jibu la swali hapo juu hapa"
+      },
+      "transaction_pin_caption": "Tazama na usasishe maelezo yako ya kibinafsi",
       "security_options": {
-        "set_transaction_pin_title": "",
-        "change_transaction_pin_title": "",
-        "recover_transaction_pin_title": ""
+        "set_transaction_pin_title": "Weka PIN ya Ununuzi",
+        "change_transaction_pin_title": "Badilisha PIN ya Ununuzi",
+        "recover_transaction_pin_title": "Rejesha PIN ya Ununuzi"
       },
       "security_questions": {
-        "page_title": "",
-        "question_label": "",
-        "question_placeholder": "",
-        "answer_label": "",
-        "answer_placeholder": ""
+        "page_title": "MIPANGO YA USALAMA",
+        "question_label": "Weka swali la usalama",
+        "question_placeholder": "mfano jina la mnyama wako wa kwanza",
+        "answer_label": "Weka jibu lako la usalama",
+        "answer_placeholder": "Ingiza jibu la swali hapo juu hapa"
       },
-      "success_message": "",
-      "confirm_transaction_pin_heading": "",
-      "enter_transaction_pin_title": ""
+      "success_message": "PIN yako ya shughuli imewekwa kwa mafanikio",
+      "confirm_transaction_pin_heading": "Thibitisha PIN",
+      "confirm_transaction_pin_title": "Ingiza PIN ya UCHUKUZI",
+      "transaction_pin": "",
+      "enter_new_transaction_pin": "",
+      "enter_transaction_pin_title": "",
+      "error_message": ""
     }
   },
   "ha": {
@@ -2409,9 +2488,9 @@
             "userNotFound": "Angaza samo amfani"
           },
           "updateLimit": {
-            "success": "",
-            "error": "",
-            "notFound": "",
+            "success": "BNPL Limit updated successfully",
+            "error": "An active BNPL does not exist for this user",
+            "notFound": "Unable to update BNPL limit for user",
             "userNotFound": "Angaza samo amfani"
           }
         },
@@ -2423,7 +2502,7 @@
             "error": "mun gaza aiwatar d drawdown, a daure a sake gwadawa ko a nememu ta manhajar shara ",
             "success": "An zabi drawdown cikin nasara",
             "duplicate": "Wannan yana kama da ma'amala biyu. Da fatan za a jira minti 2 don sake gwadawa, idan wannan ba kuskure bane.",
-            "bundleNotFound": ""
+            "bundleNotFound": "BNPL Bundle has not been approved for you"
           },
           "common": {
             "drawdownNotFound": "",
@@ -2451,30 +2530,86 @@
         },
         "validationError": "",
         "bnplKyc": {
-          "create": {"success": "", "error": ""},
-          "update": {"success": "", "error": ""},
-          "read": {"success": "", "error": ""}
+          "create": {
+            "success": "KYC Successfully Submitted",
+            "error": "Unable to submit KYC. Please try again later"
+          },
+          "update": {
+            "success": "KYC Successfully Updated",
+            "error": "Unable to updating KYC. Please try again later"
+          },
+          "read": {
+            "success": "KYC Successfully Retrieved",
+            "error": "Unable to retrieve KYC"
+          }
         },
         "bnplBundle": {
-          "available": {"success": "", "notFound": "", "error": ""},
-          "create": {"success": "", "error": ""},
-          "update": {"success": "", "error": "", "notFound": ""},
-          "list": {"success": "", "error": ""},
-          "read": {"success": "", "error": ""}
+          "available": {
+            "success": "Bundle Successfully Retrieved",
+            "notFound": "Unable to retrieve Bundle. Please try again later",
+            "error": "Unable to retrieve Bundle. Please try again later"
+          },
+          "create": {
+            "success": "Bundle Successfully Created",
+            "error": "Unable to create Bundle. Please try again later"
+          },
+          "update": {
+            "success": "Bundle Successfully Updated",
+            "error": "Unable to updating Bundle. Please try again later",
+            "notFound": "Bundle not found"
+          },
+          "list": {
+            "success": "Bundles Successfully Retrieved",
+            "error": "Unable to retrieve Bundles"
+          },
+          "read": {
+            "success": "Bundle Successfully Retrieved",
+            "error": "Unable to retrieve Bundle."
+          }
         },
         "bnplCharge": {
-          "create": {"success": "", "error": ""},
-          "update": {"success": "", "error": ""},
-          "list": {"success": "", "error": ""},
-          "template": {"success": "", "error": ""},
-          "read": {"error": "", "success": ""}
+          "create": {
+            "success": "Charge Successfully Created",
+            "error": "Unable to create Charge. Please try again later"
+          },
+          "update": {
+            "success": "Charge Successfully Updated",
+            "error": "Unable to update Charge. Please try again later"
+          },
+          "list": {
+            "success": "Charges Successfully Retrieved",
+            "error": "Unable to retrieve Charges"
+          },
+          "template": {
+            "success": "Charge Template Successfully Retrieved",
+            "error": "Unable to retrieve Charge Template"
+          },
+          "read": {
+            "error": "Unable to retrieve Charge",
+            "success": "Charge Successfully Retrieved"
+          }
         },
         "bnplProduct": {
-          "create": {"success": "", "error": ""},
-          "update": {"success": "", "error": ""},
-          "list": {"success": "", "error": ""},
-          "template": {"success": "", "error": ""},
-          "read": {"success": "", "error": ""}
+          "create": {
+            "success": "Product Successfully Created",
+            "error": "Unable to create Product. Please try again later"
+          },
+          "update": {
+            "success": "Product Successfully Updated",
+            "error": "Unable to updating Product. Please try again later"
+          },
+          "list": {
+            "success": "Products Successfully Retrieved",
+            "error": "Unable to retrieve Products"
+          },
+          "template": {
+            "success": "Product Template Successfully Retrieved",
+            "error": "Unable to retrieve Product Template."
+          },
+          "read": {
+            "success": "Product Successfully Retrieved",
+            "error": "Unable to retrieve Product"
+          }
         },
         "disbursementProvider": {"list": {"success": ""}},
         "disbursementMethod": {
@@ -2853,8 +2988,14 @@
           "description": "Sanya duk wata amsa anan"
         },
         "language": {"title": "Yare", "description": "Zabi Yare"},
-        "support": {"title": "", "description": ""},
-        "kyc_settings": {"title": "", "description": ""}
+        "support": {
+          "title": "Contact Support",
+          "description": "Ask a question or leave a message"
+        },
+        "kyc_settings": {
+          "title": "KYC Settings",
+          "description": "Fill your KYC information"
+        }
       },
       "logout": {
         "logout_data_verification_text": "Tabbatarwa da Adanin bayananku",
@@ -3068,7 +3209,7 @@
       "bnpl_drawdown_item": "Sayi yanzu biya daga gaba ** {{amount}} ** zuwa ** {{customer}} **",
       "bnpl_repayment_item": "Sayi yanzu biya da aka biya nan gaba na ** {{amount}} ** zuwa ** {{customer}} **",
       "no_decimals": "MPESA baya bada izinin biyan kuɗin goma",
-      "withdraw_maximum_error": ""
+      "withdraw_maximum_error": "Maximum amount per withdrawal is {{amount}}"
     },
     "drawdown": {
       "title": "Drawdown",
@@ -3238,32 +3379,43 @@
     "copied": "An kwafa",
     "submit": "Tura",
     "withdrawal_pin": {
-      "subHeading": "",
-      "change_transaction_pin": {"heading": ""},
-      "create_transaction_pin": {"heading": ""},
+      "subHeading": "Gbogbo awọn iṣowo jẹ ailewu, aabo ati lẹsẹkẹsẹ",
+      "change_transaction_pin": {
+        "heading": "Tẹ Pin Idunadura atijọ",
+        "title": ""
+      },
+      "create_transaction_pin": {
+        "heading": "Ṣeto PIN oni-nọmba mẹrin 4 fun gbogbo awọn iṣowo rẹ"
+      },
       "enter_transaction_pin": {"heading": "", "page_title": ""},
-      "enter_new_transaction_pin": "",
-      "not_set_transaction_pin": "",
-      "not_set_transaction_pin_text": "",
-      "security_settings": "",
-      "not_set_transaction_pin_button": "",
-      "recover_transaction_pin": {"page_title": "", "placeholder": ""},
-      "transaction_pin_caption": "",
+      "not_set_transaction_pin": "Ṣeto PIN kan Idunadura",
+      "not_set_transaction_pin_text": "Ṣeto pin pin Idunadura ṣaaju ṣiṣe yiyọ kuro",
+      "security_settings": "awọn eto aabo",
+      "not_set_transaction_pin_button": "\nLọ si Awọn Eto Aabo",
+      "recover_transaction_pin": {
+        "page_title": "Awọn ibeere aabo",
+        "placeholder": "Tẹ idahun si ibeere ti o wa loke nibi"
+      },
+      "transaction_pin_caption": "Wo ki o ṣe imudojuiwọn alaye ti ara ẹni rẹ",
       "security_options": {
-        "set_transaction_pin_title": "",
-        "change_transaction_pin_title": "",
-        "recover_transaction_pin_title": ""
+        "set_transaction_pin_title": "Ṣeto PIN Iṣowo",
+        "change_transaction_pin_title": "Yi PIN Iṣowo pada",
+        "recover_transaction_pin_title": "Pada Iṣowo PIN"
       },
       "security_questions": {
-        "page_title": "",
-        "question_label": "",
-        "question_placeholder": "",
-        "answer_label": "",
-        "answer_placeholder": ""
+        "page_title": "AWỌN NIPA AABO",
+        "question_label": "Ṣeto ibeere aabo kan",
+        "question_placeholder": "fun apẹẹrẹ Orukọ ti ohun ọsin rẹ akọkọ",
+        "answer_label": "Ṣeto idahun aabo rẹ",
+        "answer_placeholder": "Tẹ idahun si ibeere ti o wa loke nibi"
       },
-      "success_message": "",
-      "confirm_transaction_pin_heading": "",
-      "enter_transaction_pin_title": ""
+      "success_message": "PIN idunadura rẹ ti ṣeto ni aṣeyọri",
+      "confirm_transaction_pin_heading": "Jẹrisi PIN",
+      "confirm_transaction_pin_title": "WỌN PIN TRANSACTION",
+      "transaction_pin": "",
+      "enter_new_transaction_pin": "",
+      "enter_transaction_pin_title": "",
+      "error_message": ""
     }
   },
   "yo": {
@@ -4056,10 +4208,9 @@
     "submit": "",
     "withdrawal_pin": {
       "subHeading": "",
-      "change_transaction_pin": {"heading": ""},
+      "change_transaction_pin": {"heading": "", "title": ""},
       "create_transaction_pin": {"heading": ""},
       "enter_transaction_pin": {"heading": "", "page_title": ""},
-      "enter_new_transaction_pin": "",
       "not_set_transaction_pin": "",
       "not_set_transaction_pin_text": "",
       "security_settings": "",
@@ -4080,7 +4231,11 @@
       },
       "success_message": "",
       "confirm_transaction_pin_heading": "",
-      "enter_transaction_pin_title": ""
+      "confirm_transaction_pin_title": "",
+      "transaction_pin": "",
+      "enter_new_transaction_pin": "",
+      "enter_transaction_pin_title": "",
+      "error_message": ""
     }
   },
   "fr": {
@@ -4873,10 +5028,9 @@
     "submit": "",
     "withdrawal_pin": {
       "subHeading": "",
-      "change_transaction_pin": {"heading": ""},
+      "change_transaction_pin": {"heading": "", "title": ""},
       "create_transaction_pin": {"heading": ""},
       "enter_transaction_pin": {"heading": "", "page_title": ""},
-      "enter_new_transaction_pin": "",
       "not_set_transaction_pin": "",
       "not_set_transaction_pin_text": "",
       "security_settings": "",
@@ -4897,7 +5051,11 @@
       },
       "success_message": "",
       "confirm_transaction_pin_heading": "",
-      "enter_transaction_pin_title": ""
+      "confirm_transaction_pin_title": "",
+      "transaction_pin": "",
+      "enter_new_transaction_pin": "",
+      "enter_transaction_pin_title": "",
+      "error_message": ""
     }
   },
   "ar": {
@@ -5690,10 +5848,9 @@
     "submit": "",
     "withdrawal_pin": {
       "subHeading": "",
-      "change_transaction_pin": {"heading": ""},
+      "change_transaction_pin": {"heading": "", "title": ""},
       "create_transaction_pin": {"heading": ""},
       "enter_transaction_pin": {"heading": "", "page_title": ""},
-      "enter_new_transaction_pin": "",
       "not_set_transaction_pin": "",
       "not_set_transaction_pin_text": "",
       "security_settings": "",
@@ -5714,7 +5871,11 @@
       },
       "success_message": "",
       "confirm_transaction_pin_heading": "",
-      "enter_transaction_pin_title": ""
+      "confirm_transaction_pin_title": "",
+      "transaction_pin": "",
+      "enter_new_transaction_pin": "",
+      "enter_transaction_pin_title": "",
+      "error_message": ""
     }
   }
 }

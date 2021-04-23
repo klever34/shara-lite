@@ -25,7 +25,10 @@ export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
   }, [navigation]);
 
   const changeTransactionPin = useCallback(() => {
-    navigation.navigate('VerifyTransactionPin', {fromSecuritySettings});
+    navigation.navigate('VerifyTransactionPin', {
+      fromSecuritySettings,
+      heading: strings('withdrawal_pin.enter_new_transaction_pin'),
+    });
   }, [fromSecuritySettings, navigation]);
 
   const newPin = !pinSet
