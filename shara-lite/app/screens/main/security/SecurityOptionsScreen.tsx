@@ -31,8 +31,6 @@ export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
     });
   }, [fromSecuritySettings, navigation]);
 
-  console.log('va', pinSet);
-
   const newPin = !pinSet
     ? {
         leftSection: {
