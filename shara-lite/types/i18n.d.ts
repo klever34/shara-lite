@@ -855,6 +855,45 @@ export interface Strings {
   send_via: string;
   push_payment: string;
   you_get: string;
+
+  withdrawal_pin: {
+    subHeading: string;
+    change_transaction_pin: {
+      heading: string;
+    };
+    create_transaction_pin: {
+      heading: string;
+    };
+    enter_transaction_pin: {
+      heading: string;
+      page_title: string;
+    };
+    enter_new_transaction_pin: string;
+    not_set_transaction_pin: string;
+    not_set_transaction_pin_text: string;
+    security_settings: string;
+    not_set_transaction_pin_button: string;
+    recover_transaction_pin: {
+      page_title: string;
+      placeholder: string;
+    };
+    transaction_pin_caption: string;
+    security_options: {
+      set_transaction_pin_title: string;
+      change_transaction_pin_title: string;
+      recover_transaction_pin_title: string;
+    };
+    security_questions: {
+      page_title: string;
+      question_label: string;
+      question_placeholder: string;
+      answer_label: string;
+      answer_placeholder: string;
+    };
+    success_message: string;
+    confirm_transaction_pin_heading: string;
+    enter_transaction_pin_title: string;
+  };
 }
 
 interface PluralizedString {

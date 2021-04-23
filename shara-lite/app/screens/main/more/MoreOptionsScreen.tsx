@@ -1,4 +1,4 @@
-import {Image, SecureEmblem, Text} from '@/components';
+import {Button, Image, SecureEmblem, Text} from '@/components';
 import {Icon} from '@/components/Icon';
 import {TitleContainer} from '@/components/TitleContainer';
 import Touchable from '@/components/Touchable';
@@ -35,6 +35,7 @@ import {version} from '../../../../package.json';
 import {inviteImageBase64String} from './inviteImageBase64String';
 import {RootStackParamList} from '@/index';
 import {WebView} from 'react-native-webview';
+import {NotSetTransactionPinPage} from '../security/NotSetTransactionPinModal';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -66,6 +67,8 @@ export const MoreOptionsScreen = withModal(
     }, [navigation]);
     const user = getAuthService().getUser();
     const onPaymentSettings = useCallback(async () => {
+      //@ts-ignore
+      const res = await getApiService().transactionPin(user.id);
       const idValue = await getStorageService().getItem('bvn');
       if (!user?.is_identity_verified) {
         const bvnVerificationEnabled = getRemoteConfigService()
@@ -77,9 +80,15 @@ export const MoreOptionsScreen = withModal(
           navigation.navigate('PaymentSettings');
         }
       } else {
-        navigation.navigate('VerifyTransactionPin');
+        if (res.data === true) {
+          navigation.navigate('VerifyTransactionPin');
+        } else {
+          openModal('full', {
+            renderContent: () => <NotSetTransactionPinPage />,
+          });
+        }
       }
-    }, [navigation, user]);
+    }, [navigation, openModal, user]);
 
     const {reloadApp} = useContext(AppContext);
 

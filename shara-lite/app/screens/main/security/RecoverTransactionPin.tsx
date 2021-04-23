@@ -1,11 +1,13 @@
 import {AppInput, Button} from '@/components';
 import {Page} from '@/components/Page';
-import {getApiService, getAuthService} from '@/services';
+import {getApiService, getAuthService, getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import React, {useCallback, useState} from 'react';
 import {Alert, Text, View} from 'react-native';
 import {User} from 'types/app';
+
+const strings = getI18nService().strings;
 
 export const RecoverTransactionPin = (props: any) => {
   const {
@@ -30,18 +32,18 @@ export const RecoverTransactionPin = (props: any) => {
       const payload = {answer, user_id: user.id};
       await apiService.verifySecurityQuestions(payload);
       navigation.navigate('ChangeTransactionPin', {
-        heading: 'Enter your new tranaction PIN',
+        heading: strings('withdrawal_pin.enter_new_transaction_pin'),
       });
     } catch (error) {
       setLoading(false);
-      Alert.alert('error', error.message);
+      Alert.alert(strings('error'), error.message);
     }
   }, [answer, navigation, user.id]);
 
   return (
     <Page
       header={{
-        title: 'Security question',
+        title: strings('withdrawal_pin.recover_transaction_pin.page_title'),
         iconLeft: {},
         style: applyStyles('py-8'),
       }}
@@ -53,11 +55,13 @@ export const RecoverTransactionPin = (props: any) => {
         <AppInput
           value={answer}
           onChangeText={handleAnswerChange}
-          placeholder={'Enter the answer to the above question here'}
+          placeholder={strings(
+            'withdrawal_pin.security_questions.answer_placeholder',
+          )}
         />
         <View style={applyStyles('mt-32 items-end')}>
           <Button
-            title={'save'}
+            title={strings('save')}
             onPress={handleSubmit}
             style={applyStyles({width: '45%'})}
           />

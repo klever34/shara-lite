@@ -6,7 +6,9 @@ import {applyStyles, colors} from '@/styles';
 import {Page} from '@/components/Page';
 import {RouteProp} from '@react-navigation/native';
 import {SecurityStackParamList} from '.';
-import {getApiService, getAuthService} from '@/services';
+import {getApiService, getAuthService, getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type SecurityOptionsScreenProps = {
   route: RouteProp<SecurityStackParamList, 'SecurityOptions'>;
@@ -29,15 +31,19 @@ export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
   const newPin = !pinSet
     ? {
         leftSection: {
-          title: 'Set Transaction PIN',
-          caption: 'View and update your personal information',
+          title: strings(
+            'withdrawal_pin.security_options.set_transaction_pin_title',
+          ),
+          caption: strings('withdrawal_pin.transaction_pin_caption'),
         },
         onPress: setTransactionPin,
       }
     : {
         leftSection: {
-          title: 'Change Transaction PIN',
-          caption: 'View and update your personal information',
+          title: strings(
+            'withdrawal_pin.security_options.change_transaction_pin_title',
+          ),
+          caption: strings('withdrawal_pin.transaction_pin_caption'),
         },
         onPress: changeTransactionPin,
       };
@@ -47,8 +53,10 @@ export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
       newPin,
       {
         leftSection: {
-          title: 'Recover PIN',
-          caption: 'View and update your personal information',
+          title: strings(
+            'withdrawal_pin.security_options.recover_transaction_pin_title',
+          ),
+          caption: strings('withdrawal_pin.transaction_pin_caption'),
         },
         onPress: async () => {
           if (!user) {
@@ -67,7 +75,7 @@ export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
     <SafeAreaView style={applyStyles('flex-1')}>
       <Page
         header={{
-          title: 'SECURITY',
+          title: strings('withdrawal_pin.security_settings'),
           style: applyStyles('py-8 mt-0'),
           iconLeft: {},
         }}

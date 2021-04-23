@@ -999,6 +999,45 @@ const en: Strings = {
   send_via: 'Send via',
   push_payment: 'Push payment',
   you_get: 'You get',
+  withdrawal_pin: {
+    subHeading: 'All transactions are safe, secure and instant.',
+    change_transaction_pin: {
+      heading: 'Enter old Transaction Pin',
+    },
+    create_transaction_pin: {
+      heading: 'Set 4-digit PIN for all your transactions',
+    },
+    enter_transaction_pin: {
+      heading: 'Enter Transaction PIN',
+      page_title: 'Set TRANSACTION PIN',
+    },
+    enter_new_transaction_pin: 'Enter your new transaction PIN',
+    not_set_transaction_pin: 'Set a Transaction pin',
+    not_set_transaction_pin_text:
+      'Set a Transaction pin before making a withdrawal',
+    security_settings: 'security settings',
+    not_set_transaction_pin_button: 'Go to Security Settings',
+    recover_transaction_pin: {
+      page_title: 'Security questions',
+      placeholder: 'Enter the answer to the above question here',
+    },
+    transaction_pin_caption: 'View and update your personal information',
+    security_options: {
+      set_transaction_pin_title: 'Set Transaction PIN',
+      change_transaction_pin_title: 'Change Transaction PIN',
+      recover_transaction_pin_title: 'Recover Transaction PIN',
+    },
+    security_questions: {
+      page_title: 'SECURITY SETTINGS',
+      question_label: 'Set a security question',
+      question_placeholder: 'e.g Name of your first pet',
+      answer_label: 'Set your security answer',
+      answer_placeholder: 'Enter the answer to the above question here',
+    },
+    success_message: 'Your transaction PIN has been set successfully',
+    confirm_transaction_pin_heading: 'Confirm PIN',
+    enter_transaction_pin_title: 'ENTER TRANSACTION PIN',
+  },
 };
 
 export default en;

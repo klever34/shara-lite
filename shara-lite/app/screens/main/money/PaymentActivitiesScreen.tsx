@@ -119,7 +119,7 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
       });
     } else {
       openModal('bottom-half', {
-        renderContent: () => <NotSetTransactionPinModal onClose={closeModal} />,
+        renderContent: () => <NotSetTransactionPinModal />,
       });
     }
   }, [closeModal, openModal]);

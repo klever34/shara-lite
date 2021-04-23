@@ -1,6 +1,8 @@
-import {getApiService, getAuthService} from '@/services';
+import {getApiService, getAuthService, getI18nService} from '@/services';
 import React, {useCallback} from 'react';
 import {TransactionPin} from './TransactionPin';
+
+const strings = getI18nService().strings;
 
 export const CreateTransactionPin = () => {
   const user = getAuthService().getUser();
@@ -23,8 +25,8 @@ export const CreateTransactionPin = () => {
     <TransactionPin
       onSubmit={handleSubmit}
       enterProps={{
-        heading: 'Set 4-digit PIN for all your transactions',
-        subHeading: 'All transactions are safe, secure and instant.',
+        heading: strings('withdrawal_pin.create_transaction_pin.heading'),
+        subHeading: strings('withdrawal_pin.subHeading'),
       }}
     />
   );

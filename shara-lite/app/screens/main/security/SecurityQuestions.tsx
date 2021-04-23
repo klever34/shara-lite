@@ -1,9 +1,12 @@
 import {AppInput, Button} from '@/components';
 import {Page} from '@/components/Page';
+import {getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import React, {useCallback, useState} from 'react';
 import {Alert, View} from 'react-native';
+
+const strings = getI18nService().strings;
 
 export const SecurityQuestions = () => {
   const [question, setQuestion] = useState('');
@@ -25,14 +28,14 @@ export const SecurityQuestions = () => {
       navigation.navigate('VerifyTransactionPin', {question, answer});
     } catch (error) {
       setLoading(false);
-      Alert.alert('error', error.message);
+      Alert.alert(strings('error'), error.message);
     }
   }, [answer, navigation, question]);
 
   return (
     <Page
       header={{
-        title: 'Security question',
+        title: strings('withdrawal_pin.security_questions.page_title'),
         iconLeft: {},
         style: applyStyles('py-8'),
       }}
@@ -42,14 +45,18 @@ export const SecurityQuestions = () => {
           value={question}
           onChangeText={handleQuestionChange}
           style={applyStyles('mb-16')}
-          label={'Set a security question'}
-          placeholder={'e.g Name of your first pet'}
+          label={strings('withdrawal_pin.security_questions.question_label')}
+          placeholder={strings(
+            'withdrawal_pin.security_questions.answer_placeholder',
+          )}
         />
         <AppInput
           value={answer}
           onChangeText={handleAnswerChange}
-          label={'Set your securtity answer'}
-          placeholder={'Enter the answer to the above question here'}
+          label={strings('withdrawal_pin.security_questions.answer_label')}
+          placeholder={strings(
+            'withdrawal_pin.security_questions.answer_placeholder',
+          )}
         />
         <View style={applyStyles('mt-32 items-end')}>
           <Button

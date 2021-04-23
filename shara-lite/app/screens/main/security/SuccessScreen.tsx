@@ -2,7 +2,9 @@ import React from 'react';
 import {Text, View} from 'react-native';
 import LottieView from 'lottie-react-native';
 import {applyStyles} from '@/styles';
+import {getI18nService} from '@/services';
 
+const strings = getI18nService().strings;
 export const SuccessScreen = ({onDone, renderButtons}: any) => {
   return (
     <>
@@ -24,7 +26,7 @@ export const SuccessScreen = ({onDone, renderButtons}: any) => {
               width: '60%',
             },
           )}>
-          Your transaction PIN has been set succesfully
+          {strings('withdrawal_pin.success_message')}
         </Text>
       </View>
 

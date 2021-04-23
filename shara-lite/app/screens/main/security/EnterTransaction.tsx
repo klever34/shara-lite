@@ -1,6 +1,6 @@
 import Icon from '@/components/Icon';
 import {Page} from '@/components/Page';
-import {getApiService, getAuthService} from '@/services';
+import {getApiService, getAuthService, getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
@@ -10,6 +10,8 @@ import {User} from 'types/app';
 import {SuccessScreen} from './SuccessScreen';
 import {withModal} from '@/helpers/hocs';
 import {Button} from '@/components';
+
+const strings = getI18nService().strings;
 
 export const EnterTransaction = withModal(
   ({route: {params}, closeModal, openModal}: any) => {
@@ -52,7 +54,7 @@ export const EnterTransaction = withModal(
                         'mt-64 pt-64 flex-row items-center justify-around',
                       )}>
                       <Button
-                        title={'done'}
+                        title={strings('done')}
                         style={applyStyles('mt-32', {width: '45%'})}
                         onPress={() => {
                           closeModal();
@@ -71,11 +73,29 @@ export const EnterTransaction = withModal(
           }
         } catch (error) {
           setLoading(false);
-          Alert.alert('error', error.message);
+          Alert.alert(strings('error'), error.message);
         }
       },
       [closeModal, navigation, openModal, params, user.id],
     );
+
+    // const handleLoading = useCallback(() => {
+    //   // if (loading) {
+    //   const closeLoadingModal = openModal('loading', {
+    //     text: 'Loading ...',
+    //   });
+
+    //   closeLoadingModal();
+    //   // }
+    // }, [openModal]);
+
+    // const loadingState = useCallback(
+    //   (pin) => {
+    //     handleLoading();
+    //     handleSubmit(pin);
+    //   },
+    //   [handleLoading, handleSubmit],
+    // );
 
     return (
       <Page
@@ -90,7 +110,7 @@ export const EnterTransaction = withModal(
             style={applyStyles(
               'text-center text-black text-lg pt-16 px-8 mt-32',
             )}>
-            Enter Tranaction PIN
+            {strings('withdrawal_pin.enter_transaction_pin.heading')}
           </Text>
           <View style={applyStyles('flex-row pt-8')}>
             <Icon
@@ -101,9 +121,14 @@ export const EnterTransaction = withModal(
             />
             <Text
               style={applyStyles('text-center text-gray-100 text-base px-6')}>
-              All transactions are safe, secure and instant.
+              {strings('withdrawal_pin.subHeading')}
             </Text>
           </View>
+          {/* {loading && (
+            <View style={styles.customerListHeader}>
+              <ActivityIndicator size={24} color={colors.primary} />
+            </View>
+          )} */}
           <OTPInputView
             code={pin}
             pinCount={4}

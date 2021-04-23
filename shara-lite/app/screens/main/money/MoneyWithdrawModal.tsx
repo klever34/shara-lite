@@ -141,7 +141,7 @@ const ConfirmationModal = ({children}: ConfirmationModalProps) => {
   return (
     <View style={as('')}>
       <Header
-        title={'ENTER TRANSACTION PIN'}
+        title={strings('withdrawal_pin.enter_transaction_pin_title')}
         style={as('border-b-0 pt-12 pb-0')}
       />
       <View style={as('px-24 py-12 items-center')}>

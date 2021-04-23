@@ -8,7 +8,9 @@ import {SuccessScreen} from './SuccessScreen';
 import {withModal} from '@/helpers/hocs';
 import {useAppNavigation} from '@/services/navigation';
 import {Button} from '@/components';
+import {getI18nService} from '@/services';
 
+const strings = getI18nService().strings;
 type ConfirmTransactionPinProps = {
   handleSubmit?: (code: string) => void;
   heading?: any;
@@ -47,7 +49,7 @@ export const TransactionPin = withModal(
                       'mt-64 pt-64 flex-row items-center justify-around',
                     )}>
                     <Button
-                      title={'done'}
+                      title={strings('done')}
                       variantColor="transparent"
                       style={applyStyles('mt-32', {width: '45%'})}
                       onPress={() => {
@@ -56,7 +58,9 @@ export const TransactionPin = withModal(
                       }}
                     />
                     <Button
-                      title={'Security question'}
+                      title={strings(
+                        'withdrawal_pin.recover_transaction_pin.page_title',
+                      )}
                       style={applyStyles('mt-32', {width: '45%'})}
                       onPress={() => {
                         navigation.navigate('SecurityQuestions');
@@ -69,7 +73,7 @@ export const TransactionPin = withModal(
           });
         } catch (error) {
           setLoading(false);
-          Alert.alert('error', error.message);
+          Alert.alert(strings('error'), error.message);
         }
       },
       [closeModal, navigation, onSubmit, openModal, pin],
@@ -79,7 +83,7 @@ export const TransactionPin = withModal(
       <Page
         header={{
           iconLeft: {},
-          title: 'SECURITY',
+          title: strings('withdrawal_pin.enter_transaction_pin.page_title'),
           style: applyStyles('py-8'),
         }}
         style={applyStyles('px-0 py-32')}>
@@ -87,15 +91,15 @@ export const TransactionPin = withModal(
           <EnterTransactionPin
             pin={pin}
             handlePinChange={handlePinChange}
-            heading={'Set 4-digit PIN for all your transactions'}
-            subHeading={'All transactions are safe, secure and instant.'}
+            heading={strings('withdrawal_pin.create_transaction_pin.heading')}
+            subHeading={strings('withdrawal_pin.subHeading')}
             handleSubmit={handleEnterPinSubmit}
             {...enterProps}
           />
         ) : (
           <EnterTransactionPin
-            heading={'Confirm PIN'}
-            subHeading={'All transactions are safe, secure and instant.'}
+            heading={strings('withdrawal_pin.confirm_transaction_pin_heading')}
+            subHeading={strings('withdrawal_pin.subHeading')}
             handleSubmit={handleSubmit}
             {...confirmProps}
           />
