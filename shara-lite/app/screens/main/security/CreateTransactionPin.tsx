@@ -23,6 +23,7 @@ export const CreateTransactionPin = () => {
 
   return (
     <TransactionPin
+      title={strings('withdrawal_pin.enter_transaction_pin.page_title')}
       onSubmit={handleSubmit}
       hideButton={true}
       enterProps={{
