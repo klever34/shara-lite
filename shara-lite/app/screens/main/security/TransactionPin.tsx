@@ -1,6 +1,6 @@
 import {Page} from '@/components/Page';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, Alert, Keyboard, Text, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {ActivityIndicator, Alert, Text, View} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import {Icon} from '@/components/Icon';
@@ -95,8 +95,10 @@ export const TransactionPin = withModal(
               />
             ),
           });
+          setPin('');
         } catch (error) {
           setLoading(false);
+          setPin('');
           Alert.alert(strings('alert.error'), error.message);
         }
       },

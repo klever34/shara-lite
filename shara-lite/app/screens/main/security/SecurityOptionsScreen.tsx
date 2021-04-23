@@ -31,6 +31,8 @@ export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
     });
   }, [fromSecuritySettings, navigation]);
 
+  console.log('va', pinSet);
+
   const newPin = !pinSet
     ? {
         leftSection: {
@@ -51,28 +53,27 @@ export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
         onPress: changeTransactionPin,
       };
 
+  const newPin2 = pinSet && {
+    leftSection: {
+      title: strings(
+        'withdrawal_pin.security_options.recover_transaction_pin_title',
+      ),
+      caption: strings('withdrawal_pin.transaction_pin_caption'),
+    },
+    onPress: async () => {
+      if (!user) {
+        return;
+      }
+      const {data: question} = await getApiService().getSecurityQuestions(
+        user.id,
+      );
+      navigation.navigate('RecoverTransactionPin', question);
+    },
+  };
+
   const securityOptions = useMemo(() => {
-    return [
-      newPin,
-      {
-        leftSection: {
-          title: strings(
-            'withdrawal_pin.security_options.recover_transaction_pin_title',
-          ),
-          caption: strings('withdrawal_pin.transaction_pin_caption'),
-        },
-        onPress: async () => {
-          if (!user) {
-            return;
-          }
-          const {data: question} = await getApiService().getSecurityQuestions(
-            user.id,
-          );
-          navigation.navigate('RecoverTransactionPin', question);
-        },
-      },
-    ];
-  }, [navigation, newPin, user]);
+    return [newPin, newPin2];
+  }, [newPin, newPin2]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
@@ -84,24 +85,19 @@ export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
         }}
         style={applyStyles('px-0 pt-0')}>
         <View style={applyStyles('mb-24')}>
-          {securityOptions.map((option, index) => {
-            return (
-              <TouchableActionItem
-                {...option}
-                key={`${index}`}
-                style={applyStyles(
-                  'border-t-1 border-gray-20 px-16',
-                  {
-                    borderTopWidth: 1,
-                    borderColor: colors['gray-20'],
-                  },
-                  index === securityOptions.length - 1 && {
+          {securityOptions.map(
+            (option, index) =>
+              option && (
+                <TouchableActionItem
+                  {...option}
+                  key={`${index}`}
+                  style={applyStyles('border-t-1 border-gray-20 px-16', {
                     borderBottomWidth: 1,
-                  },
-                )}
-              />
-            );
-          })}
+                    borderColor: colors['gray-20'],
+                  })}
+                />
+              ),
+          )}
         </View>
       </Page>
     </SafeAreaView>

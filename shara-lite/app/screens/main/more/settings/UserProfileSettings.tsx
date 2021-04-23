@@ -23,6 +23,8 @@ export const UserProfileSettings = () => {
 
   const user = authService.getUser();
 
+  console.log('here', user?.id);
+
   const navigation = useAppNavigation();
   const {firstname, lastname, email, mobile = '', country_code = ''} =
     user || {};
