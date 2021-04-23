@@ -98,7 +98,7 @@ export const TransactionPin = withModal(
           setPin('');
         } catch (error) {
           setLoading(false);
-          setPin('');
+          navigation.navigate('ChangeTransactionPin');
           Alert.alert(strings('alert.error'), error.message);
         }
       },
