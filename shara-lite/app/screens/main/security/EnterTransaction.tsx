@@ -22,7 +22,7 @@ export const EnterTransaction = withModal(
     let user = authService.getUser() as User;
     const navigation = useAppNavigation();
 
-    const heading = params.heading;
+    const heading = params && params.heading;
 
     const handlePinChange = useCallback((code) => {
       setPin(code);
