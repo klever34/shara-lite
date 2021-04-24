@@ -76,20 +76,26 @@ export const HomeScreen = () => {
     <View style={applyStyles('flex-1')}>
       <View
         style={applyStyles(
-          'flex-row py-16 bg-white relative items-center bg-primary',{
-            paddingTop: 50
-          }
+          'flex-row py-16 bg-white relative items-center bg-primary',
+          {
+            paddingTop: 50,
+          },
         )}>
         <Touchable onPress={() => navigation.navigate('BusinessSettings')}>
           <View style={applyStyles('flex-row items-center ml-16')}>
-            <Image
-              resizeMode={business.profile_image?.url ? undefined : 'contain'}
-              source={headerImageSource}
-              style={applyStyles('w-full rounded-24', {
-                width: applySpacing(24),
-                height: applySpacing(24),
-              })}
-            />
+            {/* switch the image tag with svg */}
+            {business.profile_image?.url ? (
+              <Image
+                resizeMode={business.profile_image?.url ? undefined : 'contain'}
+                source={{uri: business.profile_image?.url}}
+                style={applyStyles('w-full rounded-24', {
+                  width: applySpacing(24),
+                  height: applySpacing(24),
+                })}
+              />
+            ) : (
+              <SharaLogo width={32} height={32} />
+            )}
             <View style={applyStyles('pl-12')}>
               <Text
                 style={applyStyles(

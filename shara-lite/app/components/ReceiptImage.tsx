@@ -10,6 +10,7 @@ import {Image, ScrollView, View, ViewStyle} from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
 import {getI18nService} from '@/services';
+import SharaLogo from '@/assets/images/shara_logo_white.svg';
 
 const strings = getI18nService().strings;
 
@@ -43,7 +44,7 @@ export const ReceiptImage = memo((props: Props) => {
   const user = getAuthService().getUser();
   const businessInfo = getAuthService().getBusinessInfo();
   console.log({businessInfo});
-  
+
   const {callingCode} = useIPGeolocation();
   console.log({businessInfo});
 
@@ -84,7 +85,7 @@ export const ReceiptImage = memo((props: Props) => {
             backgroundColor: colors.white,
           })}>
           <View style={applyStyles('py-lg items-center justify-center')}>
-            {!!businessInfo?.profile_image?.url && (
+            {businessInfo?.profile_image?.url ? (
               <Image
                 onLoad={onImageLoad}
                 style={applyStyles('mb-4 items-center justify-center', {
@@ -92,9 +93,19 @@ export const ReceiptImage = memo((props: Props) => {
                   height: 80,
                   borderRadius: 16,
                   backgroundColor: colors['gray-20'],
+                  marginBottom: 15
                 })}
                 source={{uri: businessInfo?.profile_image?.url}}
               />
+            ) : (
+              <View
+                style={{
+                  backgroundColor: '#00CD99',
+                  paddingHorizontal: 10,
+                  marginBottom: 15,
+                }}>
+                <SharaLogo width={64} height={64} />
+              </View>
             )}
             {!!businessInfo.name && (
               <Text

@@ -26,7 +26,9 @@ import {MainStackParamList} from '..';
 import {version} from '../../../../package.json';
 import {inviteImageBase64String} from './inviteImageBase64String';
 import {RootStackParamList} from '@/index';
-import BANNER from '@/assets/images/invyt-banner.svg';
+import BANNER from '@/assets/images/invite-banner-new.svg';
+import SharaLogo from '@/assets/images/shara_logo_grey_2.svg';
+import EmblemGreen from '@/assets/images/emblem-green.svg';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -183,7 +185,7 @@ export const MoreOptionsScreen = withModal(
       const closeLoadingModal = openModal('loading', {
         text: strings('more.logout.logout_data_verification_text'),
       });
-      
+
       const {isSynced} = await hasAllRecordsBeenSynced();
       closeLoadingModal();
 
@@ -286,17 +288,17 @@ export const MoreOptionsScreen = withModal(
               })}
             </View>
             <View style={applyStyles('px-16')}>
-              <Touchable onPress={handleInviteFriends}>
+              <Touchable onPress={handleInviteFriends} style={{alignSelf: 'center', marginVertical: -70}}>
                 {/* <Image
                   resizeMode="center"
                   source={require('@/assets/images/invite-banner.png')}
                   style={applyStyles('mb-24', {width: '100%', height: 80})}
                 /> */}
-                <BANNER style={{width: 100, height: 200, alignSelf: 'center', marginBottom: 20}} />
-
+                <BANNER width={350} height={300} />
               </Touchable>
               <View style={applyStyles('center pb-24')}>
-                <SecureEmblem />
+                {/* <SecureEmblem /> */}
+                <EmblemGreen width={70} height={70} />
               </View>
             </View>
             <View style={applyStyles('flex-1 mx-32')}>
@@ -323,10 +325,11 @@ export const MoreOptionsScreen = withModal(
                 style={applyStyles('text-gray-50 text-xxs font-bold mb-16')}>
                 Version {version}
               </Text>
-              <Image
+              {/* <Image
                 style={applyStyles('w-72 h-16')}
                 source={require('@/assets/images/shara_logo_grey.png')}
-              />
+              /> */}
+              <SharaLogo width={70} height={70} />
             </View>
           </View>
         </ScrollView>

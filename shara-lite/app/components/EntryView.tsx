@@ -69,6 +69,21 @@ export const EntryView = withModal(
       }
     }, [currentCustomer, navigation]);
 
+    const onRequestPayment = useCallback(() => {
+      const onSelectCustomer = (customer: ICustomer) => {
+        navigation.navigate('RequestPayment', {
+          customer,
+          goBack: () => navigation.navigate('Home'),
+        });
+      };
+
+      navigation.navigate('SelectCustomerList', {
+        withCustomer: true,
+        onSelectCustomer,
+        isCollection: true,
+      });
+    }, [currentCustomer, navigation]);
+
     const showEntryDialog = useCallback(() => {
       const entryOptions = [
         {
@@ -89,6 +104,17 @@ export const EntryView = withModal(
           color: {
             primary: colors['green-200'],
             pastel: colors['green-50'],
+          },
+        },
+        {
+          iconType: 'feathericons',
+          title: strings('request_payment.button.title'),
+          description: strings('request_payment.button.description'),
+          icon: 'dollar-sign',
+          onPress: onRequestPayment,
+          color: {
+            primary: colors['gray-300'],
+            pastel: colors['gray-20'],
           },
         },
       ];
