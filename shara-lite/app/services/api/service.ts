@@ -936,10 +936,7 @@ export class ApiService implements IApiService {
     payload: {pin: string; confirm_pin: string},
   ): Promise<ApiResponse> {
     try {
-      return await this.requester.post(
-        `/users/${id}/create-transaction-pin`,
-        payload,
-      );
+      return await this.requester.post('/pin', payload);
     } catch (error) {
       throw error;
     }
@@ -963,18 +960,15 @@ export class ApiService implements IApiService {
     payload: {pin: string},
   ): Promise<ApiResponse> {
     try {
-      return await this.requester.post(
-        `/users/${id}/verify-transaction-pin`,
-        payload,
-      );
+      return await this.requester.post('/pin/verify', payload);
     } catch (error) {
       throw error;
     }
   }
 
-  async transactionPin(id: number) {
+  async transactionPin() {
     try {
-      return this.requester.get(`/users/${id}/transaction-pin-set`, {});
+      return this.requester.get('/pin', {});
     } catch (error) {
       throw error;
     }
@@ -997,10 +991,7 @@ export class ApiService implements IApiService {
     },
   ): Promise<ApiResponse> {
     try {
-      return await this.requester.patch(
-        `/users/${id}/update-transaction-pin`,
-        payload,
-      );
+      return await this.requester.patch('/pin', payload);
     } catch (error) {
       throw error;
     }
