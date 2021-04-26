@@ -979,8 +979,8 @@
     },
     "bnpl": {
       "not_available": {
-        "instruction": "Receive and withdraw money using your Shara wallet. Click the button below to get started.",
-        "button_text": "Go to money settings"
+        "instruction": "Hi {{merchant_name}}, you have not been approved for BNPL. To know more click here.",
+        "button_text": "Learn more"
       },
       "day_text": {"one": "{{amount}} day", "other": "{{amount}} days"},
       "active_text": "Active",
@@ -1156,7 +1156,8 @@
       "error_message": "INCORRECT PIN",
       "transaction_pin": "Transaction Pin",
       "enter_new_transaction_pin": "Enter your new transaction PIN"
-    }
+    },
+    "Lọ si Awọn Eto Aabo": ""
   },
   "sw": {
     "update_shara": {
@@ -2120,8 +2121,8 @@
     },
     "bnpl": {
       "not_available": {
-        "instruction": "Pokea na toa pesa kwa kutumia mkoba wako wa Shara. Bonyeza kitufe hapa chini ili kuanza.",
-        "button_text": "Nenda kwenye mipangilio ya pesa"
+        "instruction": "Hujambo {{merchant_name}}, haujaidhinishwa kwa BNPL. Ili kujua zaidi bonyeza hapa.",
+        "button_text": "Jifunze zaidi"
       },
       "day_text": {"one": "{{amount}} siku", "other": "{{amount}} siku"},
       "active_text": "Inatumika",
@@ -2294,7 +2295,8 @@
       "error_message": "PIN isiyosahihi",
       "transaction_pin": "",
       "enter_new_transaction_pin": ""
-    }
+    },
+    "Lọ si Awọn Eto Aabo": ""
   },
   "ha": {
     "update_shara": {
@@ -3245,8 +3247,8 @@
     },
     "bnpl": {
       "not_available": {
-        "instruction": "Karba da cire kudi ta amfani da walat din ka na Shara. Danna maballin da ke ƙasa don farawa.",
-        "button_text": "Jeka saitunan kuɗi"
+        "instruction": "Barka dai {{merchant_name}}, ba a ba ku izinin BNPL ba. Don ƙarin sani danna nan.",
+        "button_text": "Moreara koyo"
       },
       "day_text": {"one": "{{amount}} rana", "other": "{{amount}} kwanaki"},
       "active_text": "Na aiki",
@@ -3395,7 +3397,7 @@
       "not_set_transaction_pin": "Ṣeto PIN kan Idunadura",
       "not_set_transaction_pin_text": "Ṣeto pin pin Idunadura ṣaaju ṣiṣe yiyọ kuro",
       "security_settings": "awọn eto aabo",
-      "not_set_transaction_pin_button": "\nLọ si Awọn Eto Aabo",
+      "not_set_transaction_pin_button": "",
       "recover_transaction_pin": {
         "page_title": "Awọn ibeere aabo",
         "placeholder": "Tẹ idahun si ibeere ti o wa loke nibi"
@@ -3419,7 +3421,8 @@
       "error_message": "PIN ti ko tọ",
       "transaction_pin": "",
       "enter_new_transaction_pin": ""
-    }
+    },
+    "Lọ si Awọn Eto Aabo": ""
   },
   "yo": {
     "update_shara": {"title": "", "description": "", "submit_button": ""},
@@ -4243,7 +4246,8 @@
       "error_message": "",
       "transaction_pin": "",
       "enter_new_transaction_pin": ""
-    }
+    },
+    "Lọ si Awọn Eto Aabo": ""
   },
   "fr": {
     "update_shara": {"title": "", "description": "", "submit_button": ""},
@@ -5067,7 +5071,8 @@
       "error_message": "",
       "transaction_pin": "",
       "enter_new_transaction_pin": ""
-    }
+    },
+    "Lọ si Awọn Eto Aabo": ""
   },
   "ar": {
     "update_shara": {"title": "", "description": "", "submit_button": ""},
@@ -5891,6 +5896,7 @@
       "error_message": "",
       "transaction_pin": "",
       "enter_new_transaction_pin": ""
-    }
+    },
+    "Lọ si Awọn Eto Aabo": ""
   }
 }
