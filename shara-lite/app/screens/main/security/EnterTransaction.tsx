@@ -63,6 +63,7 @@ export const EnterTransaction = withModal(
                         onPress={() => {
                           closeModal();
                           onCloseModal();
+                          navigation.navigate('SecuritySettings');
                         }}
                       />
                     </View>
