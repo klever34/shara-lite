@@ -284,6 +284,7 @@ export const MoneyDepositScreen = withModal(
           setSubmitting(true);
           await getApiService().stkPushDeposit({
             mobile,
+            purpose: 'deposit',
             amount: toNumber(amount),
           });
           getAnalyticsService()

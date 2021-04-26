@@ -189,6 +189,7 @@ export interface IApiService {
   stkPushDeposit(payload: {
     amount: number;
     mobile?: string;
+    purpose?: string;
   }): Promise<ApiResponse>;
   sendSMS(payload: {to: string; message: string}): Promise<ApiResponse>;
   getBNPLBundles(): Promise<BNPLBundle[]>;
