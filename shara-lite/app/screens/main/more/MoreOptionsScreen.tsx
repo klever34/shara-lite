@@ -70,7 +70,7 @@ export const MoreOptionsScreen = withModal(
       //@ts-ignore
       const res = await getApiService().transactionPin(user.id);
       const idValue = await getStorageService().getItem('bvn');
-      if (!user?.is_identity_verified) {
+      if (res.data === true) {
         const bvnVerificationEnabled = getRemoteConfigService()
           .getValue('enableBVNVerification')
           .asBoolean();
@@ -79,14 +79,11 @@ export const MoreOptionsScreen = withModal(
         } else {
           navigation.navigate('PaymentSettings');
         }
+        navigation.navigate('VerifyTransactionPin');
       } else {
-        if (res.data === true) {
-          navigation.navigate('VerifyTransactionPin');
-        } else {
-          openModal('full', {
-            renderContent: () => <NotSetTransactionPinPage />,
-          });
-        }
+        openModal('full', {
+          renderContent: () => <NotSetTransactionPinPage />,
+        });
       }
     }, [navigation, openModal, user]);
 
