@@ -66,11 +66,12 @@ export const MoreOptionsScreen = withModal(
       navigation.navigate('BusinessSettings');
     }, [navigation]);
     const user = getAuthService().getUser();
+
     const onPaymentSettings = useCallback(async () => {
       //@ts-ignore
       const res = await getApiService().transactionPin(user.id);
       const idValue = await getStorageService().getItem('bvn');
-      if (res.data === true) {
+      if (!user?.is_identity_verified) {
         const bvnVerificationEnabled = getRemoteConfigService()
           .getValue('enableBVNVerification')
           .asBoolean();
@@ -79,13 +80,14 @@ export const MoreOptionsScreen = withModal(
         } else {
           navigation.navigate('PaymentSettings');
         }
-        navigation.navigate('VerifyTransactionPin');
       } else {
-        openModal('full', {
-          renderContent: () => <NotSetTransactionPinPage />,
-        });
+        if (res.data === true) {
+          navigation.navigate('VerifyTransactionPin');
+        } else {
+          navigation.navigate('NotSetTransactionPin');
+        }
       }
-    }, [navigation, openModal, user]);
+    }, [navigation, user]);
 
     const {reloadApp} = useContext(AppContext);
 

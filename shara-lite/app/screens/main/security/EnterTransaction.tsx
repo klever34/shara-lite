@@ -77,6 +77,7 @@ export const EnterTransaction = withModal(
             navigation.navigate('DisburementScreen');
           }
         } catch (error) {
+          setPin('');
           setLoading(false);
           setHasError(true);
           Alert.alert(strings('alert.error'), error.message);

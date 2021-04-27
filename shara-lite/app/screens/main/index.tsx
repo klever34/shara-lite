@@ -65,6 +65,7 @@ import {SecurityScreen} from './security';
 import {ChangeTransactionPin} from './security/ChangeTransactionPin';
 import {CreateTransactionPin} from './security/CreateTransactionPin';
 import {EnterTransaction} from './security/EnterTransaction';
+import {NotSetTransactionPinPage} from './security/NotSetTransactionPinModal';
 import {RecoverTransactionPin} from './security/RecoverTransactionPin';
 import {SecurityQuestions} from './security/SecurityQuestions';
 import {SuccessScreen} from './security/SuccessScreen';
@@ -118,6 +119,7 @@ export type MainStackParamList = {
   VerifyTransactionPin: undefined;
   RecoverTransactionPin: undefined;
   ChangeTransactionPin: undefined;
+  NotSetTransactionPin: undefined;
 
   // Money
   Drawdown: undefined;
@@ -476,6 +478,14 @@ const MainScreens = () => {
             <MainStack.Screen
               name="ChangeTransactionPin"
               component={ChangeTransactionPin}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="NotSetTransactionPin"
+              component={NotSetTransactionPinPage}
               options={{
                 headerShown: false,
               }}
