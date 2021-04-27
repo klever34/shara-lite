@@ -1,6 +1,12 @@
 import Icon from '@/components/Icon';
 import {Page} from '@/components/Page';
-import {getApiService, getAuthService, getI18nService} from '@/services';
+import {
+  getApiService,
+  getAuthService,
+  getI18nService,
+  getRemoteConfigService,
+  getStorageService,
+} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
@@ -74,7 +80,19 @@ export const EnterTransaction = withModal(
           } else if (params && params.fromSecuritySettings) {
             navigation.navigate('ChangeTransactionPin', {token, heading});
           } else {
-            navigation.navigate('DisburementScreen');
+            const idValue = await getStorageService().getItem('bvn');
+            if (!user?.is_identity_verified) {
+              const bvnVerificationEnabled = getRemoteConfigService()
+                .getValue('enableBVNVerification')
+                .asBoolean();
+              if (idValue && !bvnVerificationEnabled) {
+                navigation.navigate('DisburementScreen');
+              } else {
+                navigation.navigate('PaymentSettings');
+              }
+            } else {
+              navigation.navigate('DisburementScreen');
+            }
           }
         } catch (error) {
           setPin('');
@@ -83,7 +101,7 @@ export const EnterTransaction = withModal(
           Alert.alert(strings('alert.error'), error.message);
         }
       },
-      [closeModal, heading, navigation, openModal, params, user.id],
+      [closeModal, heading, navigation, openModal, params, user],
     );
 
     return (

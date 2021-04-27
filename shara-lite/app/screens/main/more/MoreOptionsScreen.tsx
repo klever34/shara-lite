@@ -10,8 +10,6 @@ import {
   getAuthService,
   getHelpDeskService,
   getI18nService,
-  getRemoteConfigService,
-  getStorageService,
   getApiService,
 } from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
@@ -35,7 +33,7 @@ import {version} from '../../../../package.json';
 import {inviteImageBase64String} from './inviteImageBase64String';
 import {RootStackParamList} from '@/index';
 import {WebView} from 'react-native-webview';
-import {NotSetTransactionPinPage} from '../security/NotSetTransactionPinModal';
+import {User} from 'types/app';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -65,27 +63,14 @@ export const MoreOptionsScreen = withModal(
     const onEditBusinessSettings = useCallback(() => {
       navigation.navigate('BusinessSettings');
     }, [navigation]);
-    const user = getAuthService().getUser();
+    const user = getAuthService().getUser() as User;
 
     const onPaymentSettings = useCallback(async () => {
-      //@ts-ignore
       const res = await getApiService().transactionPin(user.id);
-      const idValue = await getStorageService().getItem('bvn');
-      if (!user?.is_identity_verified) {
-        const bvnVerificationEnabled = getRemoteConfigService()
-          .getValue('enableBVNVerification')
-          .asBoolean();
-        if (idValue && !bvnVerificationEnabled) {
-          navigation.navigate('DisburementScreen');
-        } else {
-          navigation.navigate('PaymentSettings');
-        }
+      if (res.data === false) {
+        navigation.navigate('NotSetTransactionPin');
       } else {
-        if (res.data === true) {
-          navigation.navigate('VerifyTransactionPin');
-        } else {
-          navigation.navigate('NotSetTransactionPin');
-        }
+        navigation.navigate('VerifyTransactionPin');
       }
     }, [navigation, user]);
 
