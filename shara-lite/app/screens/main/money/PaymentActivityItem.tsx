@@ -207,23 +207,25 @@ const CollectionItem = ({data}: {data: ICollection}) => {
             <View>
               <Markdown style={markdownStyle}>{text}</Markdown>
               <View style={applyStyles('flex-row items-center')}>
-                <>
-                  {customer ? (
-                    <Text style={applyStyles('text-700 text-gray-100')}>
-                      {customer.name}
-                    </Text>
-                  ) : (
-                    <Text style={applyStyles('text-secondary text-700')}>
-                      {strings(
-                        'payment_activities.payment_activity.select_customer',
-                      )}
-                    </Text>
-                  )}
-                </>
+                {purpose === 'payment' && (
+                  <>
+                    {customer ? (
+                      <Text style={applyStyles('text-700 text-gray-100 pr-8 ')}>
+                        {customer.name}
+                      </Text>
+                    ) : (
+                      <Text style={applyStyles('text-secondary text-700 pr-8')}>
+                        {strings(
+                          'payment_activities.payment_activity.select_customer',
+                        )}
+                      </Text>
+                    )}
+                  </>
+                )}
 
                 <Text
                   style={applyStyles(
-                    `pl-8 text-700 text-capitalize ${statusColors[status]}`,
+                    `text-700 text-capitalize ${statusColors[status]}`,
                   )}>
                   {status === 'pending' ? 'in progress' : status}
                 </Text>
