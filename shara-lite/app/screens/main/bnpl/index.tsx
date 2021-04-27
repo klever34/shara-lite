@@ -15,8 +15,8 @@ export const BNPLScreen = () => {
   const bnplIsAvailable = !!bnplApproval;
 
   const handleGoToSettings = useCallback(() => {
-    navigation.navigate('PaymentSettings');
-  }, [navigation]);
+    // TODO: Link to BNPL PDF
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({

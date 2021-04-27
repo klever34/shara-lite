@@ -768,9 +768,10 @@ const en: Strings = {
       'Your transaction is being processed. It may take up to a few minutes to reflect in your Shara wallet',
     payment_activity: {
       received_payment:
-        'Received payment of **{{amount}}** via **{{provider}}**',
+        "You've just received a payment of **{{amount}}** into your Shara wallet",
       withdrawal: 'Withdrawal of **{{amount}}** to your **{{provider}}**',
       select_customer: 'Select Customer',
+      deposit: "You've just deposited **{{amount}}** into your Shara wallet",
     },
     withdraw_excess_error:
       'Withdrawal amount is greater than your wallet balance',

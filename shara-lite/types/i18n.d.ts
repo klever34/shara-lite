@@ -703,6 +703,7 @@ export interface Strings {
       received_payment: string;
       withdrawal: string;
       select_customer: string;
+      deposit: string;
     };
     not_available: {
       title: string;
