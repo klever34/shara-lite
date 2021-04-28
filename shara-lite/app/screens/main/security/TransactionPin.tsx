@@ -18,6 +18,7 @@ type ConfirmTransactionPinProps = {
   pin?: any;
   handlePinChange?: (code: string) => void;
   loading?: boolean;
+  hasError?: boolean;
 };
 
 export const TransactionPin = withModal(
@@ -32,6 +33,7 @@ export const TransactionPin = withModal(
   }: any) => {
     const [pin, setPin] = useState('');
     const [loading, setLoading] = useState(false);
+    const [hasError, setHasError] = useState(false);
     const [section, setSection] = useState(0);
     const navigation = useAppNavigation();
 
@@ -44,65 +46,76 @@ export const TransactionPin = withModal(
       setSection(1);
     }, []);
 
+    const onError = useCallback(() => {
+      setPin('');
+      setSection(0);
+      setLoading(false);
+    }, []);
+
+    const onSuccess = useCallback(() => {
+      const onCloseModal = openModal('full', {
+        renderContent: () => (
+          <SuccessScreen
+            renderButtons={() => (
+              <View
+                style={applyStyles(
+                  'mt-64 pt-64 flex-row items-center justify-around',
+                )}>
+                {hideButton === true ? (
+                  <Button
+                    title={strings('done')}
+                    variantColor="transparent"
+                    style={applyStyles('mt-32', {width: '45%'})}
+                    onPress={() => {
+                      closeModal();
+                      onCloseModal();
+                      navigation.navigate('SecuritySettings');
+                    }}
+                  />
+                ) : (
+                  <Button
+                    title={strings('done')}
+                    style={applyStyles('mt-32', {width: '45%'})}
+                    onPress={() => {
+                      closeModal();
+                      onCloseModal();
+                      navigation.navigate('SecuritySettings');
+                    }}
+                  />
+                )}
+                {hideButton === true && (
+                  <Button
+                    title={strings(
+                      'withdrawal_pin.recover_transaction_pin.page_title',
+                    )}
+                    style={applyStyles('mt-32', {width: '45%'})}
+                    onPress={() => {
+                      navigation.navigate('SecurityQuestions');
+                    }}
+                  />
+                )}
+              </View>
+            )}
+          />
+        ),
+      });
+    }, [closeModal, hideButton, navigation, openModal]);
+
     const handleSubmit = useCallback(
       async (confirmPin: string) => {
         setLoading(true);
+        setHasError(false);
         try {
-          await onSubmit({pin, confirmPin});
-          const onCloseModal = openModal('full', {
-            renderContent: () => (
-              <SuccessScreen
-                renderButtons={() => (
-                  <View
-                    style={applyStyles(
-                      'mt-64 pt-64 flex-row items-center justify-around',
-                    )}>
-                    {hideButton === true ? (
-                      <Button
-                        title={strings('done')}
-                        variantColor="transparent"
-                        style={applyStyles('mt-32', {width: '45%'})}
-                        onPress={() => {
-                          closeModal();
-                          onCloseModal();
-                          navigation.navigate('SecuritySettings');
-                        }}
-                      />
-                    ) : (
-                      <Button
-                        title={strings('done')}
-                        style={applyStyles('mt-32', {width: '45%'})}
-                        onPress={() => {
-                          closeModal();
-                          onCloseModal();
-                          navigation.navigate('SecuritySettings');
-                        }}
-                      />
-                    )}
-                    {hideButton === true && (
-                      <Button
-                        title={strings(
-                          'withdrawal_pin.recover_transaction_pin.page_title',
-                        )}
-                        style={applyStyles('mt-32', {width: '45%'})}
-                        onPress={() => {
-                          navigation.navigate('SecurityQuestions');
-                        }}
-                      />
-                    )}
-                  </View>
-                )}
-              />
-            ),
-          });
+          await onSubmit({pin, confirmPin}, onError, onSuccess);
         } catch (error) {
           setPin('');
+          setHasError(true);
           setLoading(false);
           navigation.navigate('ChangeTransactionPin');
           Alert.alert(strings('alert.error'), error.message);
         }
       },
-      [closeModal, hideButton, navigation, onSubmit, openModal, pin],
+      [navigation, onError, onSubmit, onSuccess, pin],
     );
 
     return (
@@ -144,6 +157,7 @@ export const EnterTransactionPin = ({
   pin: pinProp,
   handlePinChange,
   loading,
+  hasError,
 }: ConfirmTransactionPinProps) => {
   const [pin, setPin] = useState(pinProp || '');
 
@@ -198,6 +212,11 @@ export const EnterTransactionPin = ({
         })}
       />
       {loading && <ActivityIndicator size={24} color={colors.primary} />}
+      {hasError && (
+        <Text style={applyStyles('text-red-100 text-sm text-400')}>
+          {strings('withdrawal_pin.error_message')}
+        </Text>
+      )}
     </View>
   );
 };

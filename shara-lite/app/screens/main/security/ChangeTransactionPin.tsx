@@ -12,22 +12,25 @@ export const ChangeTransactionPin = (props: any) => {
     },
   } = props;
   const user = getAuthService().getUser();
-  const navigation = useAppNavigation();
 
   const handleSubmit = useCallback(
-    async (payload) => {
+    async (payload, onError, onSuccess) => {
       try {
+        if (payload.pin !== payload.confirmPin) {
+          onError();
+          return;
+        }
         await getApiService().changeTransactionPin(`${user?.id}`, {
           pin: payload.pin,
           confirm_pin: payload.confirmPin,
           token: token && token,
         });
+        onSuccess();
       } catch (error) {
-        navigation.navigate('ChangeTransactionPin');
         throw error;
       }
     },
-    [navigation, token, user],
+    [token, user],
   );
 
   return (
