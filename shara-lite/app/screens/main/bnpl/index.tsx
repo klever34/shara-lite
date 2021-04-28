@@ -4,6 +4,7 @@ import {useBNPLApproval} from '@/services/bnpl-approval';
 import {useAppNavigation} from '@/services/navigation';
 import {colors} from '@/styles';
 import React, {useCallback, useLayoutEffect} from 'react';
+import {Linking} from 'react-native';
 import {BNPLMainScreen} from './BNPLMainScreen';
 import {BNPLNotAvailableScreen} from './BNPLNotAvailableScreen';
 
@@ -16,6 +17,9 @@ export const BNPLScreen = () => {
 
   const handleGoToSettings = useCallback(() => {
     // TODO: Link to BNPL PDF
+    Linking.openURL(
+      'https://files.shara.co/BNPL/Introduction%20to%20BNPL%20-%20CK%20Edit%20.pdf',
+    );
   }, []);
 
   useLayoutEffect(() => {
