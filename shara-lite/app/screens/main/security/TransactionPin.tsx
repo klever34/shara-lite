@@ -50,6 +50,7 @@ export const TransactionPin = withModal(
       setPin('');
       setSection(0);
       setLoading(false);
+      setHasError(true);
     }, []);
 
     const onSuccess = useCallback(() => {
@@ -130,6 +131,7 @@ export const TransactionPin = withModal(
           <EnterTransactionPin
             pin={pin}
             loading={loading}
+            hasError={hasError}
             handlePinChange={handlePinChange}
             heading={strings('withdrawal_pin.create_transaction_pin.heading')}
             subHeading={strings('withdrawal_pin.subHeading')}
@@ -139,6 +141,7 @@ export const TransactionPin = withModal(
         ) : (
           <EnterTransactionPin
             loading={loading}
+            hasError={hasError}
             heading={strings('withdrawal_pin.confirm_transaction_pin_heading')}
             subHeading={strings('withdrawal_pin.subHeading')}
             handleSubmit={handleSubmit}
