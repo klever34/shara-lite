@@ -111,6 +111,7 @@ export default withModal(function RequestPaymentSuccessScreen({
         setSubmitting(true);
         await getApiService().stkPushDeposit({
           mobile,
+          purpose: 'payment',
           amount: toNumber(amount),
         });
         getAnalyticsService()
