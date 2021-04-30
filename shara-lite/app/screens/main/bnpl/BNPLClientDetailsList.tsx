@@ -6,7 +6,12 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
 import {IBNPLRepayment} from '@/models/BNPLRepayment';
-import {getAnalyticsService, getApiService, getI18nService} from '@/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+  getI18nService,
+} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useReceipt} from '@/services/receipt';
@@ -30,6 +35,8 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
   const {data, header, drawdown, customer, openModal, closeModal} = props;
   const navigation = useAppNavigation();
   const {getReceipt} = useReceipt();
+
+  const user = getAuthService().getUser();
 
   const renderListItem = useCallback(
     ({item}) => <BNPLClientTransactionListItem item={item} />,
@@ -81,35 +88,44 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
     [handleDone, navigation],
   );
 
-  const handleAddRepayment = useCallback(() => {
-    openModal('bottom-half', {
-      renderContent: () => (
-        <AddRepaymentModal
-          onClose={closeModal}
-          onSubmit={handleSaveRepayment}
-          initialValues={{
-            amount: drawdown.payment_frequency_amount?.toString() ?? '',
-          }}
-        />
-      ),
-    });
-  }, [
-    closeModal,
-    drawdown.payment_frequency_amount,
-    handleSaveRepayment,
-    openModal,
-  ]);
+  const handleAddRepayment = useCallback(
+    async (pin) => {
+      try {
+        const res = await getApiService().verifyTransactionPin(`${user?.id}`, {
+          pin,
+        });
+        if (!!res.data.token) {
+          openModal('bottom-half', {
+            renderContent: () => (
+              <AddRepaymentModal
+                onClose={closeModal}
+                onSubmit={handleSaveRepayment}
+                initialValues={{
+                  amount: drawdown.payment_frequency_amount?.toString() ?? '',
+                }}
+              />
+            ),
+          });
+        }
+      } catch (error) {
+        handleError(error);
+      }
+    },
+    [
+      closeModal,
+      drawdown.payment_frequency_amount,
+      handleSaveRepayment,
+      openModal,
+    ],
+  );
 
   const handleOpenPinModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
         //TODO: this is where you'll put the component to render the pin modal
         <TransactionPinWithdrawModal
-          onClose={closeModal}
+          closeModal={closeModal}
           onSubmit={handleAddRepayment}
-          initialValues={{
-            amount: drawdown.payment_frequency_amount?.toString() ?? '',
-          }}
         />
       ),
     });

@@ -5,7 +5,12 @@ import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
-import {getAnalyticsService, getApiService, getI18nService} from '@/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+  getI18nService,
+} from '@/services';
 import {useBNPLApproval} from '@/services/bnpl-approval';
 import {useBNPLDrawdown} from '@/services/bnpl-drawdown';
 import {useBNPLRepayment} from '@/services/bnpl-repayment';
@@ -57,6 +62,7 @@ export const BNPLRecordTransactionScreen = withModal(
     const {saveBNPLDrawdownRepayments} = useBNPLRepayment();
 
     const wallet = getWallet();
+    const user = getAuthService().getUser();
     const {amount_available} = getBNPLApproval() ?? {};
 
     const [bnplBundles, setBNPLBundles] = useState<BNPLBundle[] | undefined>();
@@ -154,87 +160,97 @@ export const BNPLRecordTransactionScreen = withModal(
     }, [navigation]);
 
     const handleSaveTransaction = useCallback(
-      async (values: {
-        credit_amount: number;
-        amount_paid: number;
-        total_amount: number;
-        bearingFees: boolean;
-        note?: string;
-      }) => {
+      async (
+        pin: string,
+        values: {
+          credit_amount: number;
+          amount_paid: number;
+          total_amount: number;
+          bearingFees: boolean;
+          note?: string;
+        },
+      ) => {
         try {
-          const {credit_amount, bearingFees} = values;
-          const receipt = await saveTransaction({
-            ...values,
-            is_collection: false,
-          });
+          const res = await getApiService().verifyTransactionPin(
+            `${user?.id}`,
+            {pin},
+          );
+          if (!!res.data.token) {
+            const {credit_amount, bearingFees} = values;
+            const receipt = await saveTransaction({
+              ...values,
+              is_collection: false,
+            });
 
-          const {data} = await getApiService().saveBNPLDrawdown({
-            amount: credit_amount,
-            receipt_id: `${receipt?._id}`,
-            customer_id: `${customer?._id}`,
-            bnpl_bundle_id: selectedBNPLProduct?.id,
-            takes_charge: bearingFees ? 'merchant' : 'client',
-            customer_data: {
-              _id: customer?._id,
-              name: customer?.name ?? '',
-              mobile: customer?.mobile,
-              email: customer?.email,
-              image: customer?.image,
-              _partition: customer?._partition,
-              created_at: customer?.created_at,
-              is_deleted: customer?.is_deleted,
-              updated_at: customer?.updated_at,
-              disable_reminders: customer?.disable_reminders,
-            },
-            receipt_data: {
-              tax: receipt.tax,
-              _id: receipt?._id,
-              note: receipt.note,
-              _partition: receipt._partition,
-              amount_paid: receipt.amount_paid,
-              updated_at: receipt?.updated_at,
-              created_at: receipt?.created_at,
-              is_cancelled: receipt.is_cancelled,
-              is_deleted: receipt.is_deleted,
-              total_amount: receipt.total_amount,
-              is_collection: receipt.is_collection,
-              credit_amount: receipt.credit_amount,
-              customer_name: receipt.customer_name,
-              customer_mobile: receipt.customer_mobile,
-              is_hidden_in_pro: receipt.is_hidden_in_pro,
-              transaction_date: receipt.transaction_date,
-              //@ts-ignore
-              customer: receipt?.customer?._id?.toString() ?? '',
-            },
-          });
-          const {approval, repayments, drawdown} = data;
-          closeModal();
-          getAnalyticsService()
-            .logEvent('takeBNPLDrawdown', {
-              amount: values.total_amount,
-              receipt_id: receipt?._id?.toString() ?? '',
-              repayment_amount: drawdown.repayment_amount,
-            })
-            .then();
+            const {data} = await getApiService().saveBNPLDrawdown({
+              amount: credit_amount,
+              receipt_id: `${receipt?._id}`,
+              customer_id: `${customer?._id}`,
+              bnpl_bundle_id: selectedBNPLProduct?.id,
+              takes_charge: bearingFees ? 'merchant' : 'client',
+              customer_data: {
+                _id: customer?._id,
+                name: customer?.name ?? '',
+                mobile: customer?.mobile,
+                email: customer?.email,
+                image: customer?.image,
+                _partition: customer?._partition,
+                created_at: customer?.created_at,
+                is_deleted: customer?.is_deleted,
+                updated_at: customer?.updated_at,
+                disable_reminders: customer?.disable_reminders,
+              },
+              receipt_data: {
+                tax: receipt.tax,
+                _id: receipt?._id,
+                note: receipt.note,
+                _partition: receipt._partition,
+                amount_paid: receipt.amount_paid,
+                updated_at: receipt?.updated_at,
+                created_at: receipt?.created_at,
+                is_cancelled: receipt.is_cancelled,
+                is_deleted: receipt.is_deleted,
+                total_amount: receipt.total_amount,
+                is_collection: receipt.is_collection,
+                credit_amount: receipt.credit_amount,
+                customer_name: receipt.customer_name,
+                customer_mobile: receipt.customer_mobile,
+                is_hidden_in_pro: receipt.is_hidden_in_pro,
+                transaction_date: receipt.transaction_date,
+                //@ts-ignore
+                customer: receipt?.customer?._id?.toString() ?? '',
+              },
+            });
+            const {approval, repayments, drawdown} = data;
+            closeModal();
+            getAnalyticsService()
+              .logEvent('takeBNPLDrawdown', {
+                amount: values.total_amount,
+                receipt_id: receipt?._id?.toString() ?? '',
+                repayment_amount: drawdown.repayment_amount,
+              })
+              .then();
 
-          await saveBNPLDrawdown({
-            bnplDrawdown: {
-              ...drawdown,
-              _partition: drawdown._partition.toString(),
-              created_at: parseISO(`${drawdown.created_at}Z`),
-              updated_at: parseISO(`${drawdown.updated_at}Z`),
-            },
-          });
-          await saveBNPLDrawdownRepayments({bnplRepayments: repayments});
-          navigation.navigate('BNPLTransactionSuccessScreen', {
-            transaction: {
-              approval,
-              drawdown,
-              repayments,
-              receiptData: receipt,
-            },
-            onDone: handleDone,
-          });
+            await saveBNPLDrawdown({
+              bnplDrawdown: {
+                ...drawdown,
+                _partition: drawdown._partition.toString(),
+                created_at: parseISO(`${drawdown.created_at}Z`),
+                updated_at: parseISO(`${drawdown.updated_at}Z`),
+              },
+            });
+            await saveBNPLDrawdownRepayments({bnplRepayments: repayments});
+            navigation.navigate('BNPLTransactionSuccessScreen', {
+              transaction: {
+                approval,
+                drawdown,
+                repayments,
+                receiptData: receipt,
+              },
+              onDone: handleDone,
+            });
+            return data;
+          }
         } catch (error) {
           handleError(error);
         }
@@ -257,8 +273,8 @@ export const BNPLRecordTransactionScreen = withModal(
           renderContent: () => (
             //TODO: this is where you'll put the component to render the pin modal
             <TransactionPinWithdrawModal
-              onClose={closeModal}
-              onSubmit={() => handleSaveTransaction(values)}
+              closeModal={closeModal}
+              onSubmit={(pin) => handleSaveTransaction(pin, values)}
             />
           ),
         });
