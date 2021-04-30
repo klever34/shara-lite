@@ -154,8 +154,6 @@ export const EnterTransactionPin = ({
     setAutoFocusOnLoad(true);
   }, [pinProp]);
 
-  console.log(autoFocusOnLoad);
-
   return (
     <View style={applyStyles('center py-32')}>
       <Text
@@ -228,8 +226,6 @@ export const ConfirmTransactionPin = ({
     setPin(pinProp);
     setAutoFocusOnLoad(true);
   }, [pinProp]);
-
-  console.log(autoFocusOnLoad);
 
   return (
     <View style={applyStyles('center py-32')}>
