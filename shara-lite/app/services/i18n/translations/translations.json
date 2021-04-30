@@ -154,7 +154,7 @@
             "success": "Your withdrawal has been processed successfully",
             "insufficientBalance": "You cannot withdraw more than {{maxAmount}}",
             "error": "We were unable to process your withdrawal, please try again or contact us through the Shara mobile application",
-            "duplicate": "Duplicate Withdrawal detected. Please wait for 2 minutes and try again",
+            "duplicate": "Duplicate Withdrawal detected. Please wait for 5 minutes and try again",
             "multi": "Multiple Withdrawals detected. Please wait for 5 minutes and try again",
             "maxAmount": "You cannot withdraw more than {maxAmount}",
             "noToken": "We are unable to process this transaction as your PIN is required. Please update to the latest version of the Shara app to setup your PIN"
@@ -211,7 +211,7 @@
             "inactive": "Drawdown is not currently active",
             "error": "We were unable to process your drawdown, please try again or contact us through the Shara mobile application",
             "success": "Drawdown taken successfully",
-            "duplicate": "This looks like a duplicate transaction. Please wait 2 minutes to retry, if this is not an error.",
+            "duplicate": "This looks like a duplicate transaction. Please wait 5 minutes to retry, if this is not an error.",
             "bundleNotFound": "BNPL Bundle has not been approved for you"
           },
           "common": {
@@ -713,7 +713,10 @@
           "title": "Payment Settings",
           "description": "View and edit your payment information"
         },
-        "referral": {"title": "Referral", "description": "Enter referral code"},
+        "referral": {
+          "title": "Shara Ambassador Code",
+          "description": "Enter shara ambassador code"
+        },
         "feedback": {
           "title": "Give Feedback",
           "description": "Provide any feedback here?"
@@ -1856,8 +1859,8 @@
           "description": "Tazama na uhariri maelezo yako ya malipo"
         },
         "referral": {
-          "title": "Rufaa",
-          "description": "Ingiza nambari ya rufaa"
+          "title": "Msimbo wa Balozi wa Shara",
+          "description": "Ingiza nambari ya balozi wa shara"
         },
         "feedback": {
           "title": "Toa maoni",
@@ -1918,7 +1921,7 @@
       "toast_text": "Nambari ya rufaa imewasilishwa",
       "fields": {
         "code": {
-          "label": "Nambari ya rufaa",
+          "label": "Msimbo wa Balozi wa Shara",
           "placeholder": "Ingiza nambari ya rufaa hapa"
         }
       },
@@ -2984,8 +2987,8 @@
           "description": "Dubawa da gyaran bayanan tsarin biyan ku"
         },
         "referral": {
-          "title": "Referral",
-          "description": "Sanya lambar Referral"
+          "title": "Kooshi Ambassador Shara",
+          "description": "Tẹ koodu aṣoju dani sii"
         },
         "feedback": {
           "title": "Bamu amsarku",
@@ -3046,7 +3049,7 @@
       "toast_text": "An tura lambar referral dinka",
       "fields": {
         "code": {
-          "label": "lambar referral",
+          "label": "Kooshi Ambassador Shara",
           "placeholder": "Sanya lambar Referral"
         }
       },

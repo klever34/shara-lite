@@ -62,45 +62,21 @@ export const TransactionPin = withModal(
                 style={applyStyles(
                   'mt-64 pt-64 flex-row items-center justify-around',
                 )}>
-                {hideButton === true ? (
-                  <Button
-                    title={strings('done')}
-                    variantColor="transparent"
-                    style={applyStyles('mt-32', {width: '45%'})}
-                    onPress={() => {
-                      closeModal();
-                      onCloseModal();
-                      navigation.navigate('SecuritySettings');
-                    }}
-                  />
-                ) : (
-                  <Button
-                    title={strings('done')}
-                    style={applyStyles('mt-32', {width: '45%'})}
-                    onPress={() => {
-                      closeModal();
-                      onCloseModal();
-                      navigation.navigate('SecuritySettings');
-                    }}
-                  />
-                )}
-                {hideButton === true && (
-                  <Button
-                    title={strings(
-                      'withdrawal_pin.recover_transaction_pin.page_title',
-                    )}
-                    style={applyStyles('mt-32', {width: '45%'})}
-                    onPress={() => {
-                      navigation.navigate('SecurityQuestions');
-                    }}
-                  />
-                )}
+                <Button
+                  title={strings('done')}
+                  style={applyStyles('mt-32', {width: '45%'})}
+                  onPress={() => {
+                    closeModal();
+                    onCloseModal();
+                    navigation.navigate('SecuritySettings');
+                  }}
+                />
               </View>
             )}
           />
         ),
       });
-    }, [closeModal, hideButton, navigation, openModal]);
+    }, [closeModal, navigation, openModal]);
 
     const handleSubmit = useCallback(
       async (confirmPin: string) => {

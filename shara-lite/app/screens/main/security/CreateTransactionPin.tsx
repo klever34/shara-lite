@@ -10,8 +10,12 @@ export const CreateTransactionPin = () => {
   const navigation = useAppNavigation();
 
   const handleSubmit = useCallback(
-    async (payload) => {
+    async (payload, onError) => {
       try {
+        if (payload.pin !== payload.confirmPin) {
+          onError();
+          return;
+        }
         const res = await getApiService().setTransactionPin(`${user?.id}`, {
           pin: payload.pin,
           confirm_pin: payload.confirmPin,

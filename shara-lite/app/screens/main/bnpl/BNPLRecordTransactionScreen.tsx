@@ -28,6 +28,7 @@ import {
 } from 'react-native';
 import {BNPLBundle} from 'types/app';
 import {MainStackParamList} from '..';
+import {TransactionPinWithdrawModal} from '../money/MoneyWithdrawModal';
 import {BNPLProduct} from './BNPLProduct';
 import {ConfirmationModal} from './ConfirmationModal';
 
@@ -238,20 +239,32 @@ export const BNPLRecordTransactionScreen = withModal(
           handleError(error);
         }
       },
-      [handleDone, navigation, selectedBNPLProduct],
+      [
+        closeModal,
+        customer,
+        handleDone,
+        navigation,
+        saveBNPLDrawdown,
+        saveBNPLDrawdownRepayments,
+        saveTransaction,
+        selectedBNPLProduct,
+      ],
     );
 
-    const handleOpenPinModal = useCallback((values) => {
-      openModal('bottom-half', {
-        renderContent: () => (
-          //TODO: this is where you'll put the component to render the pin modal
-          <ConfirmationModal
-            onClose={closeModal}
-            onSubmit={() => handleSaveTransaction(values)}
-          />
-        ),
-      });
-    }, []);
+    const handleOpenPinModal = useCallback(
+      (values) => {
+        openModal('bottom-half', {
+          renderContent: () => (
+            //TODO: this is where you'll put the component to render the pin modal
+            <TransactionPinWithdrawModal
+              onClose={closeModal}
+              onSubmit={() => handleSaveTransaction(values)}
+            />
+          ),
+        });
+      },
+      [closeModal, handleSaveTransaction, openModal],
+    );
 
     const handleOpenConfirmModal = useCallback(
       (values) => {
@@ -264,7 +277,7 @@ export const BNPLRecordTransactionScreen = withModal(
           ),
         });
       },
-      [closeModal, handleSaveTransaction, openModal],
+      [closeModal, handleOpenPinModal, openModal],
     );
 
     const handleMerchantTermChange = useCallback(() => {

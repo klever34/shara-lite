@@ -13,6 +13,7 @@ import {useReceipt} from '@/services/receipt';
 import {applyStyles, colors, dimensions} from '@/styles';
 import React, {useCallback} from 'react';
 import {FlatList, InteractionManager, Text, View} from 'react-native';
+import {TransactionPinWithdrawModal} from '../money/MoneyWithdrawModal';
 import {AddRepaymentModal} from './AddRepaymentModal';
 import {BNPLClientTransactionListItem} from './BNPLClientTransactionListItem';
 
@@ -83,7 +84,6 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
   const handleAddRepayment = useCallback(() => {
     openModal('bottom-half', {
       renderContent: () => (
-        //TODO: this is where you'll put the component to render the ope
         <AddRepaymentModal
           onClose={closeModal}
           onSubmit={handleSaveRepayment}
@@ -93,13 +93,18 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
         />
       ),
     });
-  }, []);
+  }, [
+    closeModal,
+    drawdown.payment_frequency_amount,
+    handleSaveRepayment,
+    openModal,
+  ]);
 
   const handleOpenPinModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
         //TODO: this is where you'll put the component to render the pin modal
-        <AddRepaymentModal
+        <TransactionPinWithdrawModal
           onClose={closeModal}
           onSubmit={handleAddRepayment}
           initialValues={{
@@ -108,7 +113,7 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
         />
       ),
     });
-  }, [handleSaveRepayment, openModal]);
+  }, [drawdown.payment_frequency_amount, handleAddRepayment, openModal]);
 
   return (
     <View style={applyStyles('flex-1 bg-white')}>

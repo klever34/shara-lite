@@ -35,7 +35,7 @@ export const TransactionPinSuccessScreen = ({onDone, renderButtons}: any) => {
       </View>
 
       <View
-        style={applyStyles('mt-64 pt-64 flex-row items-center justify-around')}>
+        style={applyStyles('mt-32 pt-32 flex-row items-center justify-around')}>
         <Button
           title={strings('done')}
           style={applyStyles('mt-32', {width: '45%'})}
