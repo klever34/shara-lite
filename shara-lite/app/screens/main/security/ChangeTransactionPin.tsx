@@ -1,5 +1,4 @@
 import {getApiService, getAuthService, getI18nService} from '@/services';
-import {useAppNavigation} from '@/services/navigation';
 import React, {useCallback} from 'react';
 import {TransactionPin} from './TransactionPin';
 

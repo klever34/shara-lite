@@ -70,7 +70,10 @@ export const MoreOptionsScreen = withModal(
       if (res.data === false) {
         navigation.navigate('NotSetTransactionPin');
       } else {
-        navigation.navigate('VerifyTransactionPin');
+        //@ts-ignore
+        navigation.navigate('VerifyTransactionPin', {
+          routeName: 'DisbursementScreen',
+        });
       }
     }, [navigation, user]);
 

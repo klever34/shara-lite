@@ -4,7 +4,7 @@ import {ActivityIndicator, Alert, Text, View} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import {Icon} from '@/components/Icon';
-import {SuccessScreen} from './SuccessScreen';
+import {TransactionPinSuccessScreen} from './TransactionPinSuccessScreen';
 import {withModal} from '@/helpers/hocs';
 import {useAppNavigation} from '@/services/navigation';
 import {Button} from '@/components';
@@ -56,7 +56,7 @@ export const TransactionPin = withModal(
     const onSuccess = useCallback(() => {
       const onCloseModal = openModal('full', {
         renderContent: () => (
-          <SuccessScreen
+          <TransactionPinSuccessScreen
             renderButtons={() => (
               <View
                 style={applyStyles(

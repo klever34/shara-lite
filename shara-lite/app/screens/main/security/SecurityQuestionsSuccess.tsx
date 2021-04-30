@@ -3,9 +3,16 @@ import {Text, View} from 'react-native';
 import LottieView from 'lottie-react-native';
 import {applyStyles} from '@/styles';
 import {getI18nService} from '@/services';
+import {Button} from '@/components';
+import {useAppNavigation} from '@/services/navigation';
 
 const strings = getI18nService().strings;
-export const SuccessScreen = ({onDone, renderButtons}: any) => {
+export const SecurityQuestionsSuccessScreen = ({
+  onDone,
+  renderButtons,
+}: any) => {
+  const navigation = useAppNavigation();
+
   return (
     <>
       <View style={applyStyles('py-80 mt-80 items-center')}>
@@ -26,11 +33,20 @@ export const SuccessScreen = ({onDone, renderButtons}: any) => {
               width: '60%',
             },
           )}>
-          {strings('withdrawal_pin.success_message')}
+          Your Security questions has been changed successfully
         </Text>
       </View>
 
-      {renderButtons(onDone)}
+      <View
+        style={applyStyles('mt-64 pt-64 flex-row items-center justify-around')}>
+        <Button
+          title={strings('done')}
+          style={applyStyles('mt-32', {width: '45%'})}
+          onPress={() => {
+            navigation.navigate('SecuritySettings');
+          }}
+        />
+      </View>
     </>
   );
 };

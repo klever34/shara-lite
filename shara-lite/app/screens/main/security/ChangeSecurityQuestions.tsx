@@ -9,7 +9,7 @@ import {User} from 'types/app';
 
 const strings = getI18nService().strings;
 
-export const SecurityQuestions = ({route: {params}}: any) => {
+export const ChangeSecurityQuestions = ({route: {params}}: any) => {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [, setLoading] = useState(false);
@@ -38,7 +38,7 @@ export const SecurityQuestions = ({route: {params}}: any) => {
         question: question,
       };
       await apiService.setSecurityQuestions(securityQuestionsPayload);
-      navigation.navigate('TransactionPinSuccessScreen');
+      navigation.navigate('SecurityQuestionsSuccessScreen');
     } catch (error) {
       setLoading(false);
       Alert.alert(strings('alert.error'), error.message);

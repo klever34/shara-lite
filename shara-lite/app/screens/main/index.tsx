@@ -59,16 +59,18 @@ import {
 import FeedbackScreen from './more/feedback';
 import ReferralScreen from './more/referral';
 import {BVNVerification} from './payments/BVNVerification';
-import DisburementScreen from './payments/DisburementScreen';
+import DisbursementScreen from './payments/DisbursementScreen';
 import {ReportScreen} from './report';
 import {SecurityScreen} from './security';
+import {ChangeSecurityQuestions} from './security/ChangeSecurityQuestions';
 import {ChangeTransactionPin} from './security/ChangeTransactionPin';
 import {CreateTransactionPin} from './security/CreateTransactionPin';
 import {EnterTransaction} from './security/EnterTransaction';
 import {NotSetTransactionPinPage} from './security/NotSetTransactionPinModal';
 import {RecoverTransactionPin} from './security/RecoverTransactionPin';
 import {SecurityQuestions} from './security/SecurityQuestions';
-import {SuccessScreen} from './security/SuccessScreen';
+import {SecurityQuestionsSuccessScreen} from './security/SecurityQuestionsSuccess';
+import {TransactionPinSuccessScreen} from './security/TransactionPinSuccessScreen';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
@@ -106,7 +108,7 @@ export type MainStackParamList = {
   BVNVerification: undefined;
   BusinessSettings: undefined;
   SecuritySettings: {pinSet?: boolean};
-  DisburementScreen: undefined;
+  DisbursementScreen: undefined;
   UserProfileSettings: undefined;
 
   // Report
@@ -114,12 +116,14 @@ export type MainStackParamList = {
 
   // Pin
   SetTransactionPin: undefined;
-  SuccessScreen: undefined;
   SecurityQuestions: undefined;
   VerifyTransactionPin: undefined;
   RecoverTransactionPin: undefined;
   ChangeTransactionPin: undefined;
   NotSetTransactionPin: undefined;
+  ChangeSecurityQuestions: undefined;
+  TransactionPinSuccessScreen: undefined;
+  SecurityQuestionsSuccessScreen: undefined;
 
   // Money
   Drawdown: undefined;
@@ -384,8 +388,8 @@ const MainScreens = () => {
               options={{headerShown: false}}
             />
             <MainStack.Screen
-              name="DisburementScreen"
-              component={DisburementScreen}
+              name="DisbursementScreen"
+              component={DisbursementScreen}
               options={{headerShown: false}}
             />
 
@@ -444,8 +448,16 @@ const MainScreens = () => {
             />
 
             <MainStack.Screen
-              name="SuccessScreen"
-              component={SuccessScreen}
+              name="TransactionPinSuccessScreen"
+              component={TransactionPinSuccessScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="SecurityQuestionsSuccessScreen"
+              component={SecurityQuestionsSuccessScreen}
               options={{
                 headerShown: false,
               }}
@@ -454,6 +466,14 @@ const MainScreens = () => {
             <MainStack.Screen
               name="SecurityQuestions"
               component={SecurityQuestions}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="ChangeSecurityQuestions"
+              component={ChangeSecurityQuestions}
               options={{
                 headerShown: false,
               }}

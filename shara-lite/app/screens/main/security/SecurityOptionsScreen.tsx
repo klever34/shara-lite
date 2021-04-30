@@ -26,6 +26,15 @@ export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
 
   const changeTransactionPin = useCallback(() => {
     navigation.navigate('VerifyTransactionPin', {
+      routeName: 'ChangeTransactionPin',
+      fromSecuritySettings,
+      heading: strings('withdrawal_pin.enter_new_transaction_pin'),
+    });
+  }, [fromSecuritySettings, navigation]);
+
+  const changeSecurityQuestions = useCallback(() => {
+    navigation.navigate('VerifyTransactionPin', {
+      routeName: 'ChangeSecurityQuestions',
       fromSecuritySettings,
       heading: strings('withdrawal_pin.enter_new_transaction_pin'),
     });
@@ -69,9 +78,17 @@ export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
     },
   };
 
+  const changeQuestions = pinSet && {
+    leftSection: {
+      title: strings('withdrawal_pin.recover_transaction_pin.page_title'),
+      caption: 'Update your security questions',
+    },
+    onPress: changeSecurityQuestions,
+  };
+
   const securityOptions = useMemo(() => {
-    return [newPin, notSetPin];
-  }, [newPin, notSetPin]);
+    return [newPin, notSetPin, changeQuestions];
+  }, [changeQuestions, newPin, notSetPin]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
