@@ -8,6 +8,7 @@
     "next": "Next",
     "send": "Send",
     "skip": "Skip",
+    "new_feature": "New Feature",
     "get_started": "Get Started",
     "login": {
       "heading": "Get Started For Free",
@@ -1158,9 +1159,18 @@
       "enter_transaction_pin_title": "ENTER TRANSACTION PIN",
       "error_message": "INCORRECT PIN",
       "transaction_pin": "Transaction Pin",
-      "enter_new_transaction_pin": "Enter your new transaction PIN"
+      "enter_new_transaction_pin": "Enter your new transaction PIN",
+      "set_pin_modal": {
+        "heading": "You can now set up a PIN to further secure your transactions.",
+        "caption": "A PIN is required for withdrawals and creating BNPL transactions",
+        "action_button_text": "set withdrawal pin"
+      }
     },
-    "Lọ si Awọn Eto Aabo": ""
+    "set_pin_modal": {
+      "heading": "You can now set up a PIN to further secure your transactions.",
+      "caption": "A PIN is required for withdrawals and creating BNPL transactions",
+      "action_button_text": "set withdrawal pin"
+    }
   },
   "sw": {
     "update_shara": {
@@ -1171,6 +1181,7 @@
     "next": "Fuatayo",
     "send": "Tuma",
     "skip": "Ruka",
+    "new_feature": "Makala Mpya",
     "get_started": "Anza",
     "login": {
       "heading": "Anza bure",
@@ -2296,10 +2307,15 @@
       "confirm_transaction_pin_heading": "Thibitisha PIN",
       "enter_transaction_pin_title": "Ingiza PIN ya UCHUKUZI",
       "error_message": "PIN isiyosahihi",
-      "transaction_pin": "",
-      "enter_new_transaction_pin": ""
+      "transaction_pin": "Siri ya manunuzi",
+      "enter_new_transaction_pin": "Ingiza PIN yako mpya ya muamala",
+      "set_pin_modal": {"heading": "", "caption": "", "action_button_text": ""}
     },
-    "Lọ si Awọn Eto Aabo": ""
+    "set_pin_modal": {
+      "heading": "Sasa unaweza kusanikisha PIN ili kuhakikisha zaidi miamala yako.",
+      "caption": "PIN inahitajika kwa uondoaji na kuunda shughuli za BNPL",
+      "action_button_text": "weka pini ya kujiondoa"
+    }
   },
   "ha": {
     "update_shara": {
@@ -2310,6 +2326,7 @@
     "next": "Na Gaba",
     "send": "Aika",
     "skip": "Tsallake",
+    "new_feature": "Sabon Fasali",
     "get_started": "Farawa",
     "login": {
       "heading": "Farawa kyauta",
@@ -3422,16 +3439,22 @@
       "confirm_transaction_pin_heading": "Jẹrisi PIN",
       "enter_transaction_pin_title": "WỌN PIN TRANSACTION",
       "error_message": "PIN ti ko tọ",
-      "transaction_pin": "",
-      "enter_new_transaction_pin": ""
+      "transaction_pin": "Filin ma'amala",
+      "enter_new_transaction_pin": "Shigar da sabon PIN na ma'amala",
+      "set_pin_modal": {"heading": "", "caption": "", "action_button_text": ""}
     },
-    "Lọ si Awọn Eto Aabo": ""
+    "set_pin_modal": {
+      "heading": "Yanzu zaku iya saita PIN don ƙara amintar da ma'amalar ku.",
+      "caption": "Ana buƙatar PIN don cire kuɗi da ƙirƙirar ma'amala na BNPL",
+      "action_button_text": "saita cire pin"
+    }
   },
   "yo": {
     "update_shara": {"title": "", "description": "", "submit_button": ""},
     "next": "",
     "send": "",
     "skip": "",
+    "new_feature": "",
     "get_started": "",
     "login": {
       "heading": "",
@@ -4248,15 +4271,17 @@
       "enter_transaction_pin_title": "",
       "error_message": "",
       "transaction_pin": "",
-      "enter_new_transaction_pin": ""
+      "enter_new_transaction_pin": "",
+      "set_pin_modal": {"heading": "", "caption": "", "action_button_text": ""}
     },
-    "Lọ si Awọn Eto Aabo": ""
+    "set_pin_modal": {"heading": "", "caption": "", "action_button_text": ""}
   },
   "fr": {
     "update_shara": {"title": "", "description": "", "submit_button": ""},
     "next": "",
     "send": "",
     "skip": "",
+    "new_feature": "",
     "get_started": "",
     "login": {
       "heading": "",
@@ -5073,15 +5098,17 @@
       "enter_transaction_pin_title": "",
       "error_message": "",
       "transaction_pin": "",
-      "enter_new_transaction_pin": ""
+      "enter_new_transaction_pin": "",
+      "set_pin_modal": {"heading": "", "caption": "", "action_button_text": ""}
     },
-    "Lọ si Awọn Eto Aabo": ""
+    "set_pin_modal": {"heading": "", "caption": "", "action_button_text": ""}
   },
   "ar": {
     "update_shara": {"title": "", "description": "", "submit_button": ""},
     "next": "",
     "send": "",
     "skip": "",
+    "new_feature": "",
     "get_started": "",
     "login": {
       "heading": "",
@@ -5898,8 +5925,9 @@
       "enter_transaction_pin_title": "",
       "error_message": "",
       "transaction_pin": "",
-      "enter_new_transaction_pin": ""
+      "enter_new_transaction_pin": "",
+      "set_pin_modal": {"heading": "", "caption": "", "action_button_text": ""}
     },
-    "Lọ si Awọn Eto Aabo": ""
+    "set_pin_modal": {"heading": "", "caption": "", "action_button_text": ""}
   }
 }

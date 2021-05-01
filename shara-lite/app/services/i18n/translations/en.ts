@@ -24,6 +24,7 @@ const en: Strings = {
   next: 'Next',
   send: 'Send',
   skip: 'Skip',
+  new_feature: 'New Feature',
   get_started: 'Get Started',
   login: {
     heading: 'Get Started For Free',
@@ -1041,6 +1042,12 @@ const en: Strings = {
     confirm_transaction_pin_heading: 'Confirm PIN',
     enter_transaction_pin_title: 'ENTER TRANSACTION PIN',
     error_message: 'INCORRECT PIN',
+    set_pin_modal: {
+      heading: 'You can now set up a PIN to further secure your transactions.',
+      caption:
+        'A PIN is required for withdrawals and creating BNPL transactions',
+      action_button_text: 'set withdrawal pin',
+    },
   },
 };
 

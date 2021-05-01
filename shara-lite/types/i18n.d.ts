@@ -7,6 +7,7 @@ export interface Strings {
   next: string;
   skip: string;
   send: string;
+  new_feature: string;
   get_started: string;
   login: {
     heading: string;
@@ -897,6 +898,11 @@ export interface Strings {
     confirm_transaction_pin_heading: string;
     enter_transaction_pin_title: string;
     error_message: string;
+    set_pin_modal: {
+      heading: string;
+      caption: string;
+      action_button_text: string;
+    };
   };
 }
 
