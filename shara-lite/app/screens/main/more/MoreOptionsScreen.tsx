@@ -1,16 +1,17 @@
-import {Button, Image, SecureEmblem, Text} from '@/components';
+import {Image, SecureEmblem, Text} from '@/components';
 import {Icon} from '@/components/Icon';
 import {TitleContainer} from '@/components/TitleContainer';
 import Touchable from '@/components/Touchable';
 import {TouchableActionItem} from '@/components/TouchableActionItem';
 import {AppContext} from '@/contexts/app';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {RootStackParamList} from '@/index';
 import {
   getAnalyticsService,
+  getApiService,
   getAuthService,
   getHelpDeskService,
   getI18nService,
-  getApiService,
 } from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
@@ -27,13 +28,12 @@ import React, {
   useState,
 } from 'react';
 import {Alert, SafeAreaView, ScrollView, View} from 'react-native';
+import {WebView} from 'react-native-webview';
+import {User} from 'types/app';
 import {MoreStackParamList} from '.';
 import {MainStackParamList} from '..';
 import {version} from '../../../../package.json';
 import {inviteImageBase64String} from './inviteImageBase64String';
-import {RootStackParamList} from '@/index';
-import {WebView} from 'react-native-webview';
-import {User} from 'types/app';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;

@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {PaymentActivitiesScreen} from '@/screens/main/money/PaymentActivitiesScreen';
 import {MoneyUnavailableScreen} from './MoneyUnavailableScreen';
@@ -34,9 +34,9 @@ export const MoneyScreen = withModal(({openModal, closeModal}) => {
     }
   }, []);
 
-  const handleSetWithdrawalPin = () => {
+  const handleSetWithdrawalPin = useCallback(() => {
     navigation.navigate('SecuritySettings');
-  };
+  }, [navigation]);
 
   useEffect(() => {
     const fetchUserPin = async () => {

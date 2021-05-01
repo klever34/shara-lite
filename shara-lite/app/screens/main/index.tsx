@@ -37,7 +37,7 @@ import {ObjectId} from 'bson';
 import {parseISO} from 'date-fns';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
 import {createNativeStackNavigator} from 'react-native-screens/native-stack';
@@ -75,6 +75,9 @@ import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
+import {version} from '../../../package.json';
+import {withModal} from '@/helpers/hocs';
+import {SetPinModal} from '@/components';
 
 const strings = getI18nService().strings;
 
@@ -154,7 +157,7 @@ export type MainStackParamList = {
 
 const MainStack = createNativeStackNavigator<MainStackParamList>();
 
-const MainScreens = () => {
+const MainScreens = withModal(({openModal, closeModal}) => {
   useRepeatBackToExit();
   const realm = useRealm();
   const {isSyncCompleted} = useContext(RealmContext);
@@ -273,6 +276,21 @@ const MainScreens = () => {
         <ActivityIndicator color={colors.primary} size={40} />
       </View>
     );
+  }
+
+  const handleSetWithdrawalPin = useCallback(() => {
+    navigation.navigate('SecuritySettings');
+  }, [navigation]);
+
+  if (version) {
+    openModal('full', {
+      renderContent: () => (
+        <SetPinModal
+          onSkip={closeModal}
+          onSetWithdrawalPin={handleSetWithdrawalPin}
+        />
+      ),
+    });
   }
 
   return (
@@ -582,6 +600,6 @@ const MainScreens = () => {
       </OfflineModalProvider>
     </PubNubProvider>
   );
-};
+});
 
 export default MainScreens;
