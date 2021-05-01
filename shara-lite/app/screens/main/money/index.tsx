@@ -56,13 +56,13 @@ export const MoneyScreen = withModal(({openModal, closeModal}) => {
     ] = transactionPinVersionNumber.split('.');
     let [major, minor, patch] = currentVersionNumber.split('.');
     if (Number(transactionPinMajor) !== Number(major)) {
-      return Number(major) < Number(transactionPinMajor);
+      return Number(transactionPinMajor) < Number(major);
     } else if (Number(transactionPinMinor) !== Number(minor)) {
-      return Number(minor) < Number(transactionPinMinor);
+      return Number(transactionPinMinor) < Number(minor);
     } else if (Number(transactionPinPatch) !== Number(patch)) {
-      return Number(patch) < Number(transactionPinPatch);
+      return Number(transactionPinPatch) < Number(patch);
     }
-    return false;
+    return true;
   }, []);
 
   useEffect(() => {
