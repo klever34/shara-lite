@@ -109,10 +109,12 @@ export default withModal(function RequestPaymentSuccessScreen({
     async ({mobile, amount}, setSubmitting) => {
       try {
         setSubmitting(true);
-        await getApiService().stkPushDeposit({
+        await getApiService().stkPush({
           mobile,
           purpose: 'payment',
           amount: toNumber(amount),
+          customer_id: customer?._id?.toString(),
+          business_id: businessInfo.id.toString(),
         });
         getAnalyticsService()
           .logEvent('initiateDepositSTKPush', {

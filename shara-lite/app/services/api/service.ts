@@ -185,6 +185,14 @@ export interface IApiService {
     drawdown_id?: number;
   }): Promise<any>;
   verify(payload: {idNumber: string}): Promise<ApiResponse>;
+  stkPush(payload: {
+    business_id?: string;
+    customer_id?: string;
+    amount: number;
+    mobile?: string;
+    bnpl_drawdown_id?: number;
+    purpose?: string;
+  }): Promise<ApiResponse>;
   validate(payload: {otp: string}): Promise<ApiResponse>;
   stkPushDeposit(payload: {
     amount: number;
@@ -886,6 +894,24 @@ export class ApiService implements IApiService {
     try {
       const fetchResponse = await this.requester.post(
         '/bnpl/repayment',
+        payload,
+      );
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async stkPush(payload: {
+    business_id?: string;
+    customer_id?: string;
+    amount: number;
+    mobile?: string;
+    purpose?: string;
+  }): Promise<ApiResponse> {
+    try {
+      const fetchResponse = await this.requester.post(
+        '/collections/kenya/mobile-money/mpesa/stk',
         payload,
       );
       return fetchResponse;
