@@ -2,6 +2,7 @@ import EmptyState from '@/components/EmptyState';
 import {EntryView} from '@/components/EntryView';
 import OfflineModalProvider from '@/components/OfflineModalProvider';
 import {TransactionDetailsProps} from '@/components/TransactionDetails';
+import {withModal} from '@/helpers/hocs';
 import {ICustomer} from '@/models';
 import {IBNPLApproval} from '@/models/BNPLApproval';
 import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
@@ -37,7 +38,7 @@ import {ObjectId} from 'bson';
 import {parseISO} from 'date-fns';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
 import {createNativeStackNavigator} from 'react-native-screens/native-stack';
@@ -75,9 +76,6 @@ import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
-import {version} from '../../../package.json';
-import {withModal} from '@/helpers/hocs';
-import {SetPinModal} from '@/components';
 
 const strings = getI18nService().strings;
 
@@ -276,21 +274,6 @@ const MainScreens = withModal(({openModal, closeModal}) => {
         <ActivityIndicator color={colors.primary} size={40} />
       </View>
     );
-  }
-
-  const handleSetWithdrawalPin = useCallback(() => {
-    navigation.navigate('SecuritySettings');
-  }, [navigation]);
-
-  if (version) {
-    openModal('full', {
-      renderContent: () => (
-        <SetPinModal
-          onSkip={closeModal}
-          onSetWithdrawalPin={handleSetWithdrawalPin}
-        />
-      ),
-    });
   }
 
   return (

@@ -10,6 +10,7 @@ import {
 import {withModal} from '@/helpers/hocs';
 import {SetPinModal} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
+import {version as currentVersion} from '../../../../package.json';
 
 export type MoneyStackParamList = {
   PaymentActivities: undefined;
@@ -35,8 +36,34 @@ export const MoneyScreen = withModal(({openModal, closeModal}) => {
   }, []);
 
   const handleSetWithdrawalPin = useCallback(() => {
-    navigation.navigate('SecuritySettings');
+    navigation.navigate('SecuritySettings', {pinSet: false});
   }, [navigation]);
+
+  let transactionPinVersion = getRemoteConfigService()
+    .getValue('transactionPinVersion')
+    .asString();
+
+  const shouldShowSetPinModal = useMemo(() => {
+    if (!transactionPinVersion || !currentVersion) {
+      return false;
+    }
+    const [transactionPinVersionNumber] = transactionPinVersion.split('-');
+    const [currentVersionNumber] = currentVersion.split('-');
+    let [
+      transactionPinMajor,
+      transactionPinMinor,
+      transactionPinPatch,
+    ] = transactionPinVersionNumber.split('.');
+    let [major, minor, patch] = currentVersionNumber.split('.');
+    if (Number(transactionPinMajor) !== Number(major)) {
+      return Number(major) < Number(transactionPinMajor);
+    } else if (Number(transactionPinMinor) !== Number(minor)) {
+      return Number(minor) < Number(transactionPinMinor);
+    } else if (Number(transactionPinPatch) !== Number(patch)) {
+      return Number(patch) < Number(transactionPinPatch);
+    }
+    return false;
+  }, []);
 
   useEffect(() => {
     const fetchUserPin = async () => {
@@ -46,8 +73,7 @@ export const MoneyScreen = withModal(({openModal, closeModal}) => {
       }
       try {
         const {data: pinSet} = await getApiService().transactionPin(user?.id);
-        console.log(pinSet);
-        if (pinSet) {
+        if (!pinSet && shouldShowSetPinModal) {
           openModal('full', {
             renderContent: () => (
               <SetPinModal
@@ -57,9 +83,7 @@ export const MoneyScreen = withModal(({openModal, closeModal}) => {
             ),
           });
         }
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     };
 
     fetchUserPin();

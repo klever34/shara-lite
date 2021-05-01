@@ -5,11 +5,12 @@ import {TransactionsScreen} from '@/screens/main/transactions';
 import {applySpacing, applyStyles, colors, navBarHeight} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useContext, useEffect, useMemo} from 'react';
-import {Text} from '@/components';
+import {SetPinModal, Text} from '@/components';
 import {Image, SafeAreaView, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
 import {
+  getApiService,
   getAuthService,
   getI18nService,
   getRemoteConfigService,
@@ -19,6 +20,8 @@ import Touchable from '@/components/Touchable';
 import {useLastSeen} from '@/services/last-seen';
 import {MoneyScreen} from './money';
 import {MoreScreen} from './more';
+import {withModal} from '@/helpers/hocs';
+import {version as currentVersion} from '../../../package.json';
 
 const strings = getI18nService().strings;
 
@@ -50,7 +53,7 @@ export const useSharaMoney = () => {
   return {enableSharaMoney};
 };
 
-export const HomeScreen = () => {
+export const HomeScreen = withModal(({openModal, closeModal}) => {
   const {enableSharaMoney} = useSharaMoney();
   const navigation = useAppNavigation();
   const business = useInfo(() => getAuthService().getBusinessInfo());
@@ -65,6 +68,59 @@ export const HomeScreen = () => {
   useEffect(() => {
     setCurrentCustomer?.(null);
   }, [setCurrentCustomer]);
+
+  const handleSetWithdrawalPin = () => {
+    navigation.navigate('SecuritySettings', {pinSet: false});
+  };
+
+  let transactionPinVersion = getRemoteConfigService()
+    .getValue('transactionPinVersion')
+    .asString();
+
+  const shouldShowSetPinModal = useMemo(() => {
+    if (!transactionPinVersion || !currentVersion) {
+      return false;
+    }
+    const [transactionPinVersionNumber] = transactionPinVersion.split('-');
+    const [currentVersionNumber] = currentVersion.split('-');
+    let [
+      transactionPinMajor,
+      transactionPinMinor,
+      transactionPinPatch,
+    ] = transactionPinVersionNumber.split('.');
+    let [major, minor, patch] = currentVersionNumber.split('.');
+    if (Number(transactionPinMajor) !== Number(major)) {
+      return Number(major) < Number(transactionPinMajor);
+    } else if (Number(transactionPinMinor) !== Number(minor)) {
+      return Number(minor) < Number(transactionPinMinor);
+    } else if (Number(transactionPinPatch) !== Number(patch)) {
+      return Number(patch) < Number(transactionPinPatch);
+    }
+    return false;
+  }, []);
+
+  useEffect(() => {
+    const handleShowTransactionPinModal = async () => {
+      const user = getAuthService().getUser();
+      if (!user) {
+        return;
+      }
+      try {
+        const {data: pinSet} = await getApiService().transactionPin(user?.id);
+        if (!pinSet && shouldShowSetPinModal) {
+          openModal('full', {
+            renderContent: () => (
+              <SetPinModal
+                onSkip={closeModal}
+                onSetWithdrawalPin={handleSetWithdrawalPin}
+              />
+            ),
+          });
+        }
+      } catch (error) {}
+    };
+    handleShowTransactionPinModal();
+  }, []);
 
   navigation.addListener('focus', () => {
     setCurrentCustomer?.(null);
@@ -175,4 +231,4 @@ export const HomeScreen = () => {
       </MainNav.Navigator>
     </SafeAreaView>
   );
-};
+});
