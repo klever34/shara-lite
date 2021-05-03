@@ -63,6 +63,8 @@ import {BVNVerification} from './payments/BVNVerification';
 import DisbursementScreen from './payments/DisbursementScreen';
 import {ReportScreen} from './report';
 import {SecurityScreen} from './security';
+import {EnterTransaction} from './security/EnterTransaction';
+import {NotSetTransactionPinPage} from './security/NotSetTransactionPinModal';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
@@ -427,6 +429,22 @@ const MainScreens = withModal(() => {
             <MainStack.Screen
               name="SecuritySettings"
               component={SecurityScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="VerifyTransactionPin"
+              component={EnterTransaction}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="NotSetTransactionPin"
+              component={NotSetTransactionPinPage}
               options={{
                 headerShown: false,
               }}
