@@ -277,7 +277,6 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
             setHasError(true);
           }
           handleError(e);
-          closeModal();
         }
       },
       [
@@ -461,7 +460,7 @@ export const TransactionPinWithdrawModal = ({
         closeModal();
       }
     },
-    [closeModal, onSubmit],
+    [amount, closeModal, onSubmit],
   );
 
   useEffect(() => {

@@ -1,15 +1,16 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Text, View} from 'react-native';
 import LottieView from 'lottie-react-native';
 import {applyStyles} from '@/styles';
 import {getI18nService} from '@/services';
 import {Button} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
+import {SecurityContext} from './context';
 
 const strings = getI18nService().strings;
-export const TransactionPinSuccessScreen = ({onDone, renderButtons}: any) => {
+export const TransactionPinSuccessScreen = () => {
   const navigation = useAppNavigation();
-
+  const {setPinSet} = useContext(SecurityContext);
   return (
     <>
       <View style={applyStyles('py-80 mt-80 items-center')}>
@@ -40,7 +41,8 @@ export const TransactionPinSuccessScreen = ({onDone, renderButtons}: any) => {
           title={strings('done')}
           style={applyStyles('mt-32', {width: '45%'})}
           onPress={() => {
-            navigation.navigate('SecuritySettings');
+            setPinSet?.(true);
+            navigation.navigate('SecurityOptions');
           }}
         />
       </View>

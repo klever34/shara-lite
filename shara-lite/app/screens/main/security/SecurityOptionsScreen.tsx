@@ -1,21 +1,20 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useContext, useMemo} from 'react';
 import {SafeAreaView, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {TouchableActionItem} from '@/components/TouchableActionItem';
 import {applyStyles, colors} from '@/styles';
 import {Page} from '@/components/Page';
-import {RouteProp} from '@react-navigation/native';
-import {SecurityStackParamList} from '.';
 import {getApiService, getAuthService, getI18nService} from '@/services';
+import {SecurityContext} from './context';
 
 const strings = getI18nService().strings;
 
-type SecurityOptionsScreenProps = {
-  route: RouteProp<SecurityStackParamList, 'SecurityOptions'>;
-};
+// type SecurityOptionsScreenProps = {
+//   route: RouteProp<SecurityStackParamList, 'SecurityOptions'>;
+// };
 
-export const SecurityOptionsScreen = ({route}: SecurityOptionsScreenProps) => {
-  const {pinSet} = route.params;
+export const SecurityOptionsScreen = () => {
+  const {pinSet} = useContext(SecurityContext);
   const fromSecuritySettings = true;
   const navigation = useAppNavigation();
   const user = getAuthService().getUser();

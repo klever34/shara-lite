@@ -63,15 +63,6 @@ import {BVNVerification} from './payments/BVNVerification';
 import DisbursementScreen from './payments/DisbursementScreen';
 import {ReportScreen} from './report';
 import {SecurityScreen} from './security';
-import {ChangeSecurityQuestions} from './security/ChangeSecurityQuestions';
-import {ChangeTransactionPin} from './security/ChangeTransactionPin';
-import {CreateTransactionPin} from './security/CreateTransactionPin';
-import {EnterTransaction} from './security/EnterTransaction';
-import {NotSetTransactionPinPage} from './security/NotSetTransactionPinModal';
-import {RecoverTransactionPin} from './security/RecoverTransactionPin';
-import {SecurityQuestions} from './security/SecurityQuestions';
-import {SecurityQuestionsSuccessScreen} from './security/SecurityQuestionsSuccess';
-import {TransactionPinSuccessScreen} from './security/TransactionPinSuccessScreen';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
@@ -155,7 +146,7 @@ export type MainStackParamList = {
 
 const MainStack = createNativeStackNavigator<MainStackParamList>();
 
-const MainScreens = withModal(({openModal, closeModal}) => {
+const MainScreens = withModal(() => {
   useRepeatBackToExit();
   const realm = useRealm();
   const {isSyncCompleted} = useContext(RealmContext);
@@ -225,6 +216,7 @@ const MainScreens = withModal(({openModal, closeModal}) => {
         pubNub.unsubscribeAll();
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Effect to when FCM notification is clicked
@@ -435,78 +427,6 @@ const MainScreens = withModal(({openModal, closeModal}) => {
             <MainStack.Screen
               name="SecuritySettings"
               component={SecurityScreen}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <MainStack.Screen
-              name="SetTransactionPin"
-              component={CreateTransactionPin}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <MainStack.Screen
-              name="TransactionPinSuccessScreen"
-              component={TransactionPinSuccessScreen}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <MainStack.Screen
-              name="SecurityQuestionsSuccessScreen"
-              component={SecurityQuestionsSuccessScreen}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <MainStack.Screen
-              name="SecurityQuestions"
-              component={SecurityQuestions}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <MainStack.Screen
-              name="ChangeSecurityQuestions"
-              component={ChangeSecurityQuestions}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <MainStack.Screen
-              name="VerifyTransactionPin"
-              component={EnterTransaction}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <MainStack.Screen
-              name="RecoverTransactionPin"
-              component={RecoverTransactionPin}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <MainStack.Screen
-              name="ChangeTransactionPin"
-              component={ChangeTransactionPin}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <MainStack.Screen
-              name="NotSetTransactionPin"
-              component={NotSetTransactionPinPage}
               options={{
                 headerShown: false,
               }}
