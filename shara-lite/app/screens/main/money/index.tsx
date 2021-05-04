@@ -10,7 +10,6 @@ import {
 import {withModal} from '@/helpers/hocs';
 import {SetPinModal} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
-import {version as currentVersion} from '../../../../package.json';
 
 export type MoneyStackParamList = {
   PaymentActivities: undefined;
@@ -39,32 +38,6 @@ export const MoneyScreen = withModal(({openModal, closeModal}) => {
     navigation.navigate('SecuritySettings', {pinSet: false});
   }, [navigation]);
 
-  let transactionPinVersion = getRemoteConfigService()
-    .getValue('transactionPinVersion')
-    .asString();
-
-  const shouldShowSetPinModal = useMemo(() => {
-    if (!transactionPinVersion || !currentVersion) {
-      return false;
-    }
-    const [transactionPinVersionNumber] = transactionPinVersion.split('-');
-    const [currentVersionNumber] = currentVersion.split('-');
-    let [
-      transactionPinMajor,
-      transactionPinMinor,
-      transactionPinPatch,
-    ] = transactionPinVersionNumber.split('.');
-    let [major, minor, patch] = currentVersionNumber.split('.');
-    if (Number(transactionPinMajor) !== Number(major)) {
-      return Number(transactionPinMajor) < Number(major);
-    } else if (Number(transactionPinMinor) !== Number(minor)) {
-      return Number(transactionPinMinor) < Number(minor);
-    } else if (Number(transactionPinPatch) !== Number(patch)) {
-      return Number(transactionPinPatch) < Number(patch);
-    }
-    return true;
-  }, []);
-
   useEffect(() => {
     const fetchUserPin = async () => {
       const user = getAuthService().getUser();
@@ -73,7 +46,7 @@ export const MoneyScreen = withModal(({openModal, closeModal}) => {
       }
       try {
         const {data: pinSet} = await getApiService().transactionPin(user?.id);
-        if (!pinSet && shouldShowSetPinModal) {
+        if (!pinSet) {
           openModal('full', {
             renderContent: () => (
               <SetPinModal
