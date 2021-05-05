@@ -22,7 +22,7 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/core';
 import {addWeeks, format, parseISO} from 'date-fns';
 import {useFormik} from 'formik';
-import {orderBy} from 'lodash';
+import {orderBy, throttle} from 'lodash';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   InteractionManager,
@@ -274,7 +274,10 @@ export const BNPLRecordTransactionScreen = withModal(
             //TODO: this is where you'll put the component to render the pin modal
             <TransactionPinWithdrawModal
               closeModal={closeModal}
-              onSubmit={(pin) => handleSaveTransaction(pin, values)}
+              onSubmit={throttle(
+                (pin) => handleSaveTransaction(pin, values),
+                1000,
+              )}
             />
           ),
         });
