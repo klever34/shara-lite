@@ -780,12 +780,12 @@
       }
     },
     "referral": {
-      "title": "Referral",
-      "toast_text": "Referral code submitted",
+      "title": "Shara Ambassador Code",
+      "toast_text": "Shara ambassador code submitted",
       "fields": {
         "code": {
-          "label": "Referral Code",
-          "placeholder": "Enter referral code here"
+          "label": "Shara Ambassador Code",
+          "placeholder": "Shara ambassador code here"
         }
       },
       "submit_button": "Submit"
@@ -1937,12 +1937,12 @@
       }
     },
     "referral": {
-      "title": "Rufaa",
-      "toast_text": "Nambari ya rufaa imewasilishwa",
+      "title": "Msimbo wa Balozi wa Shara",
+      "toast_text": "Nambari ya balozi wa Shara imewasilishwa",
       "fields": {
         "code": {
           "label": "Msimbo wa Balozi wa Shara",
-          "placeholder": "Ingiza nambari ya rufaa hapa"
+          "placeholder": "Nambari ya balozi wa Shara hapa"
         }
       },
       "submit_button": "Wasilisha"
@@ -2290,7 +2290,10 @@
       "create_transaction_pin": {
         "heading": "Weka PIN ya tarakimu 4 kwa shughuli zako zote"
       },
-      "enter_transaction_pin": {"heading": "", "page_title": ""},
+      "enter_transaction_pin": {
+        "heading": "Ingiza PIN yako ya Ununuzi",
+        "page_title": "Weka PIN YA UCHUKUZI"
+      },
       "not_set_transaction_pin": "Weka pini ya Ununuzi",
       "not_set_transaction_pin_text": "Weka pini ya Ununuzi kabla ya kujitoa",
       "security_settings": "mipangilio ya usalama",
@@ -2313,7 +2316,7 @@
         "answer_placeholder": "Ingiza jibu la swali hapo juu hapa"
       },
       "success_message": "PIN yako ya shughuli imewekwa kwa mafanikio",
-      "security_questions_success_message": "\nMaswali yako ya Usalama yamebadilishwa kwa mafanikio",
+      "security_questions_success_message": "Maswali yako ya Usalama yamebadilishwa kwa mafanikio",
       "confirm_transaction_pin_heading": "Thibitisha PIN",
       "enter_transaction_pin_title": "Ingiza PIN ya UCHUKUZI",
       "error_message": "PIN isiyosahihi",
@@ -3076,12 +3079,12 @@
       }
     },
     "referral": {
-      "title": "Referral",
-      "toast_text": "An tura lambar referral dinka",
+      "title": "Shara Ambassador Code",
+      "toast_text": "Shara jakadan lambar da aka gabatar",
       "fields": {
         "code": {
-          "label": "Kooshi Ambassador Shara",
-          "placeholder": "Sanya lambar Referral"
+          "label": "Shara Ambassador Code",
+          "placeholder": "Shara jakadan lamba anan"
         }
       },
       "submit_button": "Tura"
@@ -3418,43 +3421,46 @@
     "copied": "An kwafa",
     "submit": "Tura",
     "withdrawal_pin": {
-      "subHeading": "Gbogbo awọn iṣowo jẹ ailewu, aabo ati lẹsẹkẹsẹ",
+      "subHeading": "Duk ma'amaloli suna da aminci, amintattu kuma nan take",
       "change_transaction_pin": {
-        "heading": "Tẹ Pin Idunadura atijọ",
-        "title": "Yi Pinpin Iṣowo pada",
-        "transaction_pin": "Pin Pin iṣowo"
+        "heading": "Shigar da tsohuwar Ma'amala",
+        "title": "Canja Fil ɗin ma'amala",
+        "transaction_pin": "Fil ma'amala"
       },
       "create_transaction_pin": {
-        "heading": "Ṣeto PIN oni-nọmba mẹrin 4 fun gbogbo awọn iṣowo rẹ"
+        "heading": "Saita lambar PIN 4 don duk ma'amalar ku"
       },
-      "enter_transaction_pin": {"heading": "", "page_title": ""},
-      "not_set_transaction_pin": "Ṣeto PIN kan Idunadura",
-      "not_set_transaction_pin_text": "Ṣeto pin pin Idunadura ṣaaju ṣiṣe yiyọ kuro",
-      "security_settings": "awọn eto aabo",
-      "not_set_transaction_pin_button": "",
+      "enter_transaction_pin": {
+        "heading": "Shigar da PIN na ma'amala",
+        "page_title": "Saita PIN TRANSACTION"
+      },
+      "not_set_transaction_pin": "Saita fil ma'amala",
+      "not_set_transaction_pin_text": "Kafa fil ɗin ma'amala kafin yin janyewa",
+      "security_settings": "saitunan tsaro",
+      "not_set_transaction_pin_button": "Jeka Saitunan Tsaro",
       "recover_transaction_pin": {
-        "page_title": "Awọn ibeere aabo",
-        "placeholder": "Tẹ idahun si ibeere ti o wa loke nibi"
+        "page_title": "Tambayoyin tsaro",
+        "placeholder": "Shigar da amsar tambayar da ke sama anan"
       },
-      "transaction_pin_caption": "Wo ki o ṣe imudojuiwọn alaye ti ara ẹni rẹ",
+      "transaction_pin_caption": "Duba ku sabunta bayanan ku",
       "security_options": {
-        "set_transaction_pin_title": "Ṣeto PIN Iṣowo",
-        "change_transaction_pin_title": "Yi PIN Iṣowo pada",
-        "recover_transaction_pin_title": "Pada Iṣowo PIN"
+        "set_transaction_pin_title": "Saita PIN na ma'amala",
+        "change_transaction_pin_title": "Canja ma'amala PIN",
+        "recover_transaction_pin_title": "Mai da PIN na ma'amala"
       },
       "security_questions": {
-        "page_title": "AWỌN NIPA AABO",
-        "question_label": "Ṣeto ibeere aabo kan",
-        "question_placeholder": "fun apẹẹrẹ Orukọ ti ohun ọsin rẹ akọkọ",
-        "answer_label": "Ṣeto idahun aabo rẹ",
-        "answer_placeholder": "Tẹ idahun si ibeere ti o wa loke nibi"
+        "page_title": "CIGABA DA TSARO",
+        "question_label": "Kafa tambayar tsaro",
+        "question_placeholder": "misali Sunan dabbar gidanka ta farko",
+        "answer_label": "Saita amsarka ta tsaro",
+        "answer_placeholder": "Shigar da amsar tambayar da ke sama anan"
       },
-      "success_message": "PIN idunadura rẹ ti ṣeto ni aṣeyọri",
-      "security_questions_success_message": "\nAwọn ibeere Aabo rẹ ti yipada ni aṣeyọri",
-      "confirm_transaction_pin_heading": "Jẹrisi PIN",
-      "enter_transaction_pin_title": "WỌN PIN TRANSACTION",
-      "error_message": "PIN ti ko tọ",
-      "transaction_pin": "Filin ma'amala",
+      "success_message": "An saita PIN na ma'amalarku cikin nasara",
+      "security_questions_success_message": "An canza tambayoyinku na Tsaro cikin nasara",
+      "confirm_transaction_pin_heading": "Tabbatar da PIN",
+      "enter_transaction_pin_title": "SHIGA TRANSACTION PIN",
+      "error_message": "BATSA KYAUTA",
+      "transaction_pin": "Fil ma'amala",
       "enter_new_transaction_pin": "Shigar da sabon PIN na ma'amala",
       "set_pin_modal": {"heading": "", "caption": "", "action_button_text": ""}
     },
