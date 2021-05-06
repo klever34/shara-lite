@@ -22,7 +22,7 @@ export const TransactionPinSuccessScreen = () => {
           />
         </View>
         <Text style={applyStyles('text-black text-400 text-2xl text-center')}>
-          Success
+          {strings('success')}
         </Text>
         <Text
           style={applyStyles(

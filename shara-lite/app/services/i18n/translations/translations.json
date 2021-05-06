@@ -1155,6 +1155,7 @@
         "answer_placeholder": "Enter the answer to the above question here"
       },
       "success_message": "Your transaction PIN has been set successfully",
+      "security_questions_success_message": "Your Security questions has been changed successfully",
       "confirm_transaction_pin_heading": "Confirm PIN",
       "enter_transaction_pin_title": "ENTER TRANSACTION PIN",
       "error_message": "INCORRECT PIN",
@@ -2304,6 +2305,7 @@
         "answer_placeholder": "Ingiza jibu la swali hapo juu hapa"
       },
       "success_message": "PIN yako ya shughuli imewekwa kwa mafanikio",
+      "security_questions_success_message": "Maswali yako ya Usalama yamebadilishwa kwa mafanikio",
       "confirm_transaction_pin_heading": "Thibitisha PIN",
       "enter_transaction_pin_title": "Ingiza PIN ya UCHUKUZI",
       "error_message": "PIN isiyosahihi",
@@ -3436,6 +3438,7 @@
         "answer_placeholder": "Tẹ idahun si ibeere ti o wa loke nibi"
       },
       "success_message": "PIN idunadura rẹ ti ṣeto ni aṣeyọri",
+      "security_questions_success_message": "Awọn ibeere Aabo rẹ ti yipada ni aṣeyọri",
       "confirm_transaction_pin_heading": "Jẹrisi PIN",
       "enter_transaction_pin_title": "WỌN PIN TRANSACTION",
       "error_message": "PIN ti ko tọ",
@@ -4267,6 +4270,7 @@
         "answer_placeholder": ""
       },
       "success_message": "",
+      "security_questions_success_message": "",
       "confirm_transaction_pin_heading": "",
       "enter_transaction_pin_title": "",
       "error_message": "",
@@ -5094,6 +5098,7 @@
         "answer_placeholder": ""
       },
       "success_message": "",
+      "security_questions_success_message": "",
       "confirm_transaction_pin_heading": "",
       "enter_transaction_pin_title": "",
       "error_message": "",
@@ -5921,6 +5926,7 @@
         "answer_placeholder": ""
       },
       "success_message": "",
+      "security_questions_success_message": "",
       "confirm_transaction_pin_heading": "",
       "enter_transaction_pin_title": "",
       "error_message": "",

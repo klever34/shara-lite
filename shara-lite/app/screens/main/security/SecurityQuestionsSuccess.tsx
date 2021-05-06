@@ -7,10 +7,7 @@ import {Button} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 
 const strings = getI18nService().strings;
-export const SecurityQuestionsSuccessScreen = ({
-  onDone,
-  renderButtons,
-}: any) => {
+export const SecurityQuestionsSuccessScreen = () => {
   const navigation = useAppNavigation();
 
   return (
@@ -24,7 +21,7 @@ export const SecurityQuestionsSuccessScreen = ({
           />
         </View>
         <Text style={applyStyles('text-black text-400 text-2xl text-center')}>
-          Success
+          {strings('success')}
         </Text>
         <Text
           style={applyStyles(
@@ -33,7 +30,7 @@ export const SecurityQuestionsSuccessScreen = ({
               width: '60%',
             },
           )}>
-          Your Security questions has been changed successfully
+          {strings('withdrawal_pin.security_questions_success_message')}
         </Text>
       </View>
 
@@ -43,7 +40,7 @@ export const SecurityQuestionsSuccessScreen = ({
           title={strings('done')}
           style={applyStyles('mt-32', {width: '45%'})}
           onPress={() => {
-            navigation.navigate('SecuritySettings');
+            navigation.navigate('SecurityOptions');
           }}
         />
       </View>

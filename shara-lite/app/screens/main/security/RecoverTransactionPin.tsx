@@ -33,7 +33,7 @@ export const RecoverTransactionPin = (props: any) => {
       const {
         data: {token},
       } = await apiService.verifySecurityQuestions(payload);
-      navigation.navigate('ChangeTransactionPin', {
+      navigation.replace('ChangeTransactionPin', {
         token,
         heading: strings('withdrawal_pin.enter_new_transaction_pin'),
       });

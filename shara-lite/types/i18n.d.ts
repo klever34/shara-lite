@@ -895,6 +895,7 @@ export interface Strings {
       answer_placeholder: string;
     };
     success_message: string;
+    security_questions_success_message: string;
     confirm_transaction_pin_heading: string;
     enter_transaction_pin_title: string;
     error_message: string;

@@ -22,15 +22,7 @@ type ConfirmTransactionPinProps = {
 };
 
 export const TransactionPin = withModal(
-  ({
-    enterProps,
-    confirmProps,
-    openModal,
-    closeModal,
-    onSubmit,
-    title,
-    hideButton,
-  }: any) => {
+  ({enterProps, confirmProps, openModal, onSubmit, title}: any) => {
     const [pin, setPin] = useState('');
     const [loading, setLoading] = useState(false);
     const [hasError, setHasError] = useState(false);
@@ -54,29 +46,10 @@ export const TransactionPin = withModal(
     }, []);
 
     const onSuccess = useCallback(() => {
-      const onCloseModal = openModal('full', {
-        renderContent: () => (
-          <TransactionPinSuccessScreen
-            renderButtons={() => (
-              <View
-                style={applyStyles(
-                  'mt-64 pt-64 flex-row items-center justify-around',
-                )}>
-                <Button
-                  title={strings('done')}
-                  style={applyStyles('mt-32', {width: '45%'})}
-                  onPress={() => {
-                    closeModal();
-                    onCloseModal();
-                    navigation.navigate('SecuritySettings');
-                  }}
-                />
-              </View>
-            )}
-          />
-        ),
+      openModal('full', {
+        renderContent: () => <TransactionPinSuccessScreen />,
       });
-    }, [closeModal, navigation, openModal]);
+    }, [openModal]);
 
     const handleSubmit = useCallback(
       async (confirmPin: string) => {

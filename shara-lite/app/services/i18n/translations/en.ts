@@ -1039,6 +1039,8 @@ const en: Strings = {
       answer_placeholder: 'Enter the answer to the above question here',
     },
     success_message: 'Your transaction PIN has been set successfully',
+    security_questions_success_message:
+      'Your Security questions has been changed successfully',
     confirm_transaction_pin_heading: 'Confirm PIN',
     enter_transaction_pin_title: 'ENTER TRANSACTION PIN',
     error_message: 'INCORRECT PIN',

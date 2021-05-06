@@ -57,7 +57,7 @@ export const EnterTransaction = withModal(({route: {params}}: any) => {
             navigation.navigate('DisbursementScreen');
           }
         } else {
-          navigation.navigate(params.routeName, {
+          navigation.replace(params.routeName, {
             token,
             heading,
             status: true,
