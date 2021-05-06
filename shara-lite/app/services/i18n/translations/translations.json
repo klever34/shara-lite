@@ -1874,7 +1874,10 @@
           "title": "Mipangilio ya malipo",
           "description": "Tazama na uhariri maelezo yako ya malipo"
         },
-        "security": {"title": "Usalama", "description": ""},
+        "security": {
+          "title": "Usalama",
+          "description": "Weka PIN na maswali yako ya usalama"
+        },
         "referral": {
           "title": "Msimbo wa Balozi wa Shara",
           "description": "Ingiza nambari ya balozi wa shara"
@@ -1886,7 +1889,7 @@
         "language": {"title": "Lugha", "description": "Chagua Lugha yako"},
         "support": {
           "title": "Wasiliana na Msaada",
-          "description": "Ask a question or leave a message"
+          "description": "Uliza swali au acha ujumbe"
         },
         "kyc_settings": {
           "title": "Mipangilio ya KYC",
@@ -3010,7 +3013,10 @@
           "title": "Saitin Tsarin biya",
           "description": "Dubawa da gyaran bayanan tsarin biyan ku"
         },
-        "security": {"title": "Tsaro", "description": ""},
+        "security": {
+          "title": "Tsaro",
+          "description": "Saita PIN da tambayoyin tsaro"
+        },
         "referral": {
           "title": "Kooshi Ambassador Shara",
           "description": "Tẹ koodu aṣoju dani sii"
@@ -3022,7 +3028,7 @@
         "language": {"title": "Yare", "description": "Zabi Yare"},
         "support": {
           "title": "Tuntuɓi Tallafi",
-          "description": "Ask a question or leave a message"
+          "description": "Yi tambaya ko barin saƙo"
         },
         "kyc_settings": {
           "title": "Saitunan KYC",
