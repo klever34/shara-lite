@@ -122,8 +122,8 @@ export const MoreOptionsScreen = withModal(
         },
         {
           leftSection: {
-            title: 'Security',
-            caption: 'Set your PIN and security questions',
+            title: strings('more.list.security.title'),
+            caption: strings('more.list.security.description'),
           },
           onPress: async () => {
             if (!user) {

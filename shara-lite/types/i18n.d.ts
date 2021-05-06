@@ -534,6 +534,7 @@ export interface Strings {
       profile_settings: Card;
       business_settings: Card;
       payment_settings: Card;
+      security: Card;
       language: Card;
       support: Card;
       referral: Card;

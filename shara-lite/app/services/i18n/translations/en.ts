@@ -542,6 +542,10 @@ const en: Strings = {
         title: 'Payment Settings',
         description: 'View and edit your payment information',
       },
+      security: {
+        title: 'Security',
+        description: 'Set your PIN and security questions',
+      },
       referral: {
         title: 'Referral',
         description: 'Enter referral code',

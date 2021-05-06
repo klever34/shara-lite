@@ -714,6 +714,10 @@
           "title": "Payment Settings",
           "description": "View and edit your payment information"
         },
+        "security": {
+          "title": "Security",
+          "description": "Set your PIN and security questions"
+        },
         "referral": {
           "title": "Shara Ambassador Code",
           "description": "Enter shara ambassador code"
@@ -1870,6 +1874,7 @@
           "title": "Mipangilio ya malipo",
           "description": "Tazama na uhariri maelezo yako ya malipo"
         },
+        "security": {"title": "Usalama", "description": ""},
         "referral": {
           "title": "Msimbo wa Balozi wa Shara",
           "description": "Ingiza nambari ya balozi wa shara"
@@ -1880,12 +1885,12 @@
         },
         "language": {"title": "Lugha", "description": "Chagua Lugha yako"},
         "support": {
-          "title": "Contact Support",
+          "title": "Wasiliana na Msaada",
           "description": "Ask a question or leave a message"
         },
         "kyc_settings": {
-          "title": "KYC Settings",
-          "description": "Fill your KYC information"
+          "title": "Mipangilio ya KYC",
+          "description": "Jaza habari yako ya KYC"
         }
       },
       "logout": {
@@ -2305,7 +2310,7 @@
         "answer_placeholder": "Ingiza jibu la swali hapo juu hapa"
       },
       "success_message": "PIN yako ya shughuli imewekwa kwa mafanikio",
-      "security_questions_success_message": "Maswali yako ya Usalama yamebadilishwa kwa mafanikio",
+      "security_questions_success_message": "\nMaswali yako ya Usalama yamebadilishwa kwa mafanikio",
       "confirm_transaction_pin_heading": "Thibitisha PIN",
       "enter_transaction_pin_title": "Ingiza PIN ya UCHUKUZI",
       "error_message": "PIN isiyosahihi",
@@ -3005,6 +3010,7 @@
           "title": "Saitin Tsarin biya",
           "description": "Dubawa da gyaran bayanan tsarin biyan ku"
         },
+        "security": {"title": "Tsaro", "description": ""},
         "referral": {
           "title": "Kooshi Ambassador Shara",
           "description": "Tẹ koodu aṣoju dani sii"
@@ -3015,12 +3021,12 @@
         },
         "language": {"title": "Yare", "description": "Zabi Yare"},
         "support": {
-          "title": "Contact Support",
+          "title": "Tuntuɓi Tallafi",
           "description": "Ask a question or leave a message"
         },
         "kyc_settings": {
-          "title": "KYC Settings",
-          "description": "Fill your KYC information"
+          "title": "Saitunan KYC",
+          "description": "Cika bayanan KYC naka"
         }
       },
       "logout": {
@@ -3438,7 +3444,7 @@
         "answer_placeholder": "Tẹ idahun si ibeere ti o wa loke nibi"
       },
       "success_message": "PIN idunadura rẹ ti ṣeto ni aṣeyọri",
-      "security_questions_success_message": "Awọn ibeere Aabo rẹ ti yipada ni aṣeyọri",
+      "security_questions_success_message": "\nAwọn ibeere Aabo rẹ ti yipada ni aṣeyọri",
       "confirm_transaction_pin_heading": "Jẹrisi PIN",
       "enter_transaction_pin_title": "WỌN PIN TRANSACTION",
       "error_message": "PIN ti ko tọ",
@@ -3939,6 +3945,7 @@
         "profile_settings": {"title": "", "description": ""},
         "business_settings": {"title": "", "description": ""},
         "payment_settings": {"title": "", "description": ""},
+        "security": {"title": "", "description": ""},
         "referral": {"title": "", "description": ""},
         "feedback": {"title": "", "description": ""},
         "language": {"title": "", "description": ""},
@@ -4767,6 +4774,7 @@
         "profile_settings": {"title": "", "description": ""},
         "business_settings": {"title": "", "description": ""},
         "payment_settings": {"title": "", "description": ""},
+        "security": {"title": "", "description": ""},
         "referral": {"title": "", "description": ""},
         "feedback": {"title": "", "description": ""},
         "language": {"title": "", "description": ""},
@@ -5595,6 +5603,7 @@
         "profile_settings": {"title": "", "description": ""},
         "business_settings": {"title": "", "description": ""},
         "payment_settings": {"title": "", "description": ""},
+        "security": {"title": "", "description": ""},
         "referral": {"title": "", "description": ""},
         "feedback": {"title": "", "description": ""},
         "language": {"title": "", "description": ""},
