@@ -1,22 +1,24 @@
+import {SetPinModal, Text} from '@/components';
+import {EntryContext} from '@/components/EntryView';
 import {Icon} from '@/components/Icon';
 import {TabBarLabel} from '@/components/TabBarLabel';
+import Touchable from '@/components/Touchable';
+import {withModal} from '@/helpers/hocs';
+import {useInfo} from '@/helpers/hooks';
 import {CustomersScreen} from '@/screens/main/customers';
 import {TransactionsScreen} from '@/screens/main/transactions';
-import {applySpacing, applyStyles, colors, navBarHeight} from '@/styles';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React, {useContext, useEffect, useMemo} from 'react';
-import {Text} from '@/components';
-import {Image, SafeAreaView, View} from 'react-native';
-import {useAppNavigation} from '@/services/navigation';
-import {useInfo} from '@/helpers/hooks';
 import {
+  getApiService,
   getAuthService,
   getI18nService,
   getRemoteConfigService,
 } from '@/services';
-import {EntryContext} from '@/components/EntryView';
-import Touchable from '@/components/Touchable';
 import {useLastSeen} from '@/services/last-seen';
+import {useAppNavigation} from '@/services/navigation';
+import {applySpacing, applyStyles, colors, navBarHeight} from '@/styles';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, {useContext, useEffect, useMemo} from 'react';
+import {Image, SafeAreaView, View} from 'react-native';
 import {MoneyScreen} from './money';
 import {MoreScreen} from './more';
 
@@ -50,7 +52,7 @@ export const useSharaMoney = () => {
   return {enableSharaMoney};
 };
 
-export const HomeScreen = () => {
+export const HomeScreen = withModal(({openModal, closeModal}) => {
   const {enableSharaMoney} = useSharaMoney();
   const navigation = useAppNavigation();
   const business = useInfo(() => getAuthService().getBusinessInfo());
@@ -65,6 +67,33 @@ export const HomeScreen = () => {
   useEffect(() => {
     setCurrentCustomer?.(null);
   }, [setCurrentCustomer]);
+
+  const handleSetWithdrawalPin = () => {
+    navigation.navigate('SecuritySettings', {pinSet: false});
+  };
+
+  useEffect(() => {
+    const handleShowTransactionPinModal = async () => {
+      const user = getAuthService().getUser();
+      if (!user) {
+        return;
+      }
+      try {
+        const {data: pinSet} = await getApiService().transactionPin(user?.id);
+        if (!pinSet) {
+          openModal('full', {
+            renderContent: () => (
+              <SetPinModal
+                onSkip={closeModal}
+                onSetWithdrawalPin={handleSetWithdrawalPin}
+              />
+            ),
+          });
+        }
+      } catch (error) {}
+    };
+    handleShowTransactionPinModal();
+  }, []);
 
   navigation.addListener('focus', () => {
     setCurrentCustomer?.(null);
@@ -175,4 +204,4 @@ export const HomeScreen = () => {
       </MainNav.Navigator>
     </SafeAreaView>
   );
-};
+});

@@ -2,6 +2,7 @@ import EmptyState from '@/components/EmptyState';
 import {EntryView} from '@/components/EntryView';
 import OfflineModalProvider from '@/components/OfflineModalProvider';
 import {TransactionDetailsProps} from '@/components/TransactionDetails';
+import {withModal} from '@/helpers/hocs';
 import {ICustomer} from '@/models';
 import {IBNPLApproval} from '@/models/BNPLApproval';
 import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
@@ -59,8 +60,11 @@ import {
 import FeedbackScreen from './more/feedback';
 import ReferralScreen from './more/referral';
 import {BVNVerification} from './payments/BVNVerification';
-import DisburementScreen from './payments/DisburementScreen';
+import DisbursementScreen from './payments/DisbursementScreen';
 import {ReportScreen} from './report';
+import {SecurityScreen} from './security';
+import {EnterTransaction} from './security/EnterTransaction';
+import {NotSetTransactionPinPage} from './security/NotSetTransactionPinModal';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
@@ -97,11 +101,23 @@ export type MainStackParamList = {
   PaymentSettings: undefined;
   BVNVerification: undefined;
   BusinessSettings: undefined;
-  DisburementScreen: undefined;
+  SecuritySettings: {pinSet?: boolean};
+  DisbursementScreen: undefined;
   UserProfileSettings: undefined;
 
   // Report
   Report: undefined;
+
+  // Pin
+  SetTransactionPin: undefined;
+  SecurityQuestions: undefined;
+  VerifyTransactionPin: undefined;
+  RecoverTransactionPin: undefined;
+  ChangeTransactionPin: undefined;
+  NotSetTransactionPin: undefined;
+  ChangeSecurityQuestions: undefined;
+  TransactionPinSuccessScreen: undefined;
+  SecurityQuestionsSuccessScreen: undefined;
 
   // Money
   Drawdown: undefined;
@@ -132,7 +148,7 @@ export type MainStackParamList = {
 
 const MainStack = createNativeStackNavigator<MainStackParamList>();
 
-const MainScreens = () => {
+const MainScreens = withModal(() => {
   useRepeatBackToExit();
   const realm = useRealm();
   const {isSyncCompleted} = useContext(RealmContext);
@@ -202,6 +218,7 @@ const MainScreens = () => {
         pubNub.unsubscribeAll();
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Effect to when FCM notification is clicked
@@ -366,8 +383,8 @@ const MainScreens = () => {
               options={{headerShown: false}}
             />
             <MainStack.Screen
-              name="DisburementScreen"
-              component={DisburementScreen}
+              name="DisbursementScreen"
+              component={DisbursementScreen}
               options={{headerShown: false}}
             />
 
@@ -403,6 +420,31 @@ const MainScreens = () => {
             <MainStack.Screen
               name="RequestPaymentSuccess"
               component={RequestPaymentSuccessScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            {/* Pin */}
+            <MainStack.Screen
+              name="SecuritySettings"
+              component={SecurityScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="VerifyTransactionPin"
+              component={EnterTransaction}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <MainStack.Screen
+              name="NotSetTransactionPin"
+              component={NotSetTransactionPinPage}
               options={{
                 headerShown: false,
               }}
@@ -479,6 +521,6 @@ const MainScreens = () => {
       </OfflineModalProvider>
     </PubNubProvider>
   );
-};
+});
 
 export default MainScreens;

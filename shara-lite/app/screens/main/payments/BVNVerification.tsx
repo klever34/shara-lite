@@ -54,7 +54,7 @@ export const BVNVerification = () => {
         authService.setUser(userInfo);
         await storageService.setItem('user', userInfo);
         setLoading(false);
-        navigation.navigate('DisburementScreen');
+        navigation.navigate('DisbursementScreen');
       } catch (error) {
         setLoading(false);
         Alert.alert(strings('alert.error'), error.message);

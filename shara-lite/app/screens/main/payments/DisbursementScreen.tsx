@@ -22,7 +22,7 @@ import {parseISO} from 'date-fns';
 import Icon from '@/components/Icon';
 const strings = getI18nService().strings;
 
-function DisburementScreen(props: ModalWrapperFields) {
+function DisbursementScreen(props: ModalWrapperFields) {
   const {openModal} = props;
   const apiService = getApiService();
   const navigation = useAppNavigation();
@@ -312,4 +312,4 @@ function DisburementScreen(props: ModalWrapperFields) {
   );
 }
 
-export default withModal(DisburementScreen);
+export default withModal(DisbursementScreen);

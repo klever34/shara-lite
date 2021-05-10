@@ -1,4 +1,18 @@
 import {Strings} from 'types/i18n';
+import apiEn from './api-en';
+
+const formatApiEn = (obj: {[key: string]: any}) => {
+  const result: {[key: string]: any} = {};
+  const keys = Object.keys(obj);
+  keys.forEach((key) => {
+    if (obj[key].message) {
+      result[key] = obj[key].message;
+    } else {
+      result[key] = formatApiEn(obj[key]);
+    }
+  });
+  return result;
+};
 
 const en: Strings = {
   update_shara: {
@@ -10,6 +24,7 @@ const en: Strings = {
   next: 'Next',
   send: 'Send',
   skip: 'Skip',
+  new_feature: 'New Feature',
   get_started: 'Get Started',
   login: {
     heading: 'Get Started For Free',
@@ -84,170 +99,7 @@ const en: Strings = {
       description:
         'We are syncing your data across the Shara app. This might take a few seconds.',
     },
-    api: {
-      fallbackError: 'Oops! Something unexpected happened.',
-      auth: {
-        otp: {
-          welcomeBack:
-            "Welcome back to Shara. We've sent an OTP to your mobile number",
-          welcome: "Welcome to Shara. We've sent an OTP to your mobile number",
-          selectCountry: 'Please select a country',
-          fallbackError: 'Oops! An error occurred while signing up user',
-        },
-        login: {
-          otpExpired: 'OTP has expired',
-          success: 'Login Successful',
-          fallbackError: 'Invalid mobile or OTP',
-        },
-      },
-      business: {
-        notFound: 'Business not found',
-        create: {
-          success: 'Business created successfully',
-        },
-        details: {
-          success: 'Business found successfully',
-        },
-        customerDetails: {
-          notFound: 'Customer not found',
-          success: 'Customer found successfully',
-        },
-        update: {
-          uniqueSlug: 'This slug has been taken already',
-          success: 'Business updated successfully',
-        },
-      },
-      fcm: {
-        addToken: {
-          missingFields: 'FCM token and platform are required',
-          success: 'Token updated successfully',
-        },
-      },
-      passwordReset: {
-        notFound: 'Account not found',
-        create: {
-          success: 'Please use the OTP sent to your mobile number',
-        },
-        reset: {
-          invalid: 'OTP has expired or is invalid',
-          success: 'Password reset successful',
-        },
-        update: {
-          uniqueSlug: 'This slug has been taken already',
-          success: 'Business updated successfully',
-        },
-      },
-      paymentProvider: {
-        list: {
-          success: 'Payment providers retrieved successfully',
-        },
-      },
-      user: {
-        update: {
-          success: 'User updated successfully',
-        },
-      },
-      mPesa: {
-        initiateSTKPush: {
-          business: {
-            notFound: 'Business not found',
-          },
-          customer: {
-            notFound: 'Business not found',
-          },
-          kenyaOnly: 'Business not found',
-          success:
-            'We were unable to send an STK push to your mobile number please try again or contact us through the Shara mobile application',
-        },
-        processValidationEvent: {
-          success: 'Error Validating Payment',
-        },
-        processConfirmationEvent: {
-          success: 'Error Confirming Payment',
-        },
-      },
-      disbursement: {
-        create: {
-          notFound: 'Your selected withdrawal method is not available',
-          success: 'Your withdrawal has been processed successfully',
-          insufficientBalance: 'You cannot withdraw more than {{maxAmount}}',
-          error:
-            'We were unable to process your withdrawal, please try again or contact us through the Shara mobile application',
-        },
-      },
-      drawdown: {
-        create: {
-          notFound: 'No drawdown has been approved for you',
-          invalidAmount:
-            'Amount specified is more than the amount available for drawdown',
-          inactive: 'Drawdown is not currently active',
-          error:
-            'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
-          success: 'Drawdown taken successfully',
-        },
-      },
-      drawdownRepayment: {
-        create: {
-          notFound: 'No drawdown has been approved for you',
-          complete: "You've already finished repaying your loans",
-          error:
-            'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
-          insufficientBalance: 'Your wallet balance is not sufficient',
-          success: 'Repayment successful',
-        },
-      },
-      identity: {
-        verify: {
-          error:
-            'We were unable to verify your identity, please try again or contact us through the Shara mobile application',
-          invalid: 'Your ID is invalid',
-          success: 'Verification successful',
-        },
-        validate: {
-          error: 'OTP Validation Failed',
-          invalid: 'Your OTP is invalid',
-          success: 'OTP Validation successful',
-        },
-      },
-      bnplApproval: {
-        create: {
-          success: 'BNPL approved successfully',
-          error: 'Unable to approve BNPL for user',
-          exists: 'An active BNPL exists for this user',
-          userNotFound: 'User not found',
-        },
-      },
-      bnplDrawdown: {
-        create: {
-          notFound: 'No BNPL has been approved for you',
-          invalidAmount:
-            'Amount specified is more than the amount available for drawdown',
-          inactive: 'Drawdown is not currently active',
-          error:
-            'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
-          success: 'Drawdown taken successfully',
-          duplicate:
-            'This looks like a duplicate transaction. Please wait 2 minutes to retry, if this is not an error.',
-        },
-      },
-      bnplRepayment: {
-        create: {
-          notFound: 'No BNPL has been approved for you',
-          complete: "You've already finished repaying your loans",
-          error:
-            'We were unable to process your repayment, please try again or contact us through the Shara mobile application',
-          insufficientBalance: 'Your wallet balance is not sufficient',
-          success: 'Repayment successful',
-        },
-      },
-      sms: {
-        create: {
-          success: 'Sms sent successfully',
-          missingFields: 'To & Message are required',
-          error: 'Unable to send SMS. Please try again later',
-        },
-      },
-    },
+    api: formatApiEn(apiEn) as Strings['alert']['api'],
   },
   shara_tagline: 'Built To Get You Paid Faster',
   onboarding_copy_1: {
@@ -690,6 +542,10 @@ const en: Strings = {
         title: 'Payment Settings',
         description: 'View and edit your payment information',
       },
+      security: {
+        title: 'Security',
+        description: 'Set your PIN and security questions',
+      },
       referral: {
         title: 'Referral',
         description: 'Enter referral code',
@@ -917,9 +773,10 @@ const en: Strings = {
       'Your transaction is being processed. It may take up to a few minutes to reflect in your Shara wallet',
     payment_activity: {
       received_payment:
-        'Received payment of **{{amount}}** via **{{provider}}**',
+        "You've just received a payment of **{{amount}}** into your Shara wallet",
       withdrawal: 'Withdrawal of **{{amount}}** to your **{{provider}}**',
       select_customer: 'Select Customer',
+      deposit: "You've just deposited **{{amount}}** into your Shara wallet",
     },
     withdraw_excess_error:
       'Withdrawal amount is greater than your wallet balance',
@@ -1080,7 +937,8 @@ const en: Strings = {
       payment: 'Client pays {{amount}} over {{days}} days',
     },
     receipt: {
-      bnpl_text: 'Buy Now Pay Later ({{payment_frequency}} {{payment_frequency_unit}})',
+      bnpl_text:
+        'Buy Now Pay Later ({{payment_frequency}} {{payment_frequency_unit}})',
     },
     add_repayment: 'Add Repayment',
     client: {
@@ -1121,8 +979,10 @@ const en: Strings = {
       outstanding_amount: '{{amount}}',
       notes: 'Notes',
       notes_text_content: '{{notes}}',
-      client_takes_charge: 'The client will be covering interest in their weekly repayments of {{payment_frequency_amount}}',
-      merchant_takes_charge: 'You are covering the interest payments and {{amount}} was funded to your wallet',
+      client_takes_charge:
+        'The client will be covering interest in their weekly repayments of {{payment_frequency_amount}}',
+      merchant_takes_charge:
+        'You are covering the interest payments and {{amount}} was funded to your wallet',
     },
     recent_purchase_message:
       'Hi {{customer_name}}, thank you for your recent purchase.',
@@ -1145,6 +1005,56 @@ const en: Strings = {
   send_via: 'Send via',
   push_payment: 'Push payment',
   you_get: 'You get',
+  withdrawal_pin: {
+    subHeading: 'All transactions are safe, secure and instant.',
+    change_transaction_pin: {
+      heading: 'Enter old Transaction Pin',
+      title: 'Change Transaction Pin',
+    },
+    transaction_pin: 'Transaction Pin',
+    create_transaction_pin: {
+      heading: 'Set 4-digit PIN for all your transactions',
+    },
+    enter_transaction_pin: {
+      heading: 'Enter your Transaction PIN',
+      page_title: 'Set TRANSACTION PIN',
+    },
+    enter_new_transaction_pin: 'Enter your new transaction PIN',
+    not_set_transaction_pin: 'Set a Transaction pin',
+    not_set_transaction_pin_text:
+      'Set a Transaction pin before making a withdrawal',
+    security_settings: 'security settings',
+    not_set_transaction_pin_button: 'Go to Security Settings',
+    recover_transaction_pin: {
+      page_title: 'Security questions',
+      placeholder: 'Enter the answer to the above question here',
+    },
+    transaction_pin_caption: 'View and update your personal information',
+    security_options: {
+      set_transaction_pin_title: 'Set Transaction PIN',
+      change_transaction_pin_title: 'Change Transaction PIN',
+      recover_transaction_pin_title: 'Recover Transaction PIN',
+    },
+    security_questions: {
+      page_title: 'SECURITY SETTINGS',
+      question_label: 'Set a security question',
+      question_placeholder: 'e.g Name of your first pet',
+      answer_label: 'Set your security answer',
+      answer_placeholder: 'Enter the answer to the above question here',
+    },
+    success_message: 'Your transaction PIN has been set successfully',
+    security_questions_success_message:
+      'Your Security questions has been changed successfully',
+    confirm_transaction_pin_heading: 'Confirm PIN',
+    enter_transaction_pin_title: 'ENTER TRANSACTION PIN',
+    error_message: 'INCORRECT PIN',
+    set_pin_modal: {
+      heading: 'You can now set up a PIN to further secure your transactions.',
+      caption:
+        'A PIN is required for withdrawals and creating BNPL transactions',
+      action_button_text: 'set withdrawal pin',
+    },
+  },
 };
 
 export default en;
