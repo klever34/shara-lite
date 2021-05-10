@@ -52,7 +52,7 @@ export const PaymentSettingBvn = () => {
         };
         authService.setUser(userInfo);
         await getStorageService().setItem('user', userInfo);
-        navigation.navigate('DisburementScreen');
+        navigation.navigate('DisbursementScreen');
       } else {
         const bvnVerificationEnabled = getRemoteConfigService()
           .getValue('enableBVNVerification')
@@ -61,7 +61,7 @@ export const PaymentSettingBvn = () => {
           navigation.navigate('BVNVerification');
         } else {
           await getStorageService().setItem('bvn', idValue);
-          navigation.navigate('DisburementScreen');
+          navigation.navigate('DisbursementScreen');
         }
       }
     } catch (error) {

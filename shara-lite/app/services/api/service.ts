@@ -167,6 +167,7 @@ export interface IApiService {
   makeDisbursement(payload: {
     amount: number;
     disbursement_method_id: number;
+    token: string;
   }): Promise<ApiResponse>;
   saveDrawdown(payload: {amount: number}): Promise<any>;
   makeDrawdownRepayment(payload: {amount: number}): Promise<any>;
@@ -184,13 +185,57 @@ export interface IApiService {
     drawdown_id?: number;
   }): Promise<any>;
   verify(payload: {idNumber: string}): Promise<ApiResponse>;
+  stkPush(payload: {
+    business_id?: string;
+    customer_id?: string;
+    amount: number;
+    mobile?: string;
+    bnpl_drawdown_id?: number;
+    purpose?: string;
+  }): Promise<ApiResponse>;
   validate(payload: {otp: string}): Promise<ApiResponse>;
   stkPushDeposit(payload: {
     amount: number;
     mobile?: string;
+    purpose?: string;
   }): Promise<ApiResponse>;
   sendSMS(payload: {to: string; message: string}): Promise<ApiResponse>;
-  getBNPLBundles(): Promise<BNPLBundle[]>
+  getBNPLBundles(): Promise<BNPLBundle[]>;
+
+  setTransactionPin(
+    id: string,
+    payload: {pin: string; confirm_pin: string},
+  ): Promise<ApiResponse>;
+
+  setSecurityQuestions(payload: {
+    token: string;
+    user_id: number;
+    question: string;
+    answer: string;
+  }): Promise<ApiResponse>;
+
+  verifyTransactionPin(
+    id: string,
+    payload: {pin: string},
+  ): Promise<ApiResponse>;
+
+  transactionPin(id: number): Promise<any>;
+
+  getSecurityQuestions(id: number): Promise<any>;
+
+  changeTransactionPin(
+    id: string,
+    payload: {
+      pin: string;
+      confirm_pin: string;
+      token: string;
+    },
+  ): Promise<any>;
+
+  verifySecurityQuestions(payload: {
+    answer: string;
+    user_id: number;
+  }): Promise<any>;
 }
 
 export class ApiService implements IApiService {
@@ -778,6 +823,7 @@ export class ApiService implements IApiService {
   async makeDisbursement(payload: {
     amount: number;
     disbursement_method_id: number;
+    token: string;
   }): Promise<ApiResponse> {
     try {
       return await this.requester.post('/disbursement', payload);
@@ -856,6 +902,24 @@ export class ApiService implements IApiService {
     }
   }
 
+  async stkPush(payload: {
+    business_id?: string;
+    customer_id?: string;
+    amount: number;
+    mobile?: string;
+    purpose?: string;
+  }): Promise<ApiResponse> {
+    try {
+      const fetchResponse = await this.requester.post(
+        '/collections/kenya/mobile-money/mpesa/stk',
+        payload,
+      );
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async stkPushDeposit(payload: {
     amount: number;
     mobile?: string;
@@ -891,6 +955,83 @@ export class ApiService implements IApiService {
       return bnplBundles;
     } catch (e) {
       throw e;
+    }
+  }
+
+  async setTransactionPin(
+    id: string,
+    payload: {pin: string; confirm_pin: string},
+  ): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/pin', payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async setSecurityQuestions(payload: {
+    user_id: number;
+    token: string;
+    answer: string;
+    question: string;
+  }): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/security-qa', payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async verifyTransactionPin(
+    id: string,
+    payload: {pin: string},
+  ): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/pin/verify', payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async transactionPin() {
+    try {
+      return this.requester.get('/pin', {});
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getSecurityQuestions(id: number) {
+    try {
+      return this.requester.get('/security-qa', {user_id: id});
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async changeTransactionPin(
+    id: string,
+    payload: {
+      pin: string;
+      confirm_pin: string;
+      token: string;
+    },
+  ): Promise<ApiResponse> {
+    try {
+      return await this.requester.patch('/pin', payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async verifySecurityQuestions(payload: {
+    answer: string;
+    user_id: number;
+  }): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/security-qa/verify', payload);
+    } catch (error) {
+      throw error;
     }
   }
 }

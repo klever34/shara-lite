@@ -9,7 +9,7 @@ import {useClipboard} from '@/helpers/hooks';
 import {amountWithCurrency} from '@/helpers/utils';
 import {MoneyDepositScreen} from '@/screens/main/money/MoneyDepositScreen';
 import MoneyWithdrawModal from '@/screens/main/money/MoneyWithdrawModal';
-import {getI18nService} from '@/services';
+import {getApiService, getAuthService, getI18nService} from '@/services';
 import {useBNPLDrawdown} from '@/services/bnpl-drawdown';
 import {useBNPLRepayment} from '@/services/bnpl-repayment';
 import {useCollection} from '@/services/collection';
@@ -21,6 +21,7 @@ import {format} from 'date-fns';
 import {orderBy} from 'lodash';
 import React, {useCallback, useEffect, useMemo} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
+import {NotSetTransactionPinModal} from '../security/NotSetTransactionPinModal';
 import {usePaymentActivities} from './hook';
 import {MoneyActionsContainer} from './MoneyActionsContainer';
 import {
@@ -108,10 +109,19 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     });
   }, [closeModal, openModal]);
 
-  const handleWithdraw = useCallback(() => {
-    openModal('bottom-half', {
-      renderContent: () => <MoneyWithdrawModal onClose={closeModal} />,
-    });
+  const handleWithdraw = useCallback(async () => {
+    const user = getAuthService().getUser();
+    //@ts-ignore
+    const res = await getApiService().transactionPin(user.id);
+    if (res.data === true) {
+      openModal('bottom-half', {
+        renderContent: () => <MoneyWithdrawModal onClose={closeModal} />,
+      });
+    } else {
+      openModal('bottom-half', {
+        renderContent: () => <NotSetTransactionPinModal />,
+      });
+    }
   }, [closeModal, openModal]);
 
   const handleOpenFilterModal = useCallback(() => {

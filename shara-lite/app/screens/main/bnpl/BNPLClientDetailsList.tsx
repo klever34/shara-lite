@@ -1,20 +1,26 @@
-import { Button, toNumber } from '@/components';
+import {Button, toNumber} from '@/components';
 import EmptyState from '@/components/EmptyState';
-import { Icon } from '@/components/Icon';
-import { ModalWrapperFields, withModal } from '@/helpers/hocs';
-import { amountWithCurrency } from '@/helpers/utils';
-import { ICustomer } from '@/models';
-import { IBNPLDrawdown } from '@/models/BNPLDrawdown';
-import { IBNPLRepayment } from '@/models/BNPLRepayment';
-import { getAnalyticsService, getApiService, getI18nService } from '@/services';
-import { handleError } from '@/services/error-boundary';
-import { useAppNavigation } from '@/services/navigation';
-import { useReceipt } from '@/services/receipt';
-import { applyStyles, colors, dimensions } from '@/styles';
-import React, { useCallback } from 'react';
-import { FlatList, InteractionManager, Text, View } from 'react-native';
-import { AddRepaymentModal } from './AddRepaymentModal';
-import { BNPLClientTransactionListItem } from './BNPLClientTransactionListItem';
+import {Icon} from '@/components/Icon';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {amountWithCurrency} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
+import {IBNPLRepayment} from '@/models/BNPLRepayment';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+  getI18nService,
+} from '@/services';
+import {handleError} from '@/services/error-boundary';
+import {useAppNavigation} from '@/services/navigation';
+import {useReceipt} from '@/services/receipt';
+import {applyStyles, colors, dimensions} from '@/styles';
+import React, {useCallback} from 'react';
+import {FlatList, InteractionManager, Text, View} from 'react-native';
+import {TransactionPinWithdrawModal} from '../money/MoneyWithdrawModal';
+import {AddRepaymentModal} from './AddRepaymentModal';
+import {BNPLClientTransactionListItem} from './BNPLClientTransactionListItem';
 
 type Props = {
   customer?: ICustomer;
@@ -29,6 +35,8 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
   const {data, header, drawdown, customer, openModal, closeModal} = props;
   const navigation = useAppNavigation();
   const {getReceipt} = useReceipt();
+
+  const user = getAuthService().getUser();
 
   const renderListItem = useCallback(
     ({item}) => <BNPLClientTransactionListItem item={item} />,
@@ -80,19 +88,48 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
     [handleDone, navigation],
   );
 
-  const handleAddRepayment = useCallback(() => {
+  const handleAddRepayment = useCallback(
+    async (pin) => {
+      try {
+        const res = await getApiService().verifyTransactionPin(`${user?.id}`, {
+          pin,
+        });
+        if (!!res.data.token) {
+          openModal('bottom-half', {
+            renderContent: () => (
+              <AddRepaymentModal
+                onClose={closeModal}
+                onSubmit={handleSaveRepayment}
+                initialValues={{
+                  amount: drawdown.payment_frequency_amount?.toString() ?? '',
+                }}
+              />
+            ),
+          });
+        }
+      } catch (error) {
+        handleError(error);
+      }
+    },
+    [
+      closeModal,
+      drawdown.payment_frequency_amount,
+      handleSaveRepayment,
+      openModal,
+    ],
+  );
+
+  const handleOpenPinModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
-        <AddRepaymentModal
-          onClose={closeModal}
-          onSubmit={handleSaveRepayment}
-          initialValues={{
-            amount: drawdown.payment_frequency_amount?.toString() ?? '',
-          }}
+        //TODO: this is where you'll put the component to render the pin modal
+        <TransactionPinWithdrawModal
+          closeModal={closeModal}
+          onSubmit={handleAddRepayment}
         />
       ),
     });
-  }, [handleSaveRepayment, openModal]);
+  }, [drawdown.payment_frequency_amount, handleAddRepayment, openModal]);
 
   return (
     <View style={applyStyles('flex-1 bg-white')}>
@@ -123,7 +160,7 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
         }
       />
       <Button
-        onPress={handleAddRepayment}
+        onPress={handleOpenPinModal}
         style={applyStyles('absolute bottom-16 rounded-32', {
           left: (dimensions.fullWidth - 200) / 2,
           width: 200,
