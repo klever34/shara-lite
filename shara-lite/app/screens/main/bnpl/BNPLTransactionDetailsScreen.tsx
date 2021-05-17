@@ -26,8 +26,12 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
     receipt,
     created_at,
     amount_owed,
+    amount_drawn,
+    takes_charge,
+    amount_repaid,
     bnpl_repayments,
     repayment_amount,
+    payment_frequency,
     payment_frequency_amount,
   } = transaction;
   const {getReceipt} = useReceipt();
@@ -49,6 +53,11 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
       ),
     });
   }, [openModal]);
+
+  const takesChargeMessage: {[key: string]: string} = {
+    client: strings('bnpl.transaction_info.client_takes_charge', {payment_frequency_amount: amountWithCurrency(payment_frequency_amount)}),
+    merchant: strings('bnpl.transaction_info.merchant_takes_charge', {amount: amountWithCurrency(amount_drawn)})
+  };
 
   return (
     <SafeAreaView style={applyStyles('bg-white flex-1')}>
@@ -84,7 +93,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
               'flex-1 py-18 text-gray-300 text-700 text-right',
             )}>
             {strings('bnpl.transaction_info.paid_amount', {
-              amount: amountWithCurrency(receiptData?.amount_paid),
+              amount: amountWithCurrency(amount_repaid),
             })}
           </Text>
         </View>
@@ -132,7 +141,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
           <View style={applyStyles({width: '48%'})}>
             <Text style={applyStyles('pb-8 text-right text-gray-300 text-2xl')}>
               {strings('bnpl.day_text.other', {
-                amount: 56,
+                amount: (payment_frequency ?? 0) * 7,
               })}
             </Text>
             <Text style={applyStyles('text-right text-gray-100')}>
@@ -141,6 +150,14 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
               })}
             </Text>
           </View>
+        </View>
+        <View
+          style={applyStyles('flex-row px-24 border-b-1 center', {
+            borderColor: colors['gray-20'],
+          })}>
+          <Text style={applyStyles('py-18 text-gray-300 text-700 text-center')}>
+            {!!takes_charge && takesChargeMessage[takes_charge]}
+          </Text>
         </View>
         <Text
           style={applyStyles(

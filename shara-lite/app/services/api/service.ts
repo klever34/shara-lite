@@ -8,6 +8,7 @@ import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
 import {
   ApiResponse,
+  BNPLBundle,
   Business,
   DisbursementProvider,
   GroupChat,
@@ -18,7 +19,7 @@ import {
 import {BaseModelInterface} from '@/models/baseSchema';
 import {getI18nService} from '@/services';
 import {DisbursementOption} from '@/models/DisbursementMethod';
-import { IReceipt } from '@/models/Receipt';
+import {IReceipt} from '@/models/Receipt';
 
 export type Requester = {
   get: <T extends any = any>(
@@ -159,16 +160,37 @@ export interface IApiService {
   saveDisbursementMethod(
     payload: Omit<DisbursementOption, 'fieldsData'>,
   ): Promise<any>;
+
+  deleteDisbursementMethod(
+    disbursementMethodId: number | string,
+  ): Promise<ApiResponse>;
   makeDisbursement(payload: {
     amount: number;
     disbursement_method_id: number;
   }): Promise<ApiResponse>;
   saveDrawdown(payload: {amount: number}): Promise<any>;
   makeDrawdownRepayment(payload: {amount: number}): Promise<any>;
-  saveBNPLDrawdown (payload: {amount: number; customer_id: string; receipt_id: string; receipt_data?: IReceipt; customer_data?: ICustomer;}): Promise<any>;
-  saveBNPLRepayment (payload: {amount: number; drawdown_id?: number;}): Promise<any>;
+  saveBNPLDrawdown(payload: {
+    amount: number;
+    customer_id: string;
+    receipt_id: string;
+    receipt_data?: IReceipt;
+    bnpl_bundle_id?: number;
+    customer_data?: ICustomer;
+    takes_charge?: 'merchant' | 'client';
+  }): Promise<any>;
+  saveBNPLRepayment(payload: {
+    amount: number;
+    drawdown_id?: number;
+  }): Promise<any>;
   verify(payload: {idNumber: string}): Promise<ApiResponse>;
   validate(payload: {otp: string}): Promise<ApiResponse>;
+  stkPushDeposit(payload: {
+    amount: number;
+    mobile?: string;
+  }): Promise<ApiResponse>;
+  sendSMS(payload: {to: string; message: string}): Promise<ApiResponse>;
+  getBNPLBundles(): Promise<BNPLBundle[]>
 }
 
 export class ApiService implements IApiService {
@@ -749,6 +771,19 @@ export class ApiService implements IApiService {
     }
   }
 
+  async deleteDisbursementMethod(
+    disbursementMethodId: number | string,
+  ): Promise<any> {
+    try {
+      await this.requester.delete(
+        `/disbursement-method/${disbursementMethodId}`,
+        {},
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async makeDisbursement(payload: {
     amount: number;
     disbursement_method_id: number;
@@ -797,28 +832,74 @@ export class ApiService implements IApiService {
     }
   }
 
-  async saveBNPLDrawdown ( payload: {
+  async saveBNPLDrawdown(payload: {
     amount: number;
     receipt_id: string;
     customer_id: string;
     receipt_data?: IReceipt;
     customer_data?: ICustomer;
-  }): Promise<any>
-  {
+  }): Promise<any> {
     try {
-      const fetchResponse = await this.requester.post('/bnpl/drawdown', payload);
+      const fetchResponse = await this.requester.post(
+        '/bnpl/drawdown',
+        payload,
+      );
       return fetchResponse;
     } catch (error) {
       throw error;
     }
   }
 
-  async saveBNPLRepayment (payload: {amount: number; drawdown_id: number;}): Promise<any> {
+  async saveBNPLRepayment(payload: {
+    amount: number;
+    drawdown_id: number;
+  }): Promise<any> {
     try {
-      const fetchResponse = await this.requester.post('/bnpl/repayment', payload);
+      const fetchResponse = await this.requester.post(
+        '/bnpl/repayment',
+        payload,
+      );
       return fetchResponse;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async stkPushDeposit(payload: {
+    amount: number;
+    mobile?: string;
+  }): Promise<ApiResponse> {
+    try {
+      const fetchResponse = await this.requester.post(
+        '/collections/kenya/mobile-money/mpesa/stk/wallet',
+        payload,
+      );
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async sendSMS(payload: {to: string; message: string}): Promise<ApiResponse> {
+    try {
+      const fetchResponse = await this.requester.post('/sms', payload);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getBNPLBundles() {
+    try {
+      const {
+        data: {bnplBundles},
+      } = await this.requester.get<{bnplBundles: BNPLBundle[]}>(
+        '/bnpl/bundles',
+        {},
+      );
+      return bnplBundles;
+    } catch (e) {
+      throw e;
     }
   }
 }

@@ -6,6 +6,7 @@ export interface Strings {
   };
   next: string;
   skip: string;
+  send: string;
   get_started: string;
   login: {
     heading: string;
@@ -135,12 +136,8 @@ export interface Strings {
           customer: {
             notFound: string;
           };
-          kenyaOnly: {
-            [key: string]: string;
-          };
-          success: {
-            [key: string]: string;
-          };
+          kenyaOnly: string;
+          success: string;
         };
         processValidationEvent: {
           success: string;
@@ -189,29 +186,37 @@ export interface Strings {
       };
       bnplApproval: {
         create: {
-          success: string,
-          error: string,
-          exists: string,
-          userNotFound: string,
-        },
-      },
+          success: string;
+          error: string;
+          exists: string;
+          userNotFound: string;
+        };
+      };
       bnplDrawdown: {
         create: {
-          notFound: string,
-          invalidAmount: string,
-          inactive: string,
-          error: string,
-          success: string,
-        },
-      },
+          notFound: string;
+          invalidAmount: string;
+          inactive: string;
+          error: string;
+          success: string;
+          duplicate: string;
+        };
+      };
       bnplRepayment: {
         create: {
-          notFound: string,
-          complete: string,
-          error: string,
-          insufficientBalance: string,
-          success: string,
-        },
+          notFound: string;
+          complete: string;
+          error: string;
+          insufficientBalance: string;
+          success: string;
+        };
+      };
+      sms: {
+        create: {
+          success: string;
+          missingFields: string;
+          error: string;
+        };
       };
     };
   };
@@ -354,6 +359,20 @@ export interface Strings {
     transaction_date_text: string;
     coming_soon_select_a_photo: string;
   };
+  request_payment: {
+    button: Card;
+    header: Card;
+    fields: {
+      amount: {
+        label: string;
+      };
+      note: {
+        label: string;
+        placeholder: string;
+      };
+    };
+    success_text: string;
+  };
   sale: {
     sale_recorded: string;
     button: Card;
@@ -462,6 +481,7 @@ export interface Strings {
       payment_added: string;
       warning_message: string;
       payment_edited: string;
+      payment_removed: string;
       add_payment_info: string;
       edit_payment_info: string;
       remove_message: string;
@@ -502,6 +522,9 @@ export interface Strings {
       make_default_withdrawal: string;
       withdrawal_picker_placeholder: string;
       select_an_option: string;
+      withdrawal_added: string;
+      withdrawal_removed: string;
+      remove_withdrawal_message: string;
     };
   };
   more: {
@@ -511,8 +534,10 @@ export interface Strings {
       business_settings: Card;
       payment_settings: Card;
       language: Card;
+      support: Card;
       referral: Card;
       feedback: Card;
+      kyc_settings: Card;
     };
     logout_button: string;
     logout: {
@@ -668,6 +693,7 @@ export interface Strings {
     withdraw_excess_error: string;
     withdraw_minimum_error: string;
     withdraw_amount_required_error: string;
+    withdraw_maximum_error: string;
     deposit_help_text: string;
     select_withdrawal_account: string;
     confirm_withdrawal: string;
@@ -689,6 +715,15 @@ export interface Strings {
     };
     not_withdrawal_acct: Card;
     feedback_submitted: string;
+    stk_push: {
+      confirmation_text: string;
+      notification_sent: string;
+      amount_minimum_error: string;
+      fields: {amount: FormField; mobile: FormField};
+    };
+    bnpl_drawdown_item: string;
+    bnpl_repayment_item: string;
+    no_decimals: string;
   };
   drawdown: {
     title: string;
@@ -750,6 +785,9 @@ export interface Strings {
       balance: string;
       bnpl_terms_text: string;
       repayment_date: string;
+      excess_amount_error: string;
+      bearing_fees_text: string;
+      select_option_text: string;
     };
     confirmation: {
       title: string;
@@ -798,6 +836,8 @@ export interface Strings {
       outstanding_amount: string;
       notes: string;
       notes_text_content: string;
+      merchant_takes_charge: string;
+      client_takes_charge: string;
     };
     recent_purchase_message: string;
     recent_purchase_message_from_business: string;
@@ -806,8 +846,15 @@ export interface Strings {
     next_repayment: string;
     first_repayment: string;
   };
+  message_sent: string;
+  sms_no_recipient: string;
+  offline_sms_notification_title: string;
+  offline_sms_notification_description: string;
   copied: string;
   submit: string;
+  send_via: string;
+  push_payment: string;
+  you_get: string;
 }
 
 interface PluralizedString {

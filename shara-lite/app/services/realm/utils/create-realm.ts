@@ -110,6 +110,8 @@ export const createSyncRealm = async ({
       partitionValue,
     };
   } catch (e) {
+    console.log("createSyncRealm error", e);
+    
     if (!hideError) {
       Alert.alert('Error', e.message);
     }

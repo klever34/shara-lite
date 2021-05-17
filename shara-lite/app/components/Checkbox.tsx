@@ -8,6 +8,7 @@ export type CheckboxProps = {
   style?: ViewStyle;
   isChecked?: boolean;
   disabled?: boolean;
+  borderColor?: string;
   checkedColor?: string;
   value: any;
   containerStyle?: ViewStyle;
@@ -27,6 +28,7 @@ export const Checkbox = (props: CheckboxProps) => {
     containerStyle,
     disabled = false,
     checkedColor = 'bg-green-100',
+    borderColor = colors['green-100'],
   } = props;
 
   const borderStyles = useMemo(() => {
@@ -34,7 +36,7 @@ export const Checkbox = (props: CheckboxProps) => {
       return {borderWidth: 2, borderColor: colors['gray-100']};
     }
     if (isChecked) {
-      return {borderWidth: 2, borderColor: colors['green-100']};
+      return {borderWidth: 2, borderColor};
     }
     return {borderWidth: 2, borderColor: colors['gray-50']};
   }, [disabled, isChecked]);

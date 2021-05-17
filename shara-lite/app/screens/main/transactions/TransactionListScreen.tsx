@@ -67,6 +67,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
 
   useEffect(() => {
     reloadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reloadData, searchTerm, filteredReceipts.length]);
 
   useFocusEffect(

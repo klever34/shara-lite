@@ -20,6 +20,8 @@ import {
   ListRenderItemInfo,
   SafeAreaView,
   View,
+  StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 import {Text} from '@/components';
 import {getI18nService} from '@/services';
@@ -376,17 +378,26 @@ export const SelectCustomerListScreen = withModal(
                 style={applyStyles(
                   'px-16 py-8 bg-white flex-row items-center justify-between',
                 )}>
-                <Button
-                  title="Cancel"
-                  variantColor="transparent"
-                  onPress={() => onSelectCustomer()}
-                  style={applyStyles({width: '100%'})}
-                />
-                <Button
-                  title="Save"
-                  style={applyStyles({width: '100%'})}
-                  onPress={() => onSelectCustomer(customer)}
-                />
+                <TouchableOpacity
+                  style={styles.skipBtn}
+                  onPress={() => onSelectCustomer()}>
+                  <Text
+                    style={{fontFamily: 'Roboto-Medium', alignSelf: 'center'}}>
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.nextBtn}
+                  onPress={() => onSelectCustomer(customer)}>
+                  <Text
+                    style={{
+                      fontFamily: 'Roboto-Medium',
+                      alignSelf: 'center',
+                      color: '#fff',
+                    }}>
+                    Save
+                  </Text>
+                </TouchableOpacity>
               </View>
             )
           : customer && (
@@ -394,14 +405,40 @@ export const SelectCustomerListScreen = withModal(
                 style={applyStyles(
                   'px-16 py-8 bg-white flex-row items-center justify-end',
                 )}>
-                <Button
-                  style={applyStyles({width: '100%'})}
-                  title={isCollection ? 'Next' : 'Save'}
-                  onPress={() => onSelectCustomer(customer)}
-                />
+                <TouchableOpacity
+                  style={[styles.nextBtn, {alignSelf: 'flex-end'}]}
+                  onPress={() => onSelectCustomer(customer)}>
+                  <Text
+                    style={{
+                      fontFamily: 'Roboto-Medium',
+                      alignSelf: 'center',
+                      color: '#fff',
+                    }}>
+                    {isCollection ? 'Next' : 'Save'}
+                  </Text>
+                </TouchableOpacity>
               </View>
             )}
       </SafeAreaView>
     );
   },
 );
+
+const styles = StyleSheet.create({
+  skipBtn: {
+    width: '47%',
+    elevation: 0,
+    borderWidth: 1.5,
+    borderColor: colors['gray-20'],
+    backgroundColor: 'transparent',
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+  nextBtn: {
+    width: '47%',
+    elevation: 0,
+    backgroundColor: colors['blue-100'],
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+});

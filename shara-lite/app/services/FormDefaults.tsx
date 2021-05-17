@@ -9,11 +9,11 @@ export class FormDefaults {
   private static testDefaults() {
     return {
       login: {
-        mobile: '8056636694',
+        mobile: '',
         countryCode: '234',
       },
       signup: {
-        mobile: '8056636694',
+        mobile: '',
         password: 'some-password',
         countryCode: '234',
       },

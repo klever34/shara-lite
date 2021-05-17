@@ -5,12 +5,20 @@ import {
   getApiService,
   getAuthService,
   getI18nService,
+  getRemoteConfigService,
   getStorageService,
 } from '@/services';
 import {useAppNavigation} from '@/services/navigation';
-import {applyStyles} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useMemo, useState} from 'react';
-import {Alert, Text, View} from 'react-native';
+import {
+  Alert,
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import {User} from 'types/app';
 
 const strings = getI18nService().strings;
@@ -24,7 +32,7 @@ export const PaymentSettingBvn = () => {
   const idType = useMemo(() => {
     switch (countryCode) {
       case '234':
-        return 'BVN';
+        return 'BVN number';
       case '254':
         return 'National ID';
       default:
@@ -41,6 +49,8 @@ export const PaymentSettingBvn = () => {
     try {
       let user = authService.getUser() as User;
       const payload = {idNumber};
+      let idValue = true;
+
       await apiService.verify(payload);
       if (user?.country_code !== '234') {
         const userInfo = {
@@ -51,7 +61,15 @@ export const PaymentSettingBvn = () => {
         await getStorageService().setItem('user', userInfo);
         navigation.navigate('DisburementScreen');
       } else {
-        navigation.navigate('BVNVerification');
+        const bvnVerificationEnabled = getRemoteConfigService()
+          .getValue('enableBVNVerification')
+          .asBoolean();
+        if (bvnVerificationEnabled) {
+          navigation.navigate('BVNVerification');
+        } else {
+          await getStorageService().setItem('bvn', idValue);
+          navigation.navigate('DisburementScreen');
+        }
       }
     } catch (error) {
       Alert.alert(strings('alert.error'), error.message);
@@ -77,12 +95,28 @@ export const PaymentSettingBvn = () => {
         )}
       />
       <View style={applyStyles('pt-24 items-center')}>
-        <Button
-          title={strings('next')}
-          onPress={handleSubmit}
-          style={applyStyles({width: '48%'})}
-        />
+        <TouchableOpacity style={styles.nextBtn} onPress={handleSubmit}>
+          <Text
+            style={{
+              fontFamily: 'Roboto-Medium',
+              alignSelf: 'center',
+              color: '#fff',
+              fontSize: 18
+            }}>
+            {strings('next')}
+          </Text>
+        </TouchableOpacity>
       </View>
     </Page>
   );
 };
+
+const styles = StyleSheet.create({
+  nextBtn: {
+    width: '47%',
+    elevation: 0,
+    backgroundColor: colors['blue-100'],
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+});

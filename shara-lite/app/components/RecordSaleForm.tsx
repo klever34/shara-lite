@@ -106,7 +106,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
                 credit_amount: amountWithCurrency(values.credit_amount),
               })
           : ''
-      }\n\n${link}\n\n${strings('powered_by_shara')}`;
+      }\n\n\n\n${strings('powered_by_shara')}`;
     },
     [user, values, dueDate, customer, businessInfo, paymentLink],
   );
@@ -305,7 +305,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
             label={strings('sale.fields.note.placeholder')}
             labelStyle={applyStyles('text-400 text-lg text-gray-300')}
             placeholder={strings('sale.fields.note.placeholder')}
-            style={applyStyles({height: 45})}
+            style={applyStyles({height: 100})}
             contentStyle={applyStyles({
               width: dimensions.fullWidth - 68,
             })}

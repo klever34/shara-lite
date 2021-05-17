@@ -7,11 +7,13 @@ import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {withModal} from '@/helpers/hocs';
 import {useClipboard} from '@/helpers/hooks';
 import {amountWithCurrency} from '@/helpers/utils';
-import {ICollection} from '@/models/Collection';
-import {IDisbursement} from '@/models/Disbursement';
 import {MoneyDepositScreen} from '@/screens/main/money/MoneyDepositScreen';
 import MoneyWithdrawModal from '@/screens/main/money/MoneyWithdrawModal';
 import {getI18nService} from '@/services';
+import {useBNPLDrawdown} from '@/services/bnpl-drawdown';
+import {useBNPLRepayment} from '@/services/bnpl-repayment';
+import {useCollection} from '@/services/collection';
+import {useDisbursement} from '@/services/disbursement';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, as, colors} from '@/styles';
 import {useFocusEffect} from '@react-navigation/native';
@@ -21,13 +23,21 @@ import React, {useCallback, useEffect, useMemo} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
 import {usePaymentActivities} from './hook';
 import {MoneyActionsContainer} from './MoneyActionsContainer';
-import {PaymentActivityItem} from './PaymentActivityItem';
+import {
+  PaymentActivityItem,
+  PaymentActivityItemData,
+} from './PaymentActivityItem';
 
 const strings = getI18nService().strings;
 
 export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   const navigation = useAppNavigation();
   const {copyToClipboard} = useClipboard();
+  const {getCollections} = useCollection();
+  const {getDisbursements} = useDisbursement();
+  const {getBNPLDrawdowns} = useBNPLDrawdown();
+  const {getBNPLRepayments} = useBNPLRepayment();
+
   const {
     filter,
     searchTerm,
@@ -42,16 +52,31 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     disbursements,
     filterStartDate,
     handlePagination,
+    bnplDrawdowns,
+    bnplRepayments,
     totalReceivedAmount,
     filteredCollections,
     totalWithdrawnAmount,
     filteredDisbursements,
-  } = usePaymentActivities();
-
-  const activitiesData: (ICollection | IDisbursement)[] = useMemo(() => {
-    const data = [...collections, ...disbursements];
+    filteredBNPLDrawdowns,
+    filteredBNPLRepayments,
+  } = usePaymentActivities({
+    data: {
+      collections: getCollections(),
+      disbursements: getDisbursements(),
+      bnplDrawdowns: getBNPLDrawdowns(),
+      bnplRepayments: getBNPLRepayments().filtered('status = "complete"'),
+    },
+  });
+  const activitiesData: PaymentActivityItemData[] = useMemo(() => {
+    const data = [
+      ...collections,
+      ...disbursements,
+      ...bnplDrawdowns,
+      ...bnplRepayments,
+    ];
     return orderBy(data, 'created_at', 'desc');
-  }, [collections, disbursements]);
+  }, [collections, disbursements, bnplDrawdowns, bnplRepayments]);
 
   useEffect(() => {
     if (!searchTerm) {
@@ -63,6 +88,8 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     searchTerm,
     filteredCollections.length,
     filteredDisbursements.length,
+    filteredBNPLDrawdowns.length,
+    filteredBNPLRepayments.length,
   ]);
 
   useFocusEffect(
@@ -129,7 +156,9 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   }, [navigation]);
 
   const renderListItem = useCallback(
-    ({item: data}) => <PaymentActivityItem data={data} />,
+    ({item: data}: {item: PaymentActivityItemData}) => (
+      <PaymentActivityItem data={data} />
+    ),
     [],
   );
 

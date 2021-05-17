@@ -9,15 +9,15 @@ import {getI18nService} from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {handleError} from '@/services/error-boundary';
 import {usePaymentReminder} from '@/services/payment-reminder';
-import {applyStyles} from '@/styles';
 import BluebirdPromise from 'bluebird';
 import {format} from 'date-fns';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {View} from 'react-native';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import {Button} from './Button';
 import {Checkbox} from './Checkbox';
 import {DatePicker} from './DatePicker';
 import {ToastContext} from './Toast';
+import {applyStyles, colors} from '@/styles';
 
 interface ReminderPopupProps {
   onClose(): void;
@@ -294,22 +294,22 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
         style={applyStyles(
           'flex-row items-center py-16 px-16 justify-between',
         )}>
-        <Button
-          variantColor="transparent"
-          style={applyStyles({
-            width: '100%',
-          })}
-          onPress={onClose}
-          title={strings('cancel')}
-        />
+        <TouchableOpacity style={styles.skipBtn} onPress={() => onClose()}>
+          <Text style={{fontFamily: 'Roboto-Medium', alignSelf: 'center'}}>
+            {strings('cancel')}
+          </Text>
+        </TouchableOpacity>
         {dueDate ? (
-          <Button
-            title={strings('done')}
-            onPress={handleDone}
-            style={applyStyles({
-              width: '100%',
-            })}
-          />
+          <TouchableOpacity style={styles.nextBtn} onPress={() => handleDone()}>
+            <Text
+              style={{
+                fontFamily: 'Roboto-Medium',
+                alignSelf: 'center',
+                color: '#fff',
+              }}>
+              {strings('done')}
+            </Text>
+          </TouchableOpacity>
         ) : (
           <DatePicker
             //@ts-ignore
@@ -326,6 +326,18 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
                   'reminder_popup.set_collection_date_button_text',
                 )}
               />
+            //   <TouchableOpacity style={styles.nextBtn} onPress={() => toggleShow()}>
+            //   <Text
+            //     style={{
+            //       fontFamily: 'Roboto-Medium',
+            //       alignSelf: 'center',
+            //       color: '#fff',
+            //     }}>
+            //     {strings(
+            //       'reminder_popup.set_collection_date_button_text',
+            //     )}
+            //   </Text>
+            // </TouchableOpacity>
             )}
           </DatePicker>
         )}
@@ -333,3 +345,22 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  skipBtn: {
+    width: '47%',
+    elevation: 0,
+    borderWidth: 1.5,
+    borderColor: colors['gray-20'],
+    backgroundColor: 'transparent',
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+  nextBtn: {
+    width: '47%',
+    elevation: 0,
+    backgroundColor: colors['blue-100'],
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+});

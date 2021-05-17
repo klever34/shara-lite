@@ -11,7 +11,7 @@ import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import LottieView from 'lottie-react-native';
 import React, {useCallback, useState} from 'react';
-import {Image, View} from 'react-native';
+import {Image, View, TouchableOpacity, StyleSheet} from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
 const strings = getI18nService().strings;
@@ -271,28 +271,55 @@ export const TransactionReview = (props: TransactionReviewProps) => {
             //@ts-ignore
             minimumDate={new Date()}
             value={dueDate ?? new Date()}
-            containerStyle={applyStyles({width: '48%'})}
+            containerStyle={applyStyles({width: '47%'})}
             onChange={(e: Event, date?: Date) => handleDueDateChange(date)}>
             {(toggleShow) => (
-              <Button
-                onPress={toggleShow}
-                variantColor="transparent"
-                style={applyStyles({width: '100%'})}
-                textStyle={applyStyles('text-sm')}
-                title={
-                  dueDate
+              // <Button
+              //   onPress={toggleShow}
+              //   variantColor="transparent"
+              //   style={applyStyles({width: '100%'})}
+              //   textStyle={applyStyles('text-sm')}
+              //   title={
+              //     dueDate
+              //       ? strings('transaction.change_collection_date')
+              //       : strings('transaction.collection_date')
+              //   }
+              // />
+                  <TouchableOpacity
+            style={[styles.skipBtn]}
+            onPress={toggleShow}>
+            <Text
+              style={{
+                fontFamily: 'Roboto-Medium',
+                alignSelf: 'center',
+                color: '#000',
+                fontSize: 15
+              }}>
+              {                  dueDate
                     ? strings('transaction.change_collection_date')
-                    : strings('transaction.collection_date')
-                }
-              />
+                    : strings('transaction.collection_date')}
+            </Text>
+          </TouchableOpacity>
             )}
           </DatePicker>
         )}
-        <Button
+        {/* <Button
           title={strings('done')}
           onPress={onDone}
           style={applyStyles({width: '100%'})}
-        />
+        /> */}
+                  <TouchableOpacity
+            style={[styles.nextBtn]}
+            onPress={onDone}>
+            <Text
+              style={{
+                fontFamily: 'Roboto-Medium',
+                alignSelf: 'center',
+                color: '#fff',
+              }}>
+              {strings('done')}
+            </Text>
+          </TouchableOpacity>
       </View>
       <View
         style={applyStyles({
@@ -314,3 +341,22 @@ export const TransactionReview = (props: TransactionReviewProps) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  skipBtn: {
+    width: '100%',
+    elevation: 0,
+    borderWidth: 1.5,
+    borderColor: colors['gray-20'],
+    backgroundColor: 'transparent',
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+  nextBtn: {
+    width: '47%',
+    elevation: 0,
+    backgroundColor: colors['blue-100'],
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+});

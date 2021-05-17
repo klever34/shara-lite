@@ -1,7 +1,7 @@
 import {applyStyles} from '@/styles';
 import React from 'react';
 import {Image, ImageStyle} from 'react-native';
-import EMB_IMG from '@/assets/images/emblem-gray.svg';
+import EMB_IMG from '@/assets/images/emblem-green.svg';
 
 export const SecureEmblem = ({style}: {style?: ImageStyle}) => {
   return (

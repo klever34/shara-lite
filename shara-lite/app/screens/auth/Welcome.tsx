@@ -122,7 +122,7 @@ export const Welcome = () => {
           {count === 2 ? (
             <Button
               onPress={handleSkip}
-              style={applyStyles({width: '50%', alignSelf: 'flex-end'})}
+              style={applyStyles('w-full')}
               title={strings('get_started')}
             />
           ) : (

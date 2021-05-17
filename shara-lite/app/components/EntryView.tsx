@@ -87,6 +87,7 @@ export const EntryView = withModal(
     const showEntryDialog = useCallback(() => {
       const entryOptions = [
         {
+          iconType: 'feathericons',
           title: strings('sale.button.title'),
           description: strings('sale.button.description'),
           icon: 'dollar-sign',
@@ -97,6 +98,7 @@ export const EntryView = withModal(
           },
         },
         {
+          iconType: 'feathericons',
           title: strings('collection.button.title'),
           description: strings('collection.button.description'),
           icon: 'arrow-down',
@@ -117,7 +119,22 @@ export const EntryView = withModal(
             pastel: colors['gray-20'],
           },
         },
-      ];
+      ] as {
+        icon: string;
+        title: string;
+        description: string;
+        iconType:
+          | 'ionicons'
+          | 'octicons'
+          | 'material-icons'
+          | 'feathericons'
+          | 'material-community-icons';
+        onPress: () => void;
+        color: {
+          primary: string;
+          pastel: string;
+        };
+      }[];
       return openModal('bottom-half', {
         renderContent: () => {
           return (
@@ -142,9 +159,9 @@ export const EntryView = withModal(
                             },
                           )}>
                           <Icon
-                            type="feathericons"
-                            name={icon}
                             size={24}
+                            name={icon}
+                            type="feathericons"
                             color={color.primary}
                           />
                         </View>

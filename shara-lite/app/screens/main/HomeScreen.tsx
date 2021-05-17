@@ -84,7 +84,7 @@ export const HomeScreen = () => {
         <Touchable onPress={() => navigation.navigate('BusinessSettings')}>
           <View style={applyStyles('flex-row items-center ml-16')}>
             {/* switch the image tag with svg */}
-            {business.profile_image?.url ? (
+            {!business.profile_image?.url ? (
               <Image
                 resizeMode={business.profile_image?.url ? undefined : 'contain'}
                 source={{uri: business.profile_image?.url}}

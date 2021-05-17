@@ -25,6 +25,7 @@ export const useSyncChecks = () => {
 
     try {
       const syncedRecord = await apiService.getSyncedRecord({model, _id});
+      
       if (!syncedRecord) {
         return {isSynced: false};
       }

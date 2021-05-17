@@ -1,4 +1,4 @@
-import DIContainer, {object, get, IDIContainer} from 'rsdi';
+import DIContainer, {get, IDIContainer, object} from 'rsdi';
 import {IStorageService, StorageService} from './storage';
 import {ContactService, IContactService} from './contact';
 import {AuthService, IAuthService} from './auth';
@@ -7,7 +7,7 @@ import {ApiService, IApiService} from './api';
 import {INavigationService, NavigationService} from './navigation';
 import {AnalyticsService, IAnalyticsService} from './analytics';
 import {INotificationService, NotificationService} from './notification';
-import {IGeolocationService, GeolocationService} from './geolocation';
+import {GeolocationService, IGeolocationService} from './geolocation';
 import {AddressService, IAddressService} from '@/services/address/service';
 import {
   IIPGeolocationService,
@@ -18,6 +18,8 @@ import {
   RemoteConfigService,
 } from '@/services/remote-config';
 import {I18nService, II18nService} from '@/services/i18n';
+import {HelpDeskService, IHelpDeskService} from '@/services/help-desk';
+import {IPubNubService, PubNubService} from '@/services/pubnub';
 
 const createDIContainer = (): IDIContainer => {
   const container = new DIContainer();
@@ -29,11 +31,13 @@ const createDIContainer = (): IDIContainer => {
     Geolocation: object(GeolocationService),
     IPGeolocation: object(IPGeolocationService),
     Analytics: object(AnalyticsService).construct(get('Storage')),
+    PubNub: object(PubNubService),
     I18n: object(I18nService).construct(get('RemoteConfig'), get('Storage')),
     Auth: object(AuthService).construct(
       get('Storage'),
       get('Analytics'),
       get('I18n'),
+      get('HelpDesk'),
     ),
     Api: object(ApiService).construct(get('Auth'), get('Storage')),
     Contact: object(ContactService).construct(
@@ -44,6 +48,7 @@ const createDIContainer = (): IDIContainer => {
     ),
     Address: object(AddressService).construct(get('Realm')),
     RemoteConfig: object(RemoteConfigService),
+    HelpDesk: object(HelpDeskService).construct(get('Notification')),
   });
   return container;
 };
@@ -58,6 +63,8 @@ export const getNavigationService = () =>
 
 export const getAnalyticsService = () =>
   container.get<IAnalyticsService>('Analytics');
+
+export const getPubNubService = () => container.get<IPubNubService>('PubNub');
 
 export const getRealmService = () => container.get<IRealmService>('Realm');
 
@@ -84,3 +91,6 @@ export const getRemoteConfigService = () =>
   container.get<IRemoteConfigService>('RemoteConfig');
 
 export const getI18nService = () => container.get<II18nService>('I18n');
+
+export const getHelpDeskService = () =>
+  container.get<IHelpDeskService>('HelpDesk');

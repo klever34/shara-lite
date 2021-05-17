@@ -7,7 +7,16 @@ import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Text} from '@/components';
-import {Alert, FlatList, View, KeyboardAvoidingView, Platform} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 // import {KeyboardAvoidingView, Platform} from 'react-native'
 
 import {DisbursementProvider} from 'types/app';
@@ -21,6 +30,7 @@ import {DisbursementOption} from '@/models/DisbursementMethod';
 import {handleError} from '@/services/error-boundary';
 import {useDisbursementMethod} from '@/services/disbursement-method';
 import {parseISO} from 'date-fns';
+import Icon from '@/components/Icon';
 const strings = getI18nService().strings;
 
 function DisburementScreen(props: ModalWrapperFields) {
@@ -30,12 +40,14 @@ function DisburementScreen(props: ModalWrapperFields) {
   const {
     getDisbursementMethods,
     saveDisbursementMethod,
+    deleteDisbursementMethod,
   } = useDisbursementMethod();
   const disbursementMethods = getDisbursementMethods();
   const [disbursementProviders, setDisbursementProviders] = useState<
     DisbursementProvider[]
   >([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [, setIsDeleting] = useState(false);
   const [user, setUser] = useState(getAuthService().getUser());
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
@@ -67,11 +79,13 @@ function DisburementScreen(props: ModalWrapperFields) {
               updated_at: parseISO(disbursementMethod.updated_at),
             },
           });
+          showSuccessToast(
+            strings('payment.withdrawal_method.withdrawal_added'),
+          );
+          setIsSaving(false);
         } catch (error) {
           handleError(error);
         }
-        showSuccessToast(strings('payment.payment_container.payment_added'));
-        setIsSaving(false);
       } else {
         Alert.alert(
           strings('warning'),
@@ -86,7 +100,7 @@ function DisburementScreen(props: ModalWrapperFields) {
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
         <KeyboardAvoidingView
-        behavior={Platform.OS == 'ios' ? 'padding' : 'height'}>
+          behavior={Platform.OS == 'ios' ? 'padding' : 'height'}>
           <Text
             style={applyStyles(
               'text-center text-uppercase text-700 text-gray-300 mb-16 mt-10',
@@ -103,7 +117,7 @@ function DisburementScreen(props: ModalWrapperFields) {
                     style={applyStyles(
                       'pt-10 flex-row items-center justify-between',
                     )}>
-                    <Button
+                    {/* <Button
                       title={strings('cancel')}
                       onPress={closeModal}
                       variantColor="transparent"
@@ -117,7 +131,43 @@ function DisburementScreen(props: ModalWrapperFields) {
                         handleSubmit();
                         closeModal();
                       }}
-                    />
+                    /> */}
+                    <TouchableOpacity
+                      style={styles.skipBtn}
+                      onPress={closeModal}>
+                      <Text
+                        style={{
+                          fontFamily: 'Roboto-Medium',
+                          alignSelf: 'center',
+                        }}>
+                        {strings('cancel')}
+                      </Text>
+                    </TouchableOpacity>
+                    {!isSaving ? (
+                      <TouchableOpacity
+                        style={styles.nextBtn}
+                        onPress={() => {
+                          handleSubmit();
+                          closeModal();
+                        }}>
+                        <Text
+                          style={{
+                            fontFamily: 'Roboto-Medium',
+                            alignSelf: 'center',
+                            color: '#fff',
+                          }}>
+                          {strings('save')}
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <View
+                        style={[
+                          styles.nextBtn,
+                          {backgroundColor: 'rgba(0,0,0,.3)'},
+                        ]}>
+                        <ActivityIndicator size={'small'} color={'#fff'} />
+                      </View>
+                    )}
                   </View>
                 </View>
               </>
@@ -127,6 +177,17 @@ function DisburementScreen(props: ModalWrapperFields) {
       ),
     });
   }, [openModal, isSaving, onFormSubmit, disbursementProviders]);
+
+  const handleRemoveItem = useCallback(
+    async (values) => {
+      setIsDeleting(true);
+      await apiService.deleteDisbursementMethod(values.api_id);
+      await deleteDisbursementMethod({disbursementMethod: values});
+      showSuccessToast(strings('payment.withdrawal_method.withdrawal_added'));
+      setIsDeleting(false);
+    },
+    [apiService, deleteDisbursementMethod, showSuccessToast],
+  );
 
   const fectchDisbursementProviders = useCallback(async () => {
     try {
@@ -169,7 +230,7 @@ function DisburementScreen(props: ModalWrapperFields) {
       }}
       style={applyStyles('px-0')}>
       <View
-// behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+        // behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
         style={applyStyles('py-18 bg-white flex-1', {height: '100%'})}>
         {disbursementMethods.length === 0 ? (
           <View style={applyStyles('flex-1')}>
@@ -213,7 +274,10 @@ function DisburementScreen(props: ModalWrapperFields) {
                 title={strings(
                   'payment.withdrawal_method.add_withdrawal_method',
                 )}
-                onPress={handleOpenAddItemModal}
+                onPress={() => {
+                  handleOpenAddItemModal();
+                  setIsSaving(false);
+                }}
               />
             </View>
             <FlatList
@@ -252,6 +316,36 @@ function DisburementScreen(props: ModalWrapperFields) {
                         ),
                       )}
                     </View>
+                    <View style={applyStyles('px-8')}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          Alert.alert(
+                            strings('warning'),
+                            strings(
+                              'payment.withdrawal_method.remove_withdrawal_message',
+                            ),
+                            [
+                              {
+                                text: strings('no'),
+                                onPress: () => {},
+                              },
+                              {
+                                text: strings('yes'),
+                                onPress: () => {
+                                  handleRemoveItem(item);
+                                },
+                              },
+                            ],
+                          );
+                        }}>
+                        <Icon
+                          size={24}
+                          name="delete"
+                          color={colors['gray-100']}
+                          type="material-community-icons"
+                        />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 );
               }}
@@ -263,5 +357,24 @@ function DisburementScreen(props: ModalWrapperFields) {
     </Page>
   );
 }
+
+const styles = StyleSheet.create({
+  skipBtn: {
+    width: '47%',
+    elevation: 0,
+    borderWidth: 1.5,
+    borderColor: colors['gray-20'],
+    backgroundColor: 'transparent',
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+  nextBtn: {
+    width: '47%',
+    elevation: 0,
+    backgroundColor: colors['blue-100'],
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+});
 
 export default withModal(DisburementScreen);

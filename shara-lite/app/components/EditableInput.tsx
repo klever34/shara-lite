@@ -48,7 +48,7 @@ export const EditableInput = forwardRef<TextInput, EditableInputProps>(
             onBlur={handleInputBlur}
             ref={mergeRefs([inputRef, ref])}
             onContentSizeChange={handleHeightUpdate}
-            style={applyStyles(style, {height})}
+            style={applyStyles(style, {height: 40})}
             {...rest}
           />
         )}

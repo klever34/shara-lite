@@ -1,6 +1,6 @@
 {
   "name": "shara-lite",
-  "version": "0.8.2",
+  "version": "0.8.9",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -46,8 +46,10 @@
     "js-search": "^2.0.0",
     "libphonenumber-js": "^1.8.5",
     "lodash": "^4.17.15",
-    "lottie-react-native": "^3.5.0",
+    "lottie-react-native": "^4.0.0",
     "promise-retry": "^2.0.1",
+    "pubnub": "^4.30.1",
+    "pubnub-react": "^2.1.0",
     "query-string": "^6.13.1",
     "react": "16.13.1",
     "react-error-boundary": "^2.3.1",
@@ -93,6 +95,7 @@
     "react-native-ux-cam": "^5.2.0",
     "react-native-vector-icons": "6.6.0",
     "react-native-view-shot": "^3.1.2",
+    "react-native-webview": "^11.3.2",
     "readable-stream": "1.0.33",
     "realm": "^10.1.2",
     "rn-fetch-blob": "^0.12.0",

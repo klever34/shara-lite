@@ -5,6 +5,7 @@ import {Business, User} from 'types/app';
 import {IAnalyticsService} from '@/services/analytics';
 import {handleError} from '@/services/error-boundary';
 import {II18nService} from '@/services/i18n';
+import {IHelpDeskService} from '@/services/help-desk';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -41,6 +42,7 @@ export class AuthService implements IAuthService {
     private storageService: IStorageService,
     private analyticsService: IAnalyticsService,
     private i18nService: II18nService,
+    private helpDeskService: IHelpDeskService,
   ) {}
 
   public async initialize(): Promise<void> {
@@ -70,6 +72,7 @@ export class AuthService implements IAuthService {
     this.user = user;
     this.analyticsService.setUser(user).catch(handleError);
     this.i18nService.initialize(user).catch(handleError);
+    this.helpDeskService.setUser(user);
   }
 
   public setRealmCredentials(realmCredentials: any) {

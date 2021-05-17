@@ -42,11 +42,14 @@ export const retryPromise = (
   );
 };
 
-export const decrypt = (encryptedText: string) => {
-  return CryptoJS.AES.decrypt(
-    encryptedText,
-    Config.PUBNUB_USER_CRYPT_KEY,
-  ).toString(CryptoJS.enc.Utf8);
+export const encryptText = (text: string) => {
+  return CryptoJS.AES.encrypt(text, 'cnwr4h4uhpctzhvt').toString();
+};
+
+export const decryptText = (encryptedText: string) => {
+  return CryptoJS.AES.decrypt(encryptedText, 'cnwr4h4uhpctzhvt').toString(
+    CryptoJS.enc.Utf8,
+  );
 };
 
 export const amountWithCurrency = (amount?: number) => {

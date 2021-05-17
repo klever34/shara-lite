@@ -41,7 +41,8 @@ export const BNPLReceiptImage = memo((props: Props) => {
     total_amount,
     credit_amount,
   } = receiptData ?? {};
-  const {repayment_amount} = drawdown;
+  const {repayment_amount, payment_frequency_unit, payment_frequency, amount_repaid} = drawdown;
+  const isPaid = amount_repaid !== 0;
 
   const receiptNo = _id?.toString().substring(0, 6);
 
@@ -178,26 +179,10 @@ export const BNPLReceiptImage = memo((props: Props) => {
               borderBottomColor: colors.black,
             })}>
             <Text style={applyStyles('print-text-400 pb-8 text-lg')}>
-              {strings('total')}: {amountWithCurrency(total_amount)}
-            </Text>
-            <Text style={applyStyles('print-text-400 pb-8 text-lg')}>
-              {strings('paid')}: {amountWithCurrency(amount_paid)}
+              {strings('paid')}: {amountWithCurrency(isPaid ? amount_repaid : amount_paid)}
             </Text>
           </View>
 
-          {!!credit_amount && (
-            <View
-              style={applyStyles('py-16', {
-                borderRadius: 1,
-                borderBottomWidth: 1,
-                borderStyle: 'dashed',
-                borderBottomColor: colors.black,
-              })}>
-              <Text style={applyStyles('print-text-400 text-lg')}>
-                {strings('balance')}: {amountWithCurrency(credit_amount)}
-              </Text>
-            </View>
-          )}
           <View>
             <View
               style={applyStyles(
@@ -210,7 +195,7 @@ export const BNPLReceiptImage = memo((props: Props) => {
                 },
               )}>
               <Text style={applyStyles('print-text-400 text-xl')}>
-                {strings('bnpl.receipt.bnpl_text')}
+                {strings('bnpl.receipt.bnpl_text', {payment_frequency_unit, payment_frequency})}
               </Text>
               <Text style={applyStyles('print-text-400 text-xl')}>
                 {amountWithCurrency(repayment_amount)}

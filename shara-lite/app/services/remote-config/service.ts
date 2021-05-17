@@ -5,13 +5,54 @@ import defaultTranslations from '@/services/i18n/translations';
 
 export const remoteConfigDefaults: RemoteConfig = {
   translations: defaultTranslations,
-  countries: {},
-  minimumVersion: '0.0.0',
+  countries: {
+    "NGN": {
+      "default": "en",
+      "options": [
+        {
+          "code": "en",
+          "name": "English"
+        },
+        {
+          "code": "ha",
+          "name": "Hausa"
+        }
+      ]
+    },
+    "KES": {
+      "default": "en",
+      "options": [
+        {
+          "code": "sw",
+          "name": "Swahili"
+        },
+        {
+          "code": "en",
+          "name": "English"
+        }
+      ]
+    },
+    "ZWL": {
+      "default": "en",
+      "options": [
+        {
+          "code": "en",
+          "name": "English"
+        },
+        {
+          "code": "sw",
+          "name": "Swahili"
+        }
+      ]
+    }
+  },
+  minimumVersion: '0.1.0',
   sharaMoneyEnabledCountries: {
     NGN: {},
-    KES: {},
+    KES: {maxWithdrawalAmount: 50000},
   },
   sharaMoneyEnabledUsers: {},
+  enableBVNVerification: false,
 };
 
 export interface IRemoteConfigService {
@@ -41,19 +82,19 @@ export class RemoteConfigService implements IRemoteConfigService {
 
   getValue(key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue {
     // return {
-    //   asString(): string {
-    //     return JSON.stringify(remoteConfigDefaults[key]);
+    //   asString (): string {
+    //     return JSON.stringify(remoteConfigDefaults[key])
     //   },
-    //   getSource(): 'remote' | 'default' | 'static' {
-    //     return 'default';
+    //   getSource (): 'remote' | 'default' | 'static' {
+    //     return 'default'
     //   },
-    //   asNumber(): number {
-    //     return 0;
+    //   asNumber (): number {
+    //     return 0
     //   },
-    //   asBoolean(): boolean {
-    //     return false;
+    //   asBoolean (): boolean {
+    //     return false
     //   },
-    // };
+    // }
     return remoteConfig().getValue(key);
   }
 }

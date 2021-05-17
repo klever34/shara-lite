@@ -27,6 +27,7 @@ export interface IBNPLDrawdown extends BaseModelInterface {
     api_id?: number;
     bnpl_repayments?: Realm.Results<IBNPLRepayment>;
     payment_frequency_amount?: number;
+    takes_charge?: string;
  };
 
 export const modelName = 'BNPLDrawdown';
@@ -63,7 +64,8 @@ export class BNPLDrawdown extends BaseModel implements Partial<IBNPLDrawdown> {
                 objectType: 'BNPLRepayment',
                 property: 'bnpl_drawdown',
             },
-            payment_frequency_amount: 'double?'
+            payment_frequency_amount: 'double?',
+            takes_charge: 'string?'
         }
     }
 }

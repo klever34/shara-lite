@@ -5,7 +5,14 @@ import Touchable from '@/components/Touchable';
 import {TouchableActionItem} from '@/components/TouchableActionItem';
 import {AppContext} from '@/contexts/app';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
+import {
+  getAnalyticsService,
+  getAuthService,
+  getHelpDeskService,
+  getI18nService,
+  getRemoteConfigService,
+  getStorageService,
+} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealmLogout} from '@/services/realm';
@@ -29,6 +36,7 @@ import {RootStackParamList} from '@/index';
 import BANNER from '@/assets/images/invite-banner-new.svg';
 import SharaLogo from '@/assets/images/shara_logo_grey_2.svg';
 import EmblemGreen from '@/assets/images/emblem-green.svg';
+import {WebView} from 'react-native-webview';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -58,15 +66,22 @@ export const MoreOptionsScreen = withModal(
     const onEditBusinessSettings = useCallback(() => {
       navigation.navigate('BusinessSettings');
     }, [navigation]);
-
-    const onPaymentSettings = useCallback(() => {
-      const user = getAuthService().getUser();
-      if (user?.is_identity_verified) {
-        navigation.navigate('DisburementScreen');
+    const user = getAuthService().getUser();
+    const onPaymentSettings = useCallback(async () => {
+      const idValue = await getStorageService().getItem('bvn');
+      if (!user?.is_identity_verified) {
+        const bvnVerificationEnabled = getRemoteConfigService()
+          .getValue('enableBVNVerification')
+          .asBoolean();
+        if (idValue && !bvnVerificationEnabled) {
+          navigation.navigate('DisburementScreen');
+        } else {
+          navigation.navigate('PaymentSettings');
+        }
       } else {
-        navigation.navigate('PaymentSettings');
+        navigation.navigate('DisburementScreen');
       }
-    }, [navigation]);
+    }, [navigation, user]);
 
     const {reloadApp} = useContext(AppContext);
 
@@ -111,6 +126,46 @@ export const MoreOptionsScreen = withModal(
           },
           onPress: onPaymentSettings,
         },
+        {
+          leftSection: {
+            title: strings('more.list.kyc_settings.title'),
+            caption: strings('more.list.kyc_settings.description'),
+          },
+          onPress: () => {
+            const closeModal = openModal('full', {
+              renderContent: () => {
+                return (
+                  <>
+                    <View
+                      style={applyStyles(
+                        'justify-center items-end w-full px-16 py-12',
+                      )}>
+                      <Touchable
+                        onPress={() => {
+                          closeModal();
+                        }}>
+                        <Icon type="feathericons" name="x" size={32} />
+                      </Touchable>
+                    </View>
+                    <WebView
+                      source={{
+                        uri: `https://shara.retool.com/embedded/public/89034f9f-4280-455c-b541-05486ae0cecc?token=${getAuthService().getToken()}&user_id=${
+                          user?.id ?? ''
+                        }`,
+                      }}
+                      injectedJavaScript={`
+                        const branding = document.getElementsByClassName("retool-branding")[0];
+                        if (branding) {
+                          branding.style.display = "none";
+                        }
+                      `}
+                    />
+                  </>
+                );
+              },
+            });
+          },
+        },
         ...(languages.length > 1
           ? [
               {
@@ -140,6 +195,15 @@ export const MoreOptionsScreen = withModal(
             navigation.navigate('Feedback');
           },
         },
+        {
+          leftSection: {
+            title: strings('more.list.support.title'),
+            caption: strings('more.list.support.description'),
+          },
+          onPress: () => {
+            getHelpDeskService().startChat();
+          },
+        },
       ];
     }, [
       onEditBusinessSettings,
@@ -147,6 +211,8 @@ export const MoreOptionsScreen = withModal(
       languages.length,
       onLanguageSettings,
       navigation,
+      openModal,
+      user,
     ]);
 
     const {logoutFromRealm} = useRealmLogout();
@@ -189,20 +255,24 @@ export const MoreOptionsScreen = withModal(
       const {isSynced} = await hasAllRecordsBeenSynced();
       closeLoadingModal();
 
-      const message = isSynced
+      setTimeout(() => {
+        const message = isSynced
         ? strings('more.logout.logout_confirmation_text')
         : strings('more.logout.logout_unsaved_data_text');
 
       Alert.alert('Warning', message, [
         {
           text: strings('more.no'),
-          onPress: () => {},
+          onPress: () => {
+          },
         },
         {
           text: strings('more.yes'),
           onPress: handleLogout,
         },
       ]);
+      }, 1000)
+
     }, [handleLogout, openModal, hasAllRecordsBeenSynced]);
 
     const [business, setBusiness] = useState(
@@ -278,7 +348,10 @@ export const MoreOptionsScreen = withModal(
                     key={`${index}`}
                     style={applyStyles(
                       'border-t-1 border-gray-20 px-16',
-                      {borderTopWidth: 1, borderColor: colors['gray-20']},
+                      {
+                        borderTopWidth: 1,
+                        borderColor: colors['gray-20'],
+                      },
                       index === moreOptions.length - 1 && {
                         borderBottomWidth: 1,
                       },

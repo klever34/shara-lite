@@ -83,17 +83,23 @@ const useSyncLoader = () => {
   const initializeSync = useCallback(
     async () => {
       const realmCredentials = authService.getRealmCredentials();
+      
+      console.log({realmCredentials});
+      
+      console.log("1");
+      
       if (!realmCredentials) {
         retryUpdate();
         return;
       }
+      console.log("2");
 
       try {
         if (!realm) {
           retryUpdate();
           return;
         }
-
+        console.log("3");
         const {jwt} = realmCredentials;
         const {
           realm: newRealm,
@@ -103,17 +109,20 @@ const useSyncLoader = () => {
           jwt,
           hideError: true,
         });
+      console.log("4");
         if (!newRealm) {
           retryUpdate();
           return;
         }
-
+        console.log("5");
         await syncData({
           newRealm,
           realmUser,
           partitionValue: partitionValue || '',
         });
+      console.log("6");
       } catch (e) {
+        console.log("error", e);
         retryUpdate();
       }
     },

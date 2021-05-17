@@ -8,6 +8,7 @@ const en: Strings = {
     submit_button: 'Update Now',
   },
   next: 'Next',
+  send: 'Send',
   skip: 'Skip',
   get_started: 'Get Started',
   login: {
@@ -154,13 +155,9 @@ const en: Strings = {
           customer: {
             notFound: 'Business not found',
           },
-          kenyaOnly: {
-            'Business not found': '',
-          },
-          success: {
-            'We were unable to send an STK push to your mobile number':
-              ' please try again or contact us through the Shara mobile application',
-          },
+          kenyaOnly: 'Business not found',
+          success:
+            'We were unable to send an STK push to your mobile number please try again or contact us through the Shara mobile application',
         },
         processValidationEvent: {
           success: 'Error Validating Payment',
@@ -223,19 +220,31 @@ const en: Strings = {
       bnplDrawdown: {
         create: {
           notFound: 'No BNPL has been approved for you',
-          invalidAmount: 'Amount specified is more than the amount available for drawdown',
+          invalidAmount:
+            'Amount specified is more than the amount available for drawdown',
           inactive: 'Drawdown is not currently active',
-          error:  'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
+          error:
+            'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
           success: 'Drawdown taken successfully',
+          duplicate:
+            'This looks like a duplicate transaction. Please wait 2 minutes to retry, if this is not an error.',
         },
       },
       bnplRepayment: {
         create: {
           notFound: 'No BNPL has been approved for you',
           complete: "You've already finished repaying your loans",
-          error: 'We were unable to process your repayment, please try again or contact us through the Shara mobile application',
+          error:
+            'We were unable to process your repayment, please try again or contact us through the Shara mobile application',
           insufficientBalance: 'Your wallet balance is not sufficient',
           success: 'Repayment successful',
+        },
+      },
+      sms: {
+        create: {
+          success: 'Sms sent successfully',
+          missingFields: 'To & Message are required',
+          error: 'Unable to send SMS. Please try again later',
         },
       },
     },
@@ -417,6 +426,27 @@ const en: Strings = {
     transaction_date_text: 'What date did this happen?',
     coming_soon_select_a_photo: 'Coming Soon: Select a Photo',
   },
+  request_payment: {
+    button: {
+      title: 'Request Payment',
+      description: 'Send payment link to clients to receive money',
+    },
+    header: {
+      title: 'Request Payment',
+      description: 'Send payment link to clients to receive money',
+    },
+    fields: {
+      amount: {
+        label: 'Enter Amount',
+      },
+      note: {
+        label: 'Note (optional)',
+        placeholder: 'Write a brief note about this transaction',
+      },
+    },
+    success_text:
+      'Your payment request of {{amount}} from {{customer}} was successful',
+  },
   sale: {
     sale_recorded: 'SALE RECORDED',
     button: {
@@ -588,6 +618,7 @@ const en: Strings = {
       payment_added: 'PAYMENT OPTION ADDED',
       warning_message: 'Please fill all the fields in the form',
       payment_edited: 'PAYMENT OPTION EDITED',
+      payment_removed: 'PAYMENT OPTION REMOVED',
       add_payment_info: 'add Payment info',
       edit_payment_info: 'edit Payment info',
       remove_message: 'Are you sure you want to remove the payment option?',
@@ -618,11 +649,11 @@ const en: Strings = {
     bvn_input_field_placeholder: 'Enter your BVN',
     withdrawal_method: {
       bvn_description:
-        'Some copy about why we are collecting BVN goes here. Also telling them it needs to match the name on their account',
+        'Please enter your National ID/BVN number. Your ID should match the names and the payment method in your Settings',
       bvn_input_field_placeholder: 'Enter your BVN',
       otp_description: 'An OTP has been sent to your BVN number *******4343',
       id_description:
-        'Some copy about why we are collecting {{idType}} goes here. Also telling them it needs to match the name on their account',
+        'Please enter your {{idType}}. Your ID should match the names and the payment method in your Settings',
       id_input_field_placeholder: 'Enter your {{idType}}',
       id_otp_description:
         'An OTP has been sent to your {{idType}} number {{mobile}}',
@@ -635,6 +666,10 @@ const en: Strings = {
       make_default_withdrawal: 'Make default withdrawal account',
       withdrawal_picker_placeholder: 'Select a withdrawal method',
       select_an_option: 'Select an option',
+      withdrawal_added: 'WITHDRAWAL METHOD ADDED',
+      withdrawal_removed: 'WITHDRAWAL METHOD REMOVED',
+      remove_withdrawal_message:
+        'Are you sure you want to remove the withdrawal method?',
     },
   },
   more: {
@@ -666,6 +701,14 @@ const en: Strings = {
       language: {
         title: 'Language',
         description: 'Select your language',
+      },
+      support: {
+        title: 'Contact Support',
+        description: 'Ask a question or leave a message',
+      },
+      kyc_settings: {
+        title: 'KYC Settings',
+        description: 'Fill your KYC information',
       },
     },
     logout: {
@@ -882,6 +925,7 @@ const en: Strings = {
       'Withdrawal amount is greater than your wallet balance',
     withdraw_amount_required_error: 'Amount is required',
     withdraw_minimum_error: 'Withdrawal amount must be greater than {{amount}}',
+    withdraw_maximum_error: 'Maximum amount per withdrawal is {{amount}}',
     not_available: {
       title: 'Not available in your country',
       description:
@@ -899,6 +943,29 @@ const en: Strings = {
       tag: 'Go to payment settings',
     },
     feedback_submitted: 'Feedback Submitted',
+    stk_push: {
+      notification_sent: 'Notification sent',
+      amount_minimum_error: 'Amount must be greater than {{amount}}',
+      confirmation_text:
+        'A notification has been sent to your MPESA number **{{mobile}}**. Please check your phone to confirm.',
+      fields: {
+        amount: {
+          label: 'Amount',
+          placeholder: 'Enter amount',
+          errorMessage: 'Amount is required',
+        },
+        mobile: {
+          label: 'Phone Number',
+          placeholder: 'Enter your phone number',
+          errorMessage: 'Phone Number is required',
+        },
+      },
+    },
+    bnpl_drawdown_item:
+      'Buy now pay later drawdown of **{{amount}}** to **{{customer}}**',
+    bnpl_repayment_item:
+      'Buy now pay later repayment of **{{amount}}** from **{{customer}}**',
+    no_decimals: "MPESA doesn't allow for decimal payments",
   },
   drawdown: {
     title: 'Drawdown',
@@ -937,13 +1004,16 @@ const en: Strings = {
   },
   bnpl: {
     not_available: {
-      button_text:
-        'Go to money settings',
-      instruction: 'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
+      button_text: 'Go to money settings',
+      instruction:
+        'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
     },
-    buy_now_pay_later: 'Buy now pay later',
+    buy_now_pay_later: 'Buy Now Pay Later',
     transaction_details: 'Transaction Details',
-    day_text: {one: '{{amount}} day', other: '{{amount}} days'},
+    day_text: {
+      one: '{{amount}} day',
+      other: '{{amount}} days',
+    },
     active_text: 'Active',
     complete_text: 'Complete',
     clients_text: 'Clients',
@@ -989,13 +1059,18 @@ const en: Strings = {
       balance: 'Balance',
       bnpl_terms_text: 'Buy now pay later terms',
       repayment_date: 'to be paid in full by {{date}}',
+      bearing_fees_text: 'I will be braring the BNPL fees',
+      select_option_text: 'Select buy now pay later option',
+      excess_amount_error: 'Amount is more than amount available for drawdown',
     },
     confirmation: {
       instruction:
-        '1. Accept the terms of the BNPL offered by Shara to you. \n 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.',
+        '1. Accept the terms of the BNPL offered by Shara to you 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.',
       title: 'Confirm Buy Now Pay Later',
-      client_terms: 'I confirm that my Client has accepted the terms of the Buy Now Pay Later product I am offering him or her.',
-      merchant_terms: 'I have accepted the [Terms and Conditions](https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub) for Shara Buy Now Pay Later',
+      client_terms:
+        'I confirm that my Client has accepted the terms of the Buy Now Pay Later product I am offering him or her.',
+      merchant_terms:
+        'I have accepted the [Terms and Conditions](https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub) for Shara Buy Now Pay Later',
       terms: '**Terms**',
     },
     success: {
@@ -1005,7 +1080,7 @@ const en: Strings = {
       payment: 'Client pays {{amount}} over {{days}} days',
     },
     receipt: {
-      bnpl_text: 'Buy Now Pay Later (8 weeks)',
+      bnpl_text: 'Buy Now Pay Later ({{payment_frequency}} {{payment_frequency_unit}})',
     },
     add_repayment: 'Add Repayment',
     client: {
@@ -1013,7 +1088,7 @@ const en: Strings = {
       paid_text: 'Paid',
       wallet_balance: 'Wallet balance {{amount}}',
       add_repayment_note:
-        'Note that this amount will be deducted from your wallet balance.',
+        'Note that this amount will be deducted from your wallet balance',
       repayment_to_shara: 'Repayment to Shara Inc.',
       repayment: {
         fields: {
@@ -1030,7 +1105,8 @@ const en: Strings = {
           repayment_complete: 'BNPL Transaction Repayment Completed!',
         },
       },
-      empty_state: '{{client}} has made no repayment yet. Click the button below to record a repayment.',
+      empty_state:
+        '{{client}} has made no repayment yet. Click the button below to record a repayment.',
       paid: 'Paid',
       not_paid: 'Not paid',
       past_due: 'Past due',
@@ -1045,6 +1121,8 @@ const en: Strings = {
       outstanding_amount: '{{amount}}',
       notes: 'Notes',
       notes_text_content: '{{notes}}',
+      client_takes_charge: 'The client will be covering interest in their weekly repayments of {{payment_frequency_amount}}',
+      merchant_takes_charge: 'You are covering the interest payments and {{amount}} was funded to your wallet',
     },
     recent_purchase_message:
       'Hi {{customer_name}}, thank you for your recent purchase.',
@@ -1052,11 +1130,21 @@ const en: Strings = {
       'Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.',
     you_paid_message: 'You paid {{amount}}.',
     you_owe_message: 'You owe {{credit_amount}}.',
-    next_repayment: 'Your next repayment is {{amount}} and it is due on {{date}}.',
-    first_repayment: 'Your first repayment is {{amount}} and it is due on {{date}}.'
+    next_repayment:
+      'Your next repayment is {{amount}} and it is due on {{date}}.',
+    first_repayment:
+      'Your first repayment is {{amount}} and it is due on {{date}}.',
   },
+  message_sent: 'MESSAGE SENT',
+  offline_sms_notification_title: 'You are offline',
+  sms_no_recipient: "Please ensure there's a recipient to send the message to.",
+  offline_sms_notification_description:
+    'Do you want to send via standard SMS? Your carrier SMS & data rates may apply.',
   copied: 'Copied',
   submit: 'Submit',
+  send_via: 'Send via',
+  push_payment: 'Push payment',
+  you_get: 'You get',
 };
 
 export default en;

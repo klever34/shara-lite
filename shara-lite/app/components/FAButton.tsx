@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import {ActivityIndicator, StyleSheet, View, ViewStyle} from 'react-native';
+import {ActivityIndicator, StyleSheet, View, ViewStyle,TouchableOpacity} from 'react-native';
 import {applyStyles, colors} from '../styles';
 import Icon from './Icon';
 import Touchable from './Touchable';
@@ -36,15 +36,16 @@ export const FAButton = ({
   }, [children, iconType, iconName]);
 
   return (
-    <Touchable onPress={isLoading ? undefined : onPress}>
-      <View
+    <Touchable>
+      <TouchableOpacity
+      onPress={isLoading ? undefined : onPress}
         style={applyStyles(styles.container, style, {backgroundColor: color})}>
         {isLoading ? (
           <ActivityIndicator animating={isLoading} color={colors.white} />
         ) : (
           renderContent()
         )}
-      </View>
+      </TouchableOpacity>
     </Touchable>
   );
 };
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     position: 'absolute',
     padding: 12,
-    bottom: 16,
+    bottom: 36,
     right: 16,
     borderRadius: 32,
     justifyContent: 'center',
