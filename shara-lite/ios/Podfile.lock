@@ -517,12 +517,26 @@ PODS:
     - UXCam (~> 3.3.1)
   - RNVectorIcons (6.6.0):
     - React
+  - RNZendeskChat (0.4.1):
+    - React-Core
+    - ZendeskChatSDK (~> 2.9)
   - Sentry (5.2.2):
     - Sentry/Core (= 5.2.2)
   - Sentry/Core (5.2.2)
   - Toast (4.0.0)
   - UXCam (3.3.4)
   - Yoga (1.14.0)
+  - ZendeskChatProvidersSDK (2.11.0)
+  - ZendeskChatSDK (2.11.0):
+    - ZendeskChatProvidersSDK (~> 2.11.0)
+    - ZendeskMessagingSDK (~> 3.8.2)
+  - ZendeskCommonUISDK (6.1.1)
+  - ZendeskMessagingAPISDK (3.8.2):
+    - ZendeskSDKConfigurationsSDK (~> 1.1.8)
+  - ZendeskMessagingSDK (3.8.2):
+    - ZendeskCommonUISDK (~> 6.1.1)
+    - ZendeskMessagingAPISDK (~> 3.8.2)
+  - ZendeskSDKConfigurationsSDK (1.1.8)
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -601,6 +615,7 @@ DEPENDENCIES:
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNUxcam (from `../node_modules/react-native-ux-cam`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
+  - RNZendeskChat (from `../node_modules/react-native-zendesk-chat`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -635,6 +650,12 @@ SPEC REPOS:
     - Sentry
     - Toast
     - UXCam
+    - ZendeskChatProvidersSDK
+    - ZendeskChatSDK
+    - ZendeskCommonUISDK
+    - ZendeskMessagingAPISDK
+    - ZendeskMessagingSDK
+    - ZendeskSDKConfigurationsSDK
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -781,6 +802,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-ux-cam"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
+  RNZendeskChat:
+    :path: "../node_modules/react-native-zendesk-chat"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -884,11 +907,18 @@ SPEC CHECKSUMS:
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNUxcam: d7df434cd5ad1a777518d3fc46fa9383aa8f547d
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
+  RNZendeskChat: 5a73a4353497c0670f81e30f06d45e183d0137aa
   Sentry: 8fa58a051237554f22507fb483b9a1de0171a2dc
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   UXCam: c2c00873595ab89be227f197213dc3679ff88ae5
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
+  ZendeskChatProvidersSDK: df4b700b4bbae78fb7e1e4368e7953546a18aa03
+  ZendeskChatSDK: 9df7ad5a3cc731b791487d063571b4b1fc618447
+  ZendeskCommonUISDK: 5808802951ad2bb424f0bed4259dc3c0ce9b52ec
+  ZendeskMessagingAPISDK: 144e0fb0e633a3c4e73149b781ab65338938d5a8
+  ZendeskMessagingSDK: 500e83d9413481e95180c37ddca0d4ef9d515600
+  ZendeskSDKConfigurationsSDK: 8371b468db0d09e9198f6c5a97818826943ee1ee
 
 PODFILE CHECKSUM: 96713de10938a6e9330e567946dfba14f90cd2fe
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.1

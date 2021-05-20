@@ -83,6 +83,9 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
       let link = paymentLink
         ? strings('payment_link_message', {payment_link: paymentLink})
         : '';
+
+        console.log("pplink");
+        console.log(paymentLink)
       if (clickable) {
         link = paymentLink ? `[${link}](${paymentLink})` : '';
       }
@@ -106,7 +109,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
                 credit_amount: amountWithCurrency(values.credit_amount),
               })
           : ''
-      }\n\n\n\n${strings('powered_by_shara')}`;
+      }\n\n${link}\n\n${strings('powered_by_shara')}`;
     },
     [user, values, dueDate, customer, businessInfo, paymentLink],
   );

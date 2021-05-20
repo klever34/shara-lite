@@ -152,7 +152,7 @@ const BNPLRepaymentItem = ({data}: {data: IBNPLRepayment}) => {
 };
 
 const CollectionItem = ({data}: {data: ICollection}) => {
-  const {amount, created_at, type, provider_label, status} = data;
+  const {amount, created_at, type, provider_label, status, purpose} = data;
   const [customer, setCustomer] = useState<ICustomer | undefined>(
     data.customer,
   );
@@ -180,6 +180,15 @@ const CollectionItem = ({data}: {data: ICollection}) => {
     });
   }, [navigation, data]);
 
+  const text =
+    purpose === 'payment'
+      ? strings('payment_activities.payment_activity.received_payment', {
+          amount: amountWithCurrency(amount),
+        })
+      : strings('payment_activities.payment_activity.deposit', {
+          amount: amountWithCurrency(amount),
+        });
+
   return (
     <Touchable onPress={!customer ? handleOpenSelectCustomer : undefined}>
       <View
@@ -196,35 +205,29 @@ const CollectionItem = ({data}: {data: ICollection}) => {
           />
           <View style={applyStyles('pl-8')}>
             <View>
-              <Markdown style={markdownStyle}>
-                {strings(
-                  'payment_activities.payment_activity.received_payment',
-                  {
-                    amount: amountWithCurrency(amount),
-                    provider: provider_label || type,
-                  },
-                )}
-              </Markdown>
+              <Markdown style={markdownStyle}>{text}</Markdown>
               <View style={applyStyles('flex-row items-center')}>
-                <>
-                  {customer ? (
-                    <Text style={applyStyles('text-700 text-gray-100')}>
-                      {customer.name}
-                    </Text>
-                  ) : (
-                    <Text style={applyStyles('text-secondary text-700')}>
-                      {strings(
-                        'payment_activities.payment_activity.select_customer',
-                      )}
-                    </Text>
-                  )}
-                </>
+                {purpose === 'payment' && (
+                  <>
+                    {customer ? (
+                      <Text style={applyStyles('text-700 text-gray-100 pr-8 ')}>
+                        {customer.name}
+                      </Text>
+                    ) : (
+                      <Text style={applyStyles('text-secondary text-700 pr-8')}>
+                        {strings(
+                          'payment_activities.payment_activity.select_customer',
+                        )}
+                      </Text>
+                    )}
+                  </>
+                )}
 
                 <Text
                   style={applyStyles(
-                    `pl-8 text-700 text-capitalize ${statusColors[status]}`,
+                    `text-700 text-capitalize ${statusColors[status]}`,
                   )}>
-                  {status}
+                  {status === 'pending' ? 'in progress' : status}
                 </Text>
               </View>
             </View>
@@ -285,7 +288,7 @@ const DisbursementItem = ({data}: {data: IDisbursement}) => {
             style={applyStyles(
               `text-700 text-capitalize ${statusColors[status]}`,
             )}>
-            {status}
+            {status === 'pending' ? 'in progress' : status}
           </Text>
         </View>
       </View>

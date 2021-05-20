@@ -13,7 +13,7 @@ export const dimensions = {
   fullWidth: Dimensions.get('window').width,
 };
 
-export const colors: { [ key: string ]: string; } = {
+export const colors: {[key: string]: string} = {
   // Brand Colors
   whatsapp: '#1BA058',
   // Neutral Colors
@@ -33,6 +33,7 @@ export const colors: { [ key: string ]: string; } = {
   'red-100': '#E85656',
   'red-200': '#DD0404',
   // Greens
+  'green-10': '#E7FFEE',
   'green-50': '#D8F0EA',
   'green-100': '#0EC99C',
   'green-200': '#25A36E',

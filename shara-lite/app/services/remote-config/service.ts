@@ -5,48 +5,9 @@ import defaultTranslations from '@/services/i18n/translations';
 
 export const remoteConfigDefaults: RemoteConfig = {
   translations: defaultTranslations,
-  countries: {
-    "NGN": {
-      "default": "en",
-      "options": [
-        {
-          "code": "en",
-          "name": "English"
-        },
-        {
-          "code": "ha",
-          "name": "Hausa"
-        }
-      ]
-    },
-    "KES": {
-      "default": "en",
-      "options": [
-        {
-          "code": "sw",
-          "name": "Swahili"
-        },
-        {
-          "code": "en",
-          "name": "English"
-        }
-      ]
-    },
-    "ZWL": {
-      "default": "en",
-      "options": [
-        {
-          "code": "en",
-          "name": "English"
-        },
-        {
-          "code": "sw",
-          "name": "Swahili"
-        }
-      ]
-    }
-  },
-  minimumVersion: '0.1.0',
+  countries: {},
+  minimumVersion: '0.0.0',
+  transactionPinVersion: '0.0.0',
   sharaMoneyEnabledCountries: {
     NGN: {},
     KES: {maxWithdrawalAmount: 50000},

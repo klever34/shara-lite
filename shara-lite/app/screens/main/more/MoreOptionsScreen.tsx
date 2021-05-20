@@ -5,13 +5,13 @@ import Touchable from '@/components/Touchable';
 import {TouchableActionItem} from '@/components/TouchableActionItem';
 import {AppContext} from '@/contexts/app';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {RootStackParamList} from '@/index';
 import {
   getAnalyticsService,
+  getApiService,
   getAuthService,
   getHelpDeskService,
   getI18nService,
-  getRemoteConfigService,
-  getStorageService,
 } from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
@@ -28,15 +28,15 @@ import React, {
   useState,
 } from 'react';
 import {Alert, SafeAreaView, ScrollView, View} from 'react-native';
+import {WebView} from 'react-native-webview';
+import {User} from 'types/app';
 import {MoreStackParamList} from '.';
 import {MainStackParamList} from '..';
 import {version} from '../../../../package.json';
 import {inviteImageBase64String} from './inviteImageBase64String';
-import {RootStackParamList} from '@/index';
 import BANNER from '@/assets/images/invite-banner-new.svg';
 import SharaLogo from '@/assets/images/shara_logo_grey_2.svg';
 import EmblemGreen from '@/assets/images/emblem-green.svg';
-import {WebView} from 'react-native-webview';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -66,20 +66,17 @@ export const MoreOptionsScreen = withModal(
     const onEditBusinessSettings = useCallback(() => {
       navigation.navigate('BusinessSettings');
     }, [navigation]);
-    const user = getAuthService().getUser();
+    const user = getAuthService().getUser() as User;
+
     const onPaymentSettings = useCallback(async () => {
-      const idValue = await getStorageService().getItem('bvn');
-      if (!user?.is_identity_verified) {
-        const bvnVerificationEnabled = getRemoteConfigService()
-          .getValue('enableBVNVerification')
-          .asBoolean();
-        if (idValue && !bvnVerificationEnabled) {
-          navigation.navigate('DisburementScreen');
-        } else {
-          navigation.navigate('PaymentSettings');
-        }
+      const res = await getApiService().transactionPin(user.id);
+      if (res.data === false) {
+        navigation.navigate('NotSetTransactionPin');
       } else {
-        navigation.navigate('DisburementScreen');
+        //@ts-ignore
+        navigation.navigate('VerifyTransactionPin', {
+          routeName: 'DisbursementScreen',
+        });
       }
     }, [navigation, user]);
 
@@ -125,6 +122,21 @@ export const MoreOptionsScreen = withModal(
             caption: strings('more.list.payment_settings.description'),
           },
           onPress: onPaymentSettings,
+        },
+        {
+          leftSection: {
+            title: strings('more.list.security.title'),
+            caption: strings('more.list.security.description'),
+          },
+          onPress: async () => {
+            if (!user) {
+              return;
+            }
+            const {data: pinSet} = await getApiService().transactionPin(
+              user.id,
+            );
+            navigation.navigate('SecuritySettings', {pinSet});
+          },
         },
         {
           leftSection: {
@@ -318,7 +330,7 @@ export const MoreOptionsScreen = withModal(
             {!!business.name && (
               <>
                 <View style={applyStyles('flex-row items-center ml-16 py-32')}>
-                  {!!business.profile_image && (
+                  {business.profile_image ? (
                     <Image
                       source={{
                         uri: business.profile_image.url,
@@ -328,7 +340,7 @@ export const MoreOptionsScreen = withModal(
                         height: 24,
                       })}
                     />
-                  )}
+                  ): <SharaLogo width={32} height={32} />}
                   <View style={applyStyles('pl-12')}>
                     <Text
                       style={applyStyles(
@@ -361,7 +373,7 @@ export const MoreOptionsScreen = withModal(
               })}
             </View>
             <View style={applyStyles('px-16')}>
-              <Touchable onPress={handleInviteFriends} style={{alignSelf: 'center', marginVertical: -70}}>
+              <Touchable onPress={handleInviteFriends} style={{alignSelf: 'center', marginVertical: -20}}>
                 {/* <Image
                   resizeMode="center"
                   source={require('@/assets/images/invite-banner.png')}

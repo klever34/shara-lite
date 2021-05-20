@@ -2,7 +2,6 @@ import {AppInput, Button, CurrencyInput, toNumber} from '@/components';
 import {CustomerListItem} from '@/components/CustomerListItem';
 import {Page} from '@/components/Page';
 import {TitleContainer} from '@/components/TitleContainer';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {MainStackParamList} from '@/screens/main';
 import {getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
@@ -14,14 +13,12 @@ import {TextInput, View} from 'react-native';
 
 type RequestPaymentScreenProps = {
   route: RouteProp<MainStackParamList, 'RequestPayment'>;
-} & ModalWrapperFields;
+};
 
 const strings = getI18nService().strings;
 
-export default withModal(function RequestPaymentScreen({
+export default function RequestPaymentScreen({
   route,
-  openModal,
-  closeModal,
 }: RequestPaymentScreenProps) {
   const {customer} = route.params;
 
@@ -85,9 +82,9 @@ export default withModal(function RequestPaymentScreen({
         <Button
           onPress={handleSubmit}
           title={strings('done')}
-          style={applyStyles({width: '48%'})}
+          style={applyStyles({width: 120})}
         />
       </View>
     </Page>
   );
-});
+}

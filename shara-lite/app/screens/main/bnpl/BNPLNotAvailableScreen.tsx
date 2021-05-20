@@ -1,6 +1,6 @@
 import {Button, SecureEmblem} from '@/components';
-import {getI18nService} from '@/services';
 import {applyStyles, colors} from '@/styles';
+import {getAuthService, getI18nService} from '@/services';
 import React from 'react';
 import {Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -9,6 +9,9 @@ import EmblemGreen from '@/assets/images/emblem-green.svg';
 const strings = getI18nService().strings;
 
 export const BNPLNotAvailableScreen = ({onPress}: {onPress(): void}) => {
+  const user = getAuthService().getUser();
+  const business = getAuthService().getBusinessInfo();
+
   return (
     <SafeAreaView style={applyStyles('flex-1 bg-white center px-16')}>
       <EmblemGreen style={applyStyles('w-80 h-80')} />
@@ -16,7 +19,9 @@ export const BNPLNotAvailableScreen = ({onPress}: {onPress(): void}) => {
         style={applyStyles('pb-16 pt-24 text-center text-gray-200 text-base', {
           width: 320,
         })}>
-        {strings('bnpl.not_available.instruction')}
+        {strings('bnpl.not_available.instruction', {
+          merchant_name: user?.firstname ?? business.name,
+        })}
       </Text>
       <TouchableOpacity style={styles.learnBtn} onPress={onPress}>
         <Text

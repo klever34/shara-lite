@@ -37,3 +37,4 @@ export * from './AddCustomerModal';
 export * from './AccordionItem';
 export * from './Text';
 export * from './TabBar';
+export * from './SetPinModal';

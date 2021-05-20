@@ -13,7 +13,14 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Alert, Platform, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  Platform,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import {AuthStackParamList} from '.';
@@ -202,13 +209,44 @@ export const OTPVerification = () => {
             )}
           </View>
         </View>
-        <Button
+        {/* <Button
           isLoading={loading}
           style={applyStyles('w-full')}
           title={strings('otp.otp_button')}
           onPress={() => handleSubmit(otp)}
-        />
+        /> */}
+
+        {!loading ? (
+          <TouchableOpacity
+            style={styles.nextBtn}
+            onPress={() => {
+              handleSubmit(otp);
+            }}>
+            <Text
+              style={{
+                fontFamily: 'Roboto-Medium',
+                alignSelf: 'center',
+                color: '#fff',
+              }}>
+              {strings('otp.otp_button')}
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={[styles.nextBtn, {backgroundColor: 'rgba(0,0,0,.3)'}]}>
+            <ActivityIndicator size={'small'} color={'#fff'} />
+          </View>
+        )}
       </View>
     </AuthView>
   );
 };
+
+const styles = StyleSheet.create({
+  nextBtn: {
+    width: '100%',
+    elevation: 0,
+    backgroundColor: colors['blue-100'],
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+});

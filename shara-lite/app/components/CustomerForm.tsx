@@ -137,7 +137,7 @@ export const CustomerForm = ({
           variantColor="clear"
           onPress={onCancel}
           style={applyStyles({
-            width: '100%',
+            width: 180,
           })}
         />
         <Button
@@ -146,7 +146,7 @@ export const CustomerForm = ({
           isLoading={isLoading}
           onPress={handleSubmit}
           style={applyStyles({
-            width: '100%',
+            width: 180,
           })}
         />
       </View>

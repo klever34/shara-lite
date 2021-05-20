@@ -172,7 +172,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
 
   const handleSubmit = useCallback(
     async (formValues) => {
-      // return;
+      
       const phoneNumber = formValues.mobile as PhoneNumber;
       formValues = {
         ...formValues,
@@ -192,13 +192,13 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
       
       // console.log(formValues.profileImageFile);
       payload.append('profileImageFile', {
-        name: 'Shara'+ new Date().getMilliseconds(),
+        name: 'Shara-'+ new Date().getSeconds(),
         type: "image/jpeg",
         uri: formValues.profileImageFile.uri
       });
 
       console.log(JSON.stringify(payload));
-
+// return;
 
       try {
         user?.businesses && user.businesses.length

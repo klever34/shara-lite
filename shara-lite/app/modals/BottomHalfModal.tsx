@@ -1,7 +1,7 @@
 import React, {ReactNode, useCallback} from 'react';
 import Modal from 'react-native-modal';
 import {BaseModalProps, ModalOptionsList} from 'types/modal';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, KeyboardAvoidingView, ScrollView} from 'react-native';
 import {applyStyles} from '@/styles';
 
 type BottomHalfModalProps = ModalOptionsList['bottom-half'] & BaseModalProps;
@@ -57,16 +57,20 @@ const BottomHalfModal = ({
       onBackButtonPress={handleCloseModal}
       swipeDirection={swipeDirection}
       style={applyStyles('justify-end m-0')}>
-      <View style={styles.content}>
-        {showHandleNub && (
-          <View
-            style={applyStyles(
-              'w-60 h-4 bg-gray-20 self-center rounded-8 mt-16 mb-8',
+      <KeyboardAvoidingView behavior="position" enabled>
+        <ScrollView keyboardShouldPersistTaps="handled">
+          <View style={styles.content}>
+            {showHandleNub && (
+              <View
+                style={applyStyles(
+                  'w-60 h-4 bg-gray-20 self-center rounded-8 mt-16 mb-8',
+                )}
+              />
             )}
-          />
-        )}
-        {renderContent({closeModal: handleCloseModal})}
-      </View>
+            {renderContent({closeModal: handleCloseModal})}
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };

@@ -15,7 +15,8 @@ import {getI18nService} from '@/services';
 import {as} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useCallback, useMemo} from 'react';
-import {View} from 'react-native';
+import {View, TextInput, KeyboardAvoidingView, Platform} from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const strings = getI18nService().strings;
 
@@ -57,9 +58,30 @@ export const AmountForm = ({
     [setFieldValue, onCurrencyInputChange],
   );
   return (
+    // <KeyboardAvoidingView
+    // behavior={Platform.OS == 'ios' ? 'position' : 'height'}
+    // >
+    // <ScrollView >
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    //   <TextInput placeholder={"jkjkjkjkj"} />
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    //   <Text>jkjkjkjkjk</Text>
+    // </ScrollView>
+    // </KeyboardAvoidingView>
     <View style={as('')}>
-      <Header {...header} style={as('border-b-0 pt-12 pb-0')} />
-      <View style={as('px-24 py-12')}>
+      <Header {...header} style={as('border-b-0 pt-5 pb-0')} />
+      <View style={as('px-24 py-24')}>
         <CurrencyInput
           value={toNumber(values.amount)}
           label={strings('payment_activities.withdraw_fields.amount.label')}
